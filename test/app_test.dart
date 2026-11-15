@@ -3,6 +3,9 @@ import 'package:material_ui/material_ui.dart';
 import 'package:pantry_app/app.dart';
 import 'package:pantry_app/data/household_store.dart';
 import 'package:pantry_app/data/storage_backend.dart';
+import 'package:pantry_app/data/store_scope.dart';
+import 'package:pantry_app/logic/recipe_link.dart';
+import 'package:pantry_app/ui/pages/recipe_editor_page.dart';
 
 Future<HouseholdStore> seededStore() async {
   final store = HouseholdStore(MemoryBackend());
@@ -127,5 +130,82 @@ void main() {
     expect(store.shopping.length, firstCount);
     expect(store.shopping.every((l) => l.quantity == 2), isTrue);
     expect(store.shopping.first.name[0], store.shopping.first.name[0].toUpperCase());
+  });
+
+  testWidgets('write your own recipe, open it, add what is missing', (tester) async {
+    phoneSize(tester);
+    final store = await seededStore();
+    await tester.pumpWidget(PantryApp(store: store));
+    await tester.tap(find.byKey(const ValueKey('nav-recipes')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('add-recipe')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('add-own')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('field-link')), findsNothing);
+
+    await tester.enterText(find.byKey(const ValueKey('field-recipe-name')), 'Beans on toast deluxe');
+    await tester.enterText(find.byKey(const ValueKey('field-ingredients')), 'bread\nbaked beans\nbutter');
+    await tester.enterText(find.byKey(const ValueKey('field-method')), 'Toast. Beans. Butter.');
+    await tester.tap(find.byKey(const ValueKey('save-recipe')));
+    await tester.pumpAndSettle();
+
+    expect(store.recipes.single.method, 'Toast. Beans. Butter.');
+    expect(find.text('Beans on toast deluxe'), findsOneWidget);
+    expect(find.textContaining('1 missing'), findsWidgets);
+
+    await tester.tap(find.text('Beans on toast deluxe'));
+    await tester.pumpAndSettle();
+    expect(find.text('Method'), findsOneWidget);
+    expect(find.byKey(const ValueKey('open-recipe')), findsNothing);
+    await tester.tap(find.text('Add missing to list').first);
+    await tester.pumpAndSettle();
+    expect(store.shopping.single.name, 'Butter');
+  });
+
+  testWidgets('from a link: read fills the form, method is not taken', (tester) async {
+    phoneSize(tester);
+    final store = await seededStore();
+    Future<RecipeDraft> fake(String link) async =>
+        RecipeDraft(name: 'Test fried rice', ingredients: const ['rice', 'eggs', 'soy sauce'], minutes: 25, url: link);
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: MaterialApp(home: RecipeEditorPage(startFromLink: true, fetcher: fake)),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const ValueKey('field-link')), 'https://example.com/fried-rice');
+    await tester.tap(find.byKey(const ValueKey('read-link')));
+    await tester.pumpAndSettle();
+    expect(find.text('Read 3 ingredients. Check them, then save.'), findsOneWidget);
+    expect(find.text('Notes (optional)'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('save-recipe')));
+    await tester.pumpAndSettle();
+    final saved = store.recipes.single;
+    expect(saved.name, 'Test fried rice');
+    expect(saved.minutes, 25);
+    expect(saved.ingredients, ['rice', 'eggs', 'soy sauce']);
+    expect(saved.url, 'https://example.com/fried-rice');
+    expect(saved.method, isEmpty);
+  });
+
+  testWidgets('a link that cannot be read still lets you type it in', (tester) async {
+    phoneSize(tester);
+    final store = await seededStore();
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: const MaterialApp(home: RecipeEditorPage(startFromLink: true)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const ValueKey('field-link')), 'not a link');
+    await tester.tap(find.byKey(const ValueKey('read-link')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('does not look like a web link'), findsOneWidget);
   });
 }

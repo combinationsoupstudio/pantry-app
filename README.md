@@ -14,7 +14,7 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
 | **Pantry** | Everyday food in the pantry, fridge and freezer. Search, filter by location or running low, one tap to use or add. |
 | **Storage** | Bulk and backup stock: prep pantry, spare cupboard, garage, medical, hygiene. Long-press an item to move stock, e.g. from the prep pantry to the pantry. |
 | **Shopping** | A list grouped by shop (Woolworths, Coles, Aldi, IGA). Pull in everything running low in one tap. Tick items as you buy them, then *Put away* adds them to stock. |
-| **Recipes** | Starter recipes matched against what is in stock: ready to cook, one or two things short (add the missing items to the list), or needs a shop. |
+| **Recipes** | Your saved recipes, matched against what is in stock. Paste a link (the app reads the name, time and ingredients; the method stays on the site, one tap away) or write your own. Add whatever is missing to the list in one tap. Starter ideas fill in the rest. |
 | **Insights** | Targets met, running low, out of stock, readiness by location, use-by in the next fortnight, most-used items over 30 days, and who changed what. |
 
 Every change is logged with who made it, so two people can share one stock list without arguing about who used the last of the milk.
@@ -45,6 +45,7 @@ flowchart LR
 - **One store, one way in.** Every change goes through `HouseholdStore`, which validates it, logs it and saves it. The pages only read and call methods. [ADR 0002](docs/adr/0002-local-first-store.md)
 - **Storage behind an interface.** Phase 0 writes a JSON file on the phone, atomically (temp file, then rename). Phase 1 puts a sync backend behind the same interface. [ADR 0003](docs/adr/0003-cloudflare-backend.md)
 - **Logic is plain Dart**, with no Flutter imports, so it is fast to test.
+- **Recipes respect their authors.** A linked recipe keeps only its name, time and ingredient names; the method stays on the author's site. [ADR 0004](docs/adr/0004-saved-recipes.md)
 
 ```
 lib/
@@ -82,7 +83,7 @@ flutter run         # on a connected phone or emulator
 
 | Phase | Version | What |
 | --- | --- | --- |
-| **0** | 0.1 | Six pages, stock on each phone, CSV import/export, CI, signed releases. **Done.** |
+| **0** | 0.1 to 0.2 | Six pages, stock on each phone, CSV import/export, saved recipes, CI, signed releases. **Done.** |
 | 1 | 0.2 | Sync between the two phones through a Cloudflare Worker and D1, with one account each. Offline changes queue and merge. |
 | 2 | 0.3 | Prices and specials from Woolworths, Coles, Aldi and IGA in Batemans Bay, gathered by a small, cheap Claude model on a schedule; alerts on big drops. |
 | 3 | 0.4 | Recipes from your own stock, smarter insights (burn rate, "runs out in…"), photos of items. |

@@ -10,10 +10,23 @@ class Ingredient {
 }
 
 class Recipe {
-  const Recipe({required this.name, required this.minutes, required this.ingredients});
+  const Recipe({required this.name, required this.minutes, required this.ingredients, this.savedId});
   final String name;
+
+  /// 0 when not known.
   final int minutes;
   final List<Ingredient> ingredients;
+
+  /// The household's saved recipe this came from; null for a starter.
+  final String? savedId;
+
+  /// A saved recipe as something [matchRecipes] can match.
+  factory Recipe.fromSaved(SavedRecipe saved) => Recipe(
+    name: saved.name,
+    minutes: saved.minutes ?? 0,
+    ingredients: [for (final i in saved.ingredients) Ingredient(i.toLowerCase())],
+    savedId: saved.id,
+  );
 }
 
 class RecipeMatch {
@@ -154,7 +167,11 @@ StockItem? stockItemFor(Ingredient ingredient, List<StockItem> stock, {bool inSt
   StockItem? fallback;
   for (final item in stock) {
     final name = item.name.toLowerCase();
-    if (!ingredient.keywords.any((k) => _containsWord(name, k))) continue;
+    // "garlic" stock matches the ingredient "garlic cloves", and the other way.
+    final matches = ingredient.keywords.any(
+      (k) => _containsWord(name, k) || (name.length >= 3 && _containsWord(k, name)),
+    );
+    if (!matches) continue;
     if (!item.isOut) return item;
     if (!inStockOnly) fallback ??= item;
   }

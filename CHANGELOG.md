@@ -4,6 +4,16 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-15
+
+### Added
+- Saved recipes. **From a link:** paste a recipe page link, tap *Read*, and the app fills in the name, time and ingredients from the page's recipe data; check them and save. The method stays on the site, opened with *Open recipe*. **Your own:** name, time, ingredients and method in your own words.
+- Recipe page: what you have and what is missing, which stock item covers each ingredient, add missing to the list, edit and remove.
+- Saved recipes are matched against stock like the starter ideas; ingredient names match either way round ("garlic" stock covers "garlic cloves").
+
+### Changed
+- The Recipes page shows your recipes first, then only the starter ideas you can nearly make.
+
 ## [0.1.1] - 2026-11-15
 
 ### Fixed
