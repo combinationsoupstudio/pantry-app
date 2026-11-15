@@ -11,6 +11,10 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 - Recipe page: what you have and what is missing, which stock item covers each ingredient, add missing to the list, edit and remove.
 - Saved recipes are matched against stock like the starter ideas; ingredient names match either way round ("garlic" stock covers "garlic cloves").
 
+### Build
+- CI builds a release APK on every pull request (was debug), so release-only failures are caught before merge.
+- Java 21 in CI and release. Android lint's release-time check is off: it crashed on a plugin's sources and is not the project's gate.
+
 ### Changed
 - The Recipes page shows your recipes first, then only the starter ideas you can nearly make.
 

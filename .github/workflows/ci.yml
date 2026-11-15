@@ -57,7 +57,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
           cache: gradle
       - uses: subosito/flutter-action@v2
         with:
@@ -65,10 +65,13 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
-      - name: Build debug APK
-        run: flutter build apk --debug
+      # A release build, not debug: release-only steps (shrinking, lint vital)
+      # must fail here, on the pull request, not after the merge. Without the
+      # signing secrets it signs with the debug key, so it is for checking only.
+      - name: Build release APK
+        run: flutter build apk --release
       - uses: actions/upload-artifact@v4
         with:
-          name: pantry-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          name: pantry-ci-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           retention-days: 14
