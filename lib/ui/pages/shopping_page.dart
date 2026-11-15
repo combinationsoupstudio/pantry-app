@@ -37,6 +37,14 @@ class ShoppingPage extends StatelessWidget {
                   icon: const Icon(Icons.move_to_inbox_outlined),
                   label: Text('Put away $boughtCount'),
                 ),
+              if (list.isNotEmpty)
+                PopupMenuButton<String>(
+                  key: const ValueKey('shopping-menu'),
+                  onSelected: (_) => _confirmClear(context, list.length),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(value: 'clear', key: ValueKey('clear-list'), child: Text('Clear list')),
+                  ],
+                ),
             ],
           ),
           if (lowNotOnList > 0)
@@ -90,6 +98,25 @@ class ShoppingPage extends StatelessWidget {
         label: const Text('Add'),
       ),
     );
+  }
+
+  Future<void> _confirmClear(BuildContext context, int count) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: Text('Clear all $count items?'),
+        content: const Text('The list empties. Your stock does not change.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Keep')),
+          FilledButton(
+            key: const ValueKey('confirm-clear'),
+            onPressed: () => Navigator.pop(c, true),
+            child: const Text('Clear'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true && context.mounted) await StoreScope.read(context).clearShopping();
   }
 
   Future<void> _addDialog(BuildContext context) async {

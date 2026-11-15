@@ -257,12 +257,16 @@ class SavedRecipe {
     required this.addedBy,
     required this.createdAt,
     this.url,
+    this.printUrl,
     this.minutes,
     this.method = '',
   });
 
   final String id;
   final String name;
+
+  /// The site's print view of just the recipe card, when it has one.
+  final String? printUrl;
 
   /// Where the recipe lives, for a linked recipe. Null for the household's own.
   final String? url;
@@ -278,6 +282,20 @@ class SavedRecipe {
 
   bool get isLinked => url != null && url!.isNotEmpty;
 
+  /// What "Open recipe" opens: the recipe card on its own where the site has
+  /// a print view, so there is no article to scroll past. RecipeTin Eats
+  /// links saved before print views were recorded get theirs worked out.
+  String? get openUrl {
+    if (!isLinked) return null;
+    if (printUrl != null && printUrl!.isNotEmpty) return printUrl;
+    final uri = Uri.tryParse(url!);
+    if (uri != null && uri.host.endsWith('recipetineats.com')) {
+      final slug = uri.pathSegments.where((p) => p.isNotEmpty).lastOrNull;
+      if (slug != null && slug != 'wprm_print') return 'https://www.recipetineats.com/wprm_print/$slug';
+    }
+    return url;
+  }
+
   /// The site's name for display, e.g. "recipetineats.com".
   String? get siteName {
     if (!isLinked) return null;
@@ -289,6 +307,7 @@ class SavedRecipe {
     String? name,
     String? url,
     bool clearUrl = false,
+    String? printUrl,
     int? minutes,
     bool clearMinutes = false,
     List<String>? ingredients,
@@ -297,6 +316,7 @@ class SavedRecipe {
     id: id,
     name: name ?? this.name,
     url: clearUrl ? null : (url ?? this.url),
+    printUrl: clearUrl ? null : (printUrl ?? this.printUrl),
     minutes: clearMinutes ? null : (minutes ?? this.minutes),
     ingredients: ingredients ?? this.ingredients,
     method: method ?? this.method,
@@ -308,6 +328,7 @@ class SavedRecipe {
     'id': id,
     'name': name,
     'url': url,
+    'printUrl': printUrl,
     'minutes': minutes,
     'ingredients': ingredients,
     'method': method,
@@ -319,6 +340,7 @@ class SavedRecipe {
     id: json['id']! as String,
     name: json['name']! as String,
     url: json['url'] as String?,
+    printUrl: json['printUrl'] as String?,
     minutes: (json['minutes'] as num?)?.toInt(),
     ingredients: (json['ingredients'] as List? ?? []).cast<String>(),
     method: json['method'] as String? ?? '',

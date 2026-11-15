@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pantry_app/data/household_store.dart';
 import 'package:pantry_app/data/storage_backend.dart';
+import 'package:pantry_app/logic/recipes.dart';
 import 'package:pantry_app/models/models.dart';
 
 void main() {
@@ -259,6 +260,48 @@ void main() {
       await store.addRecipe(name: 'Zucchini slice', ingredients: ['zucchini']);
       await store.addRecipe(name: 'apple crumble', ingredients: ['apples']);
       expect(store.recipes.map((r) => r.name), ['apple crumble', 'Zucchini slice']);
+    });
+  });
+
+  group('recipe clean-up', () {
+    test('headings and page clutter never become ingredients', () async {
+      final r = await store.addRecipe(
+        name: 'Roast',
+        ingredients: ['Ingredients', '\u25A21 kg pork belly', 'For serving:', 'apple sauce', 'Cook mode', 'Reply'],
+      );
+      expect(r.ingredients, ['1 kg pork belly', 'apple sauce']);
+    });
+
+    test('a recipe saved with clutter shows only real ingredients', () {
+      final old = SavedRecipe(
+        id: 'x',
+        name: 'Old',
+        ingredients: const ['Ingredients', '1 kg pork belly', 'Instructions', '1,027 comments'],
+        addedBy: 'Chris',
+        createdAt: clock,
+      );
+      expect(Recipe.fromSaved(old).ingredients.map((i) => i.line), ['1 kg pork belly']);
+    });
+
+    test('RecipeTin Eats links open the recipe card print view', () {
+      SavedRecipe linked(String url, {String? printUrl}) => SavedRecipe(
+        id: 'r',
+        name: 'R',
+        ingredients: const ['rice'],
+        url: url,
+        printUrl: printUrl,
+        addedBy: 'Chris',
+        createdAt: clock,
+      );
+      expect(
+        linked('https://www.recipetineats.com/chicken-fried-rice/').openUrl,
+        'https://www.recipetineats.com/wprm_print/chicken-fried-rice',
+      );
+      expect(
+        linked('https://example.com/a', printUrl: 'https://example.com/wprm_print/a').openUrl,
+        'https://example.com/wprm_print/a',
+      );
+      expect(linked('https://example.com/a').openUrl, 'https://example.com/a');
     });
   });
 }

@@ -58,8 +58,9 @@ void main() {
     )!;
     expect(draft.name, 'Test Lemon Chicken & Rice');
     expect(draft.minutes, 40);
-    expect(draft.ingredients, ['chicken thighs', 'rice', 'lemon']);
+    expect(draft.ingredients, ['600g chicken thighs', '1 cup rice', '1 lemon, juiced']);
     expect(draft.url, 'https://example.com/lemon-chicken');
+    expect(draft.printUrl, isNull);
   });
 
   test('adds prep and cook time when there is no total', () {
@@ -80,5 +81,59 @@ void main() {
     expect(parseRecipeHtml('<html><body>Hello</body></html>', 'https://example.com'), isNull);
     const broken = '<script type="application/ld+json">{not json</script>';
     expect(parseRecipeHtml(broken + page({'@type': 'Recipe', 'name': 'Ok'}), 'https://example.com')!.name, 'Ok');
+  });
+
+  test('finds the print view of the recipe card', () {
+    final html =
+        '<a href="https://example.com/wprm_print/soup" class="print">Print</a>${page({
+          '@type': 'Recipe',
+          'name': 'Soup',
+          'recipeIngredient': ['1 carrot'],
+        })}';
+    expect(parseRecipeHtml(html, 'https://example.com/soup')!.printUrl, 'https://example.com/wprm_print/soup');
+  });
+
+  test('tick boxes and bullets copied from a page are stripped', () {
+    expect(cleanIngredientLine('\u25A21 tsp salt'), '1 tsp salt');
+    expect(cleanIngredientLine(' \u2022  2 eggs '), '2 eggs');
+    expect(cleanIngredientLine('- 1 cup  rice'), '1 cup rice');
+  });
+
+  group('isIngredientLine keeps ingredients and drops page clutter', () {
+    const keep = [
+      '1 kg pork belly, skin on',
+      'Salt and pepper',
+      'apple sauce',
+      '2 x 400g tins chickpeas, drained',
+      '1/2 tsp fennel powder / ground fennel seeds',
+      'Fresh coriander',
+    ];
+    const drop = [
+      'Ingredients',
+      'INSTRUCTIONS',
+      'Method:',
+      'For serving (as pictured):',
+      'Recipe notes:',
+      'Cook mode',
+      'Prevent screen from sleeping',
+      'Reply',
+      'Next post',
+      'Hi, I am the cook!',
+      'Did you make this recipe?',
+      'October 6, 2026 at 6:02 pm',
+      '1,027 comments',
+      '5 stars Great recipe, will make again',
+      'Calories: 500kcal (25%)',
+      'Keywords: pork, roast',
+      'This is how they start off every single morning in the kitchen at our place',
+      'Preheat the oven. Dry the skin well. Rub with oil and salt.',
+      'Visit https://example.com for more',
+    ];
+    for (final line in keep) {
+      test('keeps "$line"', () => expect(isIngredientLine(line), isTrue));
+    }
+    for (final line in drop) {
+      test('drops "$line"', () => expect(isIngredientLine(line), isFalse));
+    }
   });
 }

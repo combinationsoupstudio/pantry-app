@@ -12,6 +12,9 @@ typedef RecipeFetcher = Future<RecipeDraft> Function(String link);
 /// came back, save. Own recipe: type it in.
 class RecipeEditorPage extends StatefulWidget {
   const RecipeEditorPage({super.key, this.existing, this.startFromLink = false, this.fetcher});
+
+  /// More lines than any home recipe has: a pasted web page, not a list.
+  static const maxIngredients = 40;
   final SavedRecipe? existing;
   final bool startFromLink;
 
@@ -32,6 +35,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
   late bool _linked;
   bool _reading = false;
   String? _readMessage;
+  String? _printUrl;
+  String? _lastReadLink;
+
+  static const maxLineLength = 120;
 
   @override
   void initState() {
@@ -43,6 +50,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     _ingredients = TextEditingController(text: e?.ingredients.join('\n') ?? '');
     _method = TextEditingController(text: e?.method ?? '');
     _linked = e?.isLinked ?? widget.startFromLink;
+    _printUrl = e?.printUrl;
     if (widget.startFromLink && e == null) _pasteLinkFromClipboard();
   }
 
@@ -53,7 +61,10 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     } on Exception {
       return; // no clipboard access: the person pastes it themselves
     }
-    if (mounted && _link.text.isEmpty && text.startsWith('http')) setState(() => _link.text = text);
+    if (mounted && _link.text.isEmpty && text.startsWith('http')) {
+      setState(() => _link.text = text);
+      await _read();
+    }
   }
 
   @override
@@ -64,7 +75,15 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
     super.dispose();
   }
 
+  /// Reads the link once it looks complete, so there is no button to find.
+  void _onLinkChanged(String value) {
+    final uri = Uri.tryParse(value.trim());
+    final looksComplete = uri != null && uri.hasScheme && uri.host.contains('.') && uri.path.length > 1;
+    if (looksComplete && value.trim() != _lastReadLink && !_reading) _read();
+  }
+
   Future<void> _read() async {
+    _lastReadLink = _link.text.trim();
     setState(() {
       _reading = true;
       _readMessage = null;
@@ -76,6 +95,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
         if (draft.name.isNotEmpty) _name.text = draft.name;
         if (draft.minutes != null) _minutes.text = '${draft.minutes}';
         if (draft.ingredients.isNotEmpty) _ingredients.text = draft.ingredients.join('\n');
+        _printUrl = draft.printUrl;
         _readMessage = 'Read ${draft.ingredients.length} ingredients. Check them, then save.';
       });
     } on RecipeFetchException catch (e) {
@@ -99,6 +119,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
         name: _name.text,
         ingredients: _ingredientLines,
         url: url,
+        printUrl: _printUrl,
         minutes: minutes,
         method: _method.text,
       );
@@ -108,6 +129,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
           name: _name.text,
           url: url,
           clearUrl: url == null || url.isEmpty,
+          printUrl: _printUrl,
           minutes: minutes,
           clearMinutes: minutes == null,
           ingredients: _ingredientLines,
@@ -157,6 +179,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                 key: const ValueKey('field-link'),
                 controller: _link,
                 keyboardType: TextInputType.url,
+                onChanged: _onLinkChanged,
                 decoration: InputDecoration(
                   labelText: 'Link',
                   hintText: 'https://www.recipetineats.com/…',
@@ -203,7 +226,7 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
                 helperText: 'Just the item, e.g. "chicken thighs". These are matched to your stock.',
                 alignLabelWithHint: true,
               ),
-              validator: (_) => _ingredientLines.isEmpty ? 'Add at least one ingredient' : null,
+              validator: (_) => ingredientProblem(_ingredientLines),
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -225,4 +248,19 @@ class _RecipeEditorPageState extends State<RecipeEditorPage> {
       ),
     );
   }
+}
+
+/// Why a list of ingredient lines cannot be saved, or null if it can.
+String? ingredientProblem(List<String> lines) {
+  if (lines.isEmpty) return 'Add at least one ingredient';
+  if (lines.length > RecipeEditorPage.maxIngredients) {
+    return 'That is ${lines.length} lines, which looks like a whole web page. '
+        'For a website recipe use From a link; otherwise one ingredient per line.';
+  }
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].length > _RecipeEditorPageState.maxLineLength) {
+      return 'Line ${i + 1} is very long. Put one ingredient on each line.';
+    }
+  }
+  return null;
 }

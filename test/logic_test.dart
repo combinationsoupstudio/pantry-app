@@ -3,6 +3,7 @@ import 'package:pantry_app/data/csv_import.dart';
 import 'package:pantry_app/logic/insights.dart';
 import 'package:pantry_app/logic/recipes.dart';
 import 'package:pantry_app/models/models.dart';
+import 'package:pantry_app/ui/pages/recipe_detail_page.dart';
 
 StockItem item(String name, double qty, {double target = 0, String loc = 'pantry', DateTime? useBy}) => StockItem(
   id: name,
@@ -177,5 +178,15 @@ void main() {
     expect(back.toJson(), i.toJson());
     const s = ShoppingItem(id: 's', name: 'Bread', quantity: 1, unit: '', store: Store.coles, addedBy: 'Emily');
     expect(ShoppingItem.fromJson(s.toJson()).toJson(), s.toJson());
+  });
+
+  test('method steps: one per line, typed numbering taken off', () {
+    expect(methodSteps('1. Boil water\n\nStep 2: Add pasta\n3) Drain\nServe'), [
+      'Boil water',
+      'Add pasta',
+      'Drain',
+      'Serve',
+    ]);
+    expect(methodSteps(''), isEmpty);
   });
 }

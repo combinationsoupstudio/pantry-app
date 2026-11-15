@@ -4,6 +4,23 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-16
+
+### Changed
+- Recipes page: one banner per recipe (name, time, ingredient count, a *Ready* or *N to buy* badge). Adding to the list happens inside the recipe.
+- Recipe page laid out for a phone: the header (what you have, time, source) and the *Ingredients | Method* tabs stay put, only the list under them scrolls, and *Add N missing to shopping list* is fixed at the bottom. Ingredients show with amounts, *To buy* first, then *You have* with the stock item that covers each.
+- Method shows as numbered steps, one per line. A linked recipe's method opens the site's print view of the recipe card: ingredients and steps, nothing else to scroll past.
+- The add button adds each missing ingredient once, then says they are on the list.
+
+### Fixed
+- Headings and page clutter ("Ingredients", "Instructions", "For serving:", "Cook mode", comments, dates, nutrition) are never taken as ingredients or added to the shopping list, including in recipes saved before this version.
+- Tick boxes and bullets copied from a web page are stripped from ingredient lines.
+- An ingredient list that looks like a whole pasted web page (over 40 lines, or very long lines) is refused with a reason; such a recipe saved earlier is flagged on its banner.
+
+### Added
+- Shopping list: *Clear list*, after a yes.
+- Pasting a link reads it straight away; no button to find.
+
 ## [0.2.0] - 2026-11-15
 
 ### Added

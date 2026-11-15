@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../logic/recipe_link.dart';
 import '../models/models.dart';
 import 'csv_import.dart';
 import 'storage_backend.dart';
@@ -456,6 +457,19 @@ class HouseholdStore extends ChangeNotifier {
     await _commit();
   }
 
+  /// Empties the shopping list. Returns how many lines went.
+  Future<int> clearShopping() async {
+    final n = _shopping.length;
+    if (n == 0) return 0;
+    _shopping.clear();
+    await _commit();
+    return n;
+  }
+
+  /// True if [name] (or the stock item [stockItemId]) already has an open line.
+  bool isOnShoppingList(String name, {String? stockItemId}) =>
+      _findStackTarget(name: name, unit: '', stockItemId: stockItemId) >= 0;
+
   Future<void> removeShopping(String shoppingId) async {
     _shopping.removeWhere((s) => s.id == shoppingId);
     await _commit();
@@ -488,13 +502,16 @@ class HouseholdStore extends ChangeNotifier {
     required String name,
     required List<String> ingredients,
     String? url,
+    String? printUrl,
     int? minutes,
     String method = '',
   }) async {
+    final hasUrl = url != null && url.trim().isNotEmpty;
     final recipe = SavedRecipe(
       id: newId(),
       name: name.trim(),
-      url: (url == null || url.trim().isEmpty) ? null : url.trim(),
+      url: hasUrl ? url.trim() : null,
+      printUrl: hasUrl && printUrl != null && printUrl.trim().isNotEmpty ? printUrl.trim() : null,
       minutes: (minutes == null || minutes <= 0) ? null : minutes,
       ingredients: _cleanIngredients(ingredients),
       method: method.trim(),
@@ -535,8 +552,8 @@ class HouseholdStore extends ChangeNotifier {
     final seen = <String>{};
     final out = <String>[];
     for (final r in raw) {
-      final t = r.trim();
-      if (t.isEmpty || !seen.add(nameKey(t))) continue;
+      final t = cleanIngredientLine(r);
+      if (!isIngredientLine(t) || !seen.add(nameKey(t))) continue;
       out.add(t);
     }
     return out;
