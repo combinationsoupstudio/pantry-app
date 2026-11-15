@@ -57,7 +57,7 @@ jobs:
           fi
           echo "$KEYSTORE_B64" | tr -d '[:space:]' | base64 --decode > "$RUNNER_TEMP/pantry-release.jks"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         if: steps.version.outputs.new == 'true'
         with:
           distribution: temurin
