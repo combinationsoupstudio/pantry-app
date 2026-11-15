@@ -61,7 +61,7 @@ jobs:
         if: steps.version.outputs.new == 'true'
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
           cache: gradle
       - uses: subosito/flutter-action@v2
         if: steps.version.outputs.new == 'true'
