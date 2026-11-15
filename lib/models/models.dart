@@ -163,16 +163,17 @@ class ShoppingItem {
   final String? stockItemId;
   final bool bought;
 
-  ShoppingItem copyWith({double? quantity, Store? store, bool? bought}) => ShoppingItem(
-    id: id,
-    name: name,
-    quantity: quantity ?? this.quantity,
-    unit: unit,
-    store: store ?? this.store,
-    addedBy: addedBy,
-    stockItemId: stockItemId,
-    bought: bought ?? this.bought,
-  );
+  ShoppingItem copyWith({double? quantity, String? unit, Store? store, String? stockItemId, bool? bought}) =>
+      ShoppingItem(
+        id: id,
+        name: name,
+        quantity: quantity ?? this.quantity,
+        unit: unit ?? this.unit,
+        store: store ?? this.store,
+        addedBy: addedBy,
+        stockItemId: stockItemId ?? this.stockItemId,
+        bought: bought ?? this.bought,
+      );
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -235,6 +236,9 @@ class ActivityEntry {
     unit: json['unit'] as String? ?? '',
   );
 }
+
+/// The form two names are compared in: "  Tinned  Tomatoes" and "tinned tomatoes" match.
+String nameKey(String name) => name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
 
 /// Formats a quantity without a trailing ".0" (2.0 -> "2", 1.5 -> "1.5").
 String formatQty(double value) {

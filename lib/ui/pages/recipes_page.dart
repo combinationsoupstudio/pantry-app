@@ -97,7 +97,12 @@ class _RecipeCard extends StatelessWidget {
                     onPressed: () async {
                       final store = StoreScope.read(context);
                       for (final i in match.missing) {
-                        await store.addShopping(name: i.label);
+                        final stock = stockItemFor(i, store.items);
+                        await store.addShopping(
+                          name: stock?.name ?? sentenceCase(i.label),
+                          unit: stock?.unit ?? '',
+                          stockItemId: stock?.id,
+                        );
                       }
                       if (context.mounted) {
                         ScaffoldMessenger.of(

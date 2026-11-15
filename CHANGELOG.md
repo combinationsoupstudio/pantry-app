@@ -4,6 +4,16 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-15
+
+### Fixed
+- Shopping list: adding something already on the list now stacks onto that line instead of making a new one. This holds for recipes, the Add button and running low alike, ignoring case and spacing, in the same unit. Ticked lines are left alone.
+- Lists saved by 0.1.0 with duplicate lines are merged when the app opens.
+
+### Changed
+- Shopping lines link to the stock item they refer to (by name, or by recipe ingredient), so *Put away* restocks it, and running low joins a line already typed in rather than adding another.
+- Ingredients added from recipes are named like stock items ("Bread", not "bread").
+
 ## [0.1.0] - 2026-11-15
 
 ### Added
