@@ -111,25 +111,29 @@ void main() {
     expect(store.runningLow, isEmpty);
   });
 
-  testWidgets('adding the missing items of a recipe twice stacks them, no duplicate lines', (tester) async {
+  testWidgets('recipes are banners; the add button stops at once, no duplicate lines', (tester) async {
     phoneSize(tester);
     final store = await seededStore();
     await tester.pumpWidget(PantryApp(store: store));
     await tester.tap(find.byKey(const ValueKey('nav-recipes')));
     await tester.pumpAndSettle();
 
-    final button = find.text('Add missing to list').hitTestable().first;
-    await tester.tap(button);
-    await tester.pumpAndSettle();
-    final firstCount = store.shopping.length;
-    await tester.tap(find.text('Add missing to list').hitTestable().first);
+    expect(find.text('Add missing to list'), findsNothing, reason: 'adding happens inside a recipe');
+    expect(find.text('Ready'), findsWidgets);
+    final banner = find.textContaining('to buy').hitTestable().first;
+    await tester.tap(banner);
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byKey(const ValueKey('add-missing')));
+    await tester.pumpAndSettle();
+    final count = store.shopping.length;
+    expect(count, greaterThan(0));
+    expect(find.byKey(const ValueKey('add-missing')), findsNothing);
+    expect(find.text('Missing items are on your shopping list'), findsOneWidget);
+
     final keys = store.shopping.map((l) => l.name.toLowerCase()).toList();
-    expect(keys.toSet().length, keys.length, reason: 'no two lines for the same thing');
-    expect(store.shopping.length, firstCount);
-    expect(store.shopping.every((l) => l.quantity == 2), isTrue);
-    expect(store.shopping.first.name[0], store.shopping.first.name[0].toUpperCase());
+    expect(keys.toSet().length, keys.length);
+    expect(store.shopping.every((l) => l.name[0] == l.name[0].toUpperCase()), isTrue);
   });
 
   testWidgets('write your own recipe, open it, add what is missing', (tester) async {
@@ -147,19 +151,27 @@ void main() {
 
     await tester.enterText(find.byKey(const ValueKey('field-recipe-name')), 'Beans on toast deluxe');
     await tester.enterText(find.byKey(const ValueKey('field-ingredients')), 'bread\nbaked beans\nbutter');
-    await tester.enterText(find.byKey(const ValueKey('field-method')), 'Toast. Beans. Butter.');
+    await tester.enterText(find.byKey(const ValueKey('field-method')), 'Toast.\nBeans.\nButter.');
     await tester.tap(find.byKey(const ValueKey('save-recipe')));
     await tester.pumpAndSettle();
 
-    expect(store.recipes.single.method, 'Toast. Beans. Butter.');
+    expect(store.recipes.single.method, 'Toast.\nBeans.\nButter.');
     expect(find.text('Beans on toast deluxe'), findsOneWidget);
-    expect(find.textContaining('1 missing'), findsWidgets);
+    expect(find.text('1 to buy'), findsWidgets);
 
     await tester.tap(find.text('Beans on toast deluxe'));
     await tester.pumpAndSettle();
-    expect(find.text('Method'), findsOneWidget);
+    expect(find.text('1 of 3 in stock'), findsNothing);
+    expect(find.text('2 of 3 in stock'), findsOneWidget);
+    expect(find.text('To buy (1)'), findsOneWidget);
+    expect(find.text('You have (2)'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('tab-method')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Beans.'), findsOneWidget);
     expect(find.byKey(const ValueKey('open-recipe')), findsNothing);
-    await tester.tap(find.text('Add missing to list').first);
+
+    await tester.tap(find.byKey(const ValueKey('add-missing')));
     await tester.pumpAndSettle();
     expect(store.shopping.single.name, 'Butter');
   });
@@ -207,5 +219,42 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('read-link')));
     await tester.pumpAndSettle();
     expect(find.textContaining('does not look like a web link'), findsOneWidget);
+  });
+
+  testWidgets('a whole pasted page is refused, with a reason', (tester) async {
+    phoneSize(tester);
+    final store = await seededStore();
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: const MaterialApp(home: RecipeEditorPage()),
+      ),
+    );
+    await tester.enterText(find.byKey(const ValueKey('field-recipe-name')), 'Pasted');
+    await tester.enterText(
+      find.byKey(const ValueKey('field-ingredients')),
+      List.generate(60, (i) => '${i + 1} g thing $i').join('\n'),
+    );
+    await tester.tap(find.byKey(const ValueKey('save-recipe')));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('looks like a whole web page'), findsOneWidget);
+    expect(store.recipes, isEmpty);
+  });
+
+  testWidgets('clear the shopping list after a yes', (tester) async {
+    phoneSize(tester);
+    final store = await seededStore();
+    await store.addShopping(name: 'Ingredients');
+    await store.addShopping(name: 'Bread');
+    await tester.pumpWidget(PantryApp(store: store));
+    await tester.tap(find.byKey(const ValueKey('nav-shopping')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('shopping-menu')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('clear-list')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('confirm-clear')));
+    await tester.pumpAndSettle();
+    expect(store.shopping, isEmpty);
   });
 }

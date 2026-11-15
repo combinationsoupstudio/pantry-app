@@ -1,10 +1,17 @@
 import '../models/models.dart';
+import 'recipe_link.dart';
 
 /// One ingredient, with the words a stock item might be called.
 class Ingredient {
-  const Ingredient(this.label, [this.aliases = const []]);
+  const Ingredient(this.label, [this.aliases = const [], String? line]) : _line = line;
+
+  /// The name it is matched and shopped by, e.g. "pork belly".
   final String label;
   final List<String> aliases;
+  final String? _line;
+
+  /// The line as written, with its amount, e.g. "1 kg pork belly, skin on".
+  String get line => _line ?? label;
 
   Iterable<String> get keywords => [label, ...aliases].map((k) => k.toLowerCase());
 }
@@ -24,7 +31,10 @@ class Recipe {
   factory Recipe.fromSaved(SavedRecipe saved) => Recipe(
     name: saved.name,
     minutes: saved.minutes ?? 0,
-    ingredients: [for (final i in saved.ingredients) Ingredient(i.toLowerCase())],
+    ingredients: [
+      for (final line in saved.ingredients)
+        if (isIngredientLine(line)) Ingredient(_matchName(line), const [], cleanIngredientLine(line)),
+    ],
     savedId: saved.id,
   );
 }
@@ -36,6 +46,11 @@ class RecipeMatch {
   final List<Ingredient> missing;
 
   bool get ready => missing.isEmpty;
+}
+
+String _matchName(String line) {
+  final simple = simplifyIngredient(line);
+  return simple.isEmpty ? line.toLowerCase() : simple;
 }
 
 /// Starter recipes until the AI phase. Kept short and pantry-friendly.
