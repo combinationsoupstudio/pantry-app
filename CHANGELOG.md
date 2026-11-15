@@ -15,4 +15,4 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 - Insights: targets met, low and out counts, readiness by location, use-by soon, most used in 30 days, change history.
 - Who is using the phone (Chris or Emily), recorded on every change.
 - CSV import and export of the stock list.
-- CI on every push and pull request; signed release APKs from version tags.
+- CI on every push and pull request; signed release APKs published when the version is bumped.

@@ -1,15 +1,19 @@
 name: Release
 
-# Push a tag like v0.1.0 and this builds a signed APK and publishes it as a
-# GitHub Release. The APK is what gets installed on the phones.
+# Releases are cut by bumping `version:` in pubspec.yaml and merging to main.
+# If no tag exists for that version yet, this tests, builds a signed APK,
+# tags the commit vX.Y.Z and publishes a GitHub Release with the APK.
 on:
   push:
-    tags: ['v*.*.*']
+    branches: [main]
+    paths:
+      - pubspec.yaml
+      - .github/workflows/release.yml
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Existing tag to (re)build, e.g. v0.1.0'
-        required: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -22,13 +26,27 @@ jobs:
     name: Signed APK and GitHub Release
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ env.TAG }}
+          fetch-depth: 0
+
+      - name: Read version and check it is new
+        id: version
+        run: |
+          name=$(grep -E '^version:' pubspec.yaml | sed -E 's/version:[[:space:]]*([^+]+).*/\1/')
+          tag="v${name}"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "new=false" >> "$GITHUB_OUTPUT"
+            echo "${tag} is already released. Bump version in pubspec.yaml to release." | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+            echo "Releasing ${tag}" | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: Signing key must be set
+        if: steps.version.outputs.new == 'true'
         env:
           KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -37,35 +55,47 @@ jobs:
             echo "::error::ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD repository secrets are not set. See docs/RELEASING.md."
             exit 1
           fi
-          echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/pantry-release.jks"
+          echo "$KEYSTORE_B64" | tr -d '[:space:]' | base64 --decode > "$RUNNER_TEMP/pantry-release.jks"
+
       - uses: actions/setup-java@v4
+        if: steps.version.outputs.new == 'true'
         with:
           distribution: temurin
           java-version: '17'
           cache: gradle
       - uses: subosito/flutter-action@v2
+        if: steps.version.outputs.new == 'true'
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: stable
           cache: true
-      - run: flutter pub get
-      - run: flutter test
+      - if: steps.version.outputs.new == 'true'
+        run: flutter pub get
+      - if: steps.version.outputs.new == 'true'
+        run: flutter test
+
       - name: Build signed release APK
+        if: steps.version.outputs.new == 'true'
         env:
           PANTRY_KEYSTORE_PATH: ${{ runner.temp }}/pantry-release.jks
           PANTRY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           flutter build apk --release
           cp build/app/outputs/flutter-apk/app-release.apk "pantry-${TAG}.apk"
           sha256sum "pantry-${TAG}.apk" > "pantry-${TAG}.apk.sha256"
-      - name: Publish GitHub Release
+
+      - name: Tag and publish GitHub Release
+        if: steps.version.outputs.new == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
           notes=$(awk -v v="${TAG#v}" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md)
           gh release create "$TAG" "pantry-${TAG}.apk" "pantry-${TAG}.apk.sha256" \
-            --title "Pantry ${TAG}" --notes "${notes:-See CHANGELOG.md}" 2>/dev/null \
-          || gh release upload "$TAG" "pantry-${TAG}.apk" "pantry-${TAG}.apk.sha256" --clobber
+            --target "$GITHUB_SHA" --title "Pantry ${TAG}" \
+            --notes "${notes:-See CHANGELOG.md}"$'\n\n'"Install: open this page on the phone, download the .apk and open it."
+
       - name: Remove the key file
         if: always()
         run: rm -f "$RUNNER_TEMP/pantry-release.jks"
