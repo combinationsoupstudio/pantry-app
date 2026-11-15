@@ -1,0 +1,74 @@
+name: CI
+
+# Every push and every pull request: format, analyse, test, and build an APK.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.50.0'
+
+jobs:
+  check:
+    name: Format, analyse, test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Analyse
+        run: flutter analyze --fatal-infos
+      - name: Test
+        run: flutter test --coverage
+      - name: Coverage summary
+        run: |
+          total=$(grep -c '^DA:' coverage/lcov.info)
+          hit=$(grep '^DA:' coverage/lcov.info | grep -vc ',0$')
+          echo "Line coverage: $hit / $total ($(( 100 * hit / total ))%)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          retention-days: 14
+
+  build:
+    name: Build APK
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Build debug APK
+        run: flutter build apk --debug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pantry-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 14
