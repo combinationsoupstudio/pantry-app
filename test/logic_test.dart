@@ -74,6 +74,20 @@ void main() {
       expect(stockItemFor(pasta, stock, inStockOnly: true), isNull);
     });
 
+    test('saved-recipe ingredients match stock both ways round', () {
+      final saved = SavedRecipe(
+        id: 'r',
+        name: 'Garlic rice',
+        ingredients: const ['garlic cloves', 'rice', 'rice wine'],
+        addedBy: 'Chris',
+        createdAt: DateTime(2026),
+      );
+      final m = matchRecipes([item('Garlic', 1), item('Jasmine rice', 2)], recipes: [Recipe.fromSaved(saved)]).single;
+      expect(m.recipe.savedId, 'r');
+      expect(m.have.map((i) => i.label), ['garlic cloves', 'rice']);
+      expect(m.missing.map((i) => i.label), ['rice wine'], reason: 'rice wine is not rice');
+    });
+
     test('sentence case', () {
       expect(sentenceCase('tinned tomatoes'), 'Tinned tomatoes');
       expect(sentenceCase(''), '');

@@ -245,3 +245,84 @@ String formatQty(double value) {
   if (value == value.roundToDouble()) return value.toInt().toString();
   return value.toStringAsFixed(2).replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
 }
+
+/// A recipe the household saved: a link to someone's page (whose method
+/// stays there), or one of their own. Only ingredient names are kept for a
+/// linked recipe, to match against stock.
+class SavedRecipe {
+  const SavedRecipe({
+    required this.id,
+    required this.name,
+    required this.ingredients,
+    required this.addedBy,
+    required this.createdAt,
+    this.url,
+    this.minutes,
+    this.method = '',
+  });
+
+  final String id;
+  final String name;
+
+  /// Where the recipe lives, for a linked recipe. Null for the household's own.
+  final String? url;
+  final int? minutes;
+
+  /// Ingredient names, one each, as they are matched to stock.
+  final List<String> ingredients;
+
+  /// The household's own method (own recipes) or notes (linked ones).
+  final String method;
+  final String addedBy;
+  final DateTime createdAt;
+
+  bool get isLinked => url != null && url!.isNotEmpty;
+
+  /// The site's name for display, e.g. "recipetineats.com".
+  String? get siteName {
+    if (!isLinked) return null;
+    final host = Uri.tryParse(url!)?.host ?? '';
+    return host.startsWith('www.') ? host.substring(4) : (host.isEmpty ? null : host);
+  }
+
+  SavedRecipe copyWith({
+    String? name,
+    String? url,
+    bool clearUrl = false,
+    int? minutes,
+    bool clearMinutes = false,
+    List<String>? ingredients,
+    String? method,
+  }) => SavedRecipe(
+    id: id,
+    name: name ?? this.name,
+    url: clearUrl ? null : (url ?? this.url),
+    minutes: clearMinutes ? null : (minutes ?? this.minutes),
+    ingredients: ingredients ?? this.ingredients,
+    method: method ?? this.method,
+    addedBy: addedBy,
+    createdAt: createdAt,
+  );
+
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'name': name,
+    'url': url,
+    'minutes': minutes,
+    'ingredients': ingredients,
+    'method': method,
+    'addedBy': addedBy,
+    'createdAt': createdAt.toIso8601String(),
+  };
+
+  factory SavedRecipe.fromJson(Map<String, Object?> json) => SavedRecipe(
+    id: json['id']! as String,
+    name: json['name']! as String,
+    url: json['url'] as String?,
+    minutes: (json['minutes'] as num?)?.toInt(),
+    ingredients: (json['ingredients'] as List? ?? []).cast<String>(),
+    method: json['method'] as String? ?? '',
+    addedBy: json['addedBy'] as String? ?? '',
+    createdAt: DateTime.parse(json['createdAt']! as String),
+  );
+}

@@ -223,4 +223,42 @@ void main() {
       expect((old.data!['shopping']! as List).length, 3);
     });
   });
+
+  group('saved recipes', () {
+    test('save, edit and remove; ingredients are cleaned; survives reload', () async {
+      final r = await store.addRecipe(
+        name: ' Lemon chicken ',
+        ingredients: ['chicken thighs', '', '  Rice ', 'rice', 'lemon'],
+        url: 'https://www.recipetineats.com/lemon-chicken/',
+        minutes: 40,
+      );
+      expect(r.name, 'Lemon chicken');
+      expect(r.ingredients, ['chicken thighs', 'Rice', 'lemon']);
+      expect(r.siteName, 'recipetineats.com');
+      expect(r.addedBy, 'Chris');
+
+      await store.updateRecipe(r.copyWith(name: 'Lemon chicken and rice', clearMinutes: true));
+      final reloaded = HouseholdStore(backend, clock: () => clock);
+      await reloaded.load();
+      expect(reloaded.recipes.single.name, 'Lemon chicken and rice');
+      expect(reloaded.recipes.single.minutes, isNull);
+      expect(reloaded.recipes.single.isLinked, isTrue);
+
+      await store.removeRecipe(r.id);
+      expect(store.recipes, isEmpty);
+    });
+
+    test('an own recipe has no link and keeps its method', () async {
+      final r = await store.addRecipe(name: 'Nan\'s scones', ingredients: ['flour'], url: '  ', method: 'Mix. Bake.');
+      expect(r.isLinked, isFalse);
+      expect(r.siteName, isNull);
+      expect(r.method, 'Mix. Bake.');
+    });
+
+    test('recipes are listed by name', () async {
+      await store.addRecipe(name: 'Zucchini slice', ingredients: ['zucchini']);
+      await store.addRecipe(name: 'apple crumble', ingredients: ['apples']);
+      expect(store.recipes.map((r) => r.name), ['apple crumble', 'Zucchini slice']);
+    });
+  });
 }

@@ -33,12 +33,23 @@ class HouseholdStore extends ChangeNotifier {
   List<StockItem> _items = [];
   List<ShoppingItem> _shopping = [];
   List<ActivityEntry> _activity = [];
+  List<SavedRecipe> _recipes = [];
   String _user = householdMembers.first;
   bool _loaded = false;
 
   List<StockLocation> get locations => List.unmodifiable(_locations);
   List<StockItem> get items => List.unmodifiable(_items);
   List<ShoppingItem> get shopping => List.unmodifiable(_shopping);
+
+  /// The household's saved recipes, by name.
+  List<SavedRecipe> get recipes => List.unmodifiable(_recipes);
+
+  SavedRecipe? recipe(String id) {
+    for (final r in _recipes) {
+      if (r.id == id) return r;
+    }
+    return null;
+  }
 
   /// Newest first.
   List<ActivityEntry> get activity => List.unmodifiable(_activity);
@@ -94,6 +105,9 @@ class HouseholdStore extends ChangeNotifier {
       _activity = (data['activity'] as List? ?? [])
           .map((e) => ActivityEntry.fromJson((e as Map).cast<String, Object?>()))
           .toList();
+      _recipes = (data['recipes'] as List? ?? [])
+          .map((e) => SavedRecipe.fromJson((e as Map).cast<String, Object?>()))
+          .toList();
       _shoppingNeedsSave = _consolidateShopping();
       final savedUser = data['user'] as String?;
       if (savedUser != null && householdMembers.contains(savedUser)) _user = savedUser;
@@ -115,6 +129,7 @@ class HouseholdStore extends ChangeNotifier {
     'items': _items.map((i) => i.toJson()).toList(),
     'shopping': _shopping.map((s) => s.toJson()).toList(),
     'activity': _activity.map((a) => a.toJson()).toList(),
+    'recipes': _recipes.map((r) => r.toJson()).toList(),
   };
 
   Future<void> _commit() async {
@@ -465,6 +480,66 @@ class HouseholdStore extends ChangeNotifier {
     _shopping.removeWhere((s) => s.bought);
     await _commit();
     return bought.length;
+  }
+
+  // ---------------------------------------------------------------- recipes
+
+  Future<SavedRecipe> addRecipe({
+    required String name,
+    required List<String> ingredients,
+    String? url,
+    int? minutes,
+    String method = '',
+  }) async {
+    final recipe = SavedRecipe(
+      id: newId(),
+      name: name.trim(),
+      url: (url == null || url.trim().isEmpty) ? null : url.trim(),
+      minutes: (minutes == null || minutes <= 0) ? null : minutes,
+      ingredients: _cleanIngredients(ingredients),
+      method: method.trim(),
+      addedBy: _user,
+      createdAt: _clock(),
+    );
+    _recipes.add(recipe);
+    _sortRecipes();
+    _log(recipe.name, 'saved recipe');
+    await _commit();
+    return recipe;
+  }
+
+  Future<void> updateRecipe(SavedRecipe updated) async {
+    final index = _recipes.indexWhere((r) => r.id == updated.id);
+    if (index < 0) return;
+    _recipes[index] = updated.copyWith(
+      name: updated.name.trim(),
+      ingredients: _cleanIngredients(updated.ingredients),
+      method: updated.method.trim(),
+    );
+    _sortRecipes();
+    await _commit();
+  }
+
+  Future<void> removeRecipe(String id) async {
+    final existing = recipe(id);
+    if (existing == null) return;
+    _recipes.removeWhere((r) => r.id == id);
+    _log(existing.name, 'removed recipe');
+    await _commit();
+  }
+
+  void _sortRecipes() => _recipes.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+
+  /// Trims, drops blanks and drops repeats (ignoring case and spacing).
+  static List<String> _cleanIngredients(List<String> raw) {
+    final seen = <String>{};
+    final out = <String>[];
+    for (final r in raw) {
+      final t = r.trim();
+      if (t.isEmpty || !seen.add(nameKey(t))) continue;
+      out.add(t);
+    }
+    return out;
   }
 
   // ----------------------------------------------------------------- import
