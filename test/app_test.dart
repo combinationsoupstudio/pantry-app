@@ -107,4 +107,25 @@ void main() {
     expect(store.shopping, isEmpty);
     expect(store.runningLow, isEmpty);
   });
+
+  testWidgets('adding the missing items of a recipe twice stacks them, no duplicate lines', (tester) async {
+    phoneSize(tester);
+    final store = await seededStore();
+    await tester.pumpWidget(PantryApp(store: store));
+    await tester.tap(find.byKey(const ValueKey('nav-recipes')));
+    await tester.pumpAndSettle();
+
+    final button = find.text('Add missing to list').hitTestable().first;
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    final firstCount = store.shopping.length;
+    await tester.tap(find.text('Add missing to list').hitTestable().first);
+    await tester.pumpAndSettle();
+
+    final keys = store.shopping.map((l) => l.name.toLowerCase()).toList();
+    expect(keys.toSet().length, keys.length, reason: 'no two lines for the same thing');
+    expect(store.shopping.length, firstCount);
+    expect(store.shopping.every((l) => l.quantity == 2), isTrue);
+    expect(store.shopping.first.name[0], store.shopping.first.name[0].toUpperCase());
+  });
 }

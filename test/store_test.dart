@@ -136,4 +136,91 @@ void main() {
     }
     expect(store.activity, hasLength(HouseholdStore.maxActivity));
   });
+
+  group('shopping list stacks the same thing on one line', () {
+    test('same name, any case or spacing, adds to the amount', () async {
+      await store.addShopping(name: 'Bread');
+      await store.addShopping(name: '  bread ', quantity: 2);
+      await store.addShopping(name: 'BREAD');
+      expect(store.shopping, hasLength(1));
+      expect(store.shopping.single.quantity, 4);
+      expect(store.shopping.single.name, 'Bread');
+    });
+
+    test('different units stay apart, a missing unit stacks', () async {
+      await store.addShopping(name: 'Milk', quantity: 2, unit: 'L');
+      await store.addShopping(name: 'milk', unit: 'packs');
+      await store.addShopping(name: 'Milk');
+      expect(store.shopping, hasLength(2));
+      expect(store.shopping.firstWhere((l) => l.unit == 'L').quantity, 3);
+    });
+
+    test('a ticked line is not added to; a new line starts', () async {
+      final first = await store.addShopping(name: 'Eggs');
+      await store.setBought(first.id, true);
+      await store.addShopping(name: 'eggs');
+      expect(store.shopping, hasLength(2));
+    });
+
+    test('a typed line links to the stock item of that name, so putting it away restocks', () async {
+      final tuna = await store.addItem(name: 'Tuna', locationId: 'pantry', quantity: 1, unit: 'tins');
+      final line = await store.addShopping(name: 'tuna', quantity: 3);
+      expect(line.stockItemId, tuna.id);
+      expect(line.unit, 'tins');
+      await store.setBought(line.id, true);
+      await store.putAwayBought();
+      expect(store.item(tuna.id)!.quantity, 4);
+    });
+
+    test('running low joins a line already typed in, and raises it to the shortfall', () async {
+      await store.addItem(name: 'Pasta', locationId: 'pantry', quantity: 2, unit: 'kg', target: 5);
+      await store.addShopping(name: 'pasta');
+      expect(await store.addRunningLowToShopping(), 1);
+      expect(store.shopping, hasLength(1));
+      expect(store.shopping.single.quantity, 3);
+      expect(await store.addRunningLowToShopping(), 0);
+    });
+
+    test('two different stock items with the same name keep their own lines', () async {
+      await store.addItem(name: 'Soap', locationId: 'garage', quantity: 0, unit: 'bars', target: 4);
+      await store.addItem(name: 'Soap', locationId: 'hygiene', quantity: 1, unit: 'bars', target: 2);
+      expect(await store.addRunningLowToShopping(), 2);
+      expect(store.shopping, hasLength(2));
+    });
+
+    test('a list saved with duplicates is merged when it loads, and saved clean', () async {
+      Map<String, Object?> line(String id, String name, {bool bought = false}) => {
+        'id': id,
+        'name': name,
+        'quantity': 1,
+        'unit': '',
+        'store': 'any',
+        'addedBy': 'Chris',
+        'bought': bought,
+      };
+      final old = MemoryBackend({
+        'schema': 1,
+        'user': 'Chris',
+        'locations': defaultLocations().map((l) => l.toJson()).toList(),
+        'items': <Object?>[],
+        'activity': <Object?>[],
+        'shopping': [
+          line('a', 'bread'),
+          line('b', 'cheese'),
+          line('c', 'Bread'),
+          line('d', 'cheese'),
+          line('e', 'bread', bought: true),
+        ],
+      });
+      final loaded = HouseholdStore(old, clock: () => clock);
+      await loaded.load();
+      expect(loaded.shopping.map((l) => '${l.name} ${formatQty(l.quantity)} ${l.bought}'), [
+        'bread 2 false',
+        'cheese 2 false',
+        'bread 1 true',
+      ]);
+      expect(old.saves, 1);
+      expect((old.data!['shopping']! as List).length, 3);
+    });
+  });
 }

@@ -134,16 +134,9 @@ class ShoppingPage extends StatelessWidget {
       ),
     );
     if (ok == true && name.text.trim().isNotEmpty && context.mounted) {
-      // Link to a stock item of the same name so "put away" tops it up.
-      final s = StoreScope.read(context);
-      final match = s.items.where((i) => i.name.toLowerCase() == name.text.trim().toLowerCase()).firstOrNull;
-      await s.addShopping(
-        name: name.text,
-        quantity: double.tryParse(qty.text.trim()) ?? 1,
-        unit: match?.unit ?? '',
-        store: store,
-        stockItemId: match?.id,
-      );
+      // The store stacks it onto a matching line and links it to stock.
+      await StoreScope.read(context)
+          .addShopping(name: name.text, quantity: double.tryParse(qty.text.trim()) ?? 1, store: store);
     }
     name.dispose();
     qty.dispose();

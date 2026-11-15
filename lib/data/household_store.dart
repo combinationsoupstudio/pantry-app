@@ -94,12 +94,19 @@ class HouseholdStore extends ChangeNotifier {
       _activity = (data['activity'] as List? ?? [])
           .map((e) => ActivityEntry.fromJson((e as Map).cast<String, Object?>()))
           .toList();
+      _shoppingNeedsSave = _consolidateShopping();
       final savedUser = data['user'] as String?;
       if (savedUser != null && householdMembers.contains(savedUser)) _user = savedUser;
     }
     _loaded = true;
     notifyListeners();
+    if (data != null && _shoppingNeedsSave) {
+      _shoppingNeedsSave = false;
+      await _backend.save(toJson());
+    }
   }
+
+  bool _shoppingNeedsSave = false;
 
   Map<String, Object?> toJson() => {
     'schema': 1,
@@ -262,50 +269,162 @@ class HouseholdStore extends ChangeNotifier {
 
   // ---------------------------------------------------------------- shopping
 
-  Future<void> addShopping({
+  /// Adds to the shopping list. If the same thing is already on it, not yet
+  /// bought, the amount stacks onto that line instead of making a new one.
+  /// "The same thing" is the same stock item, or the same name ignoring case
+  /// and spacing, in a compatible unit. A line with no stock item is linked
+  /// to a stock item of the same name, so putting it away restocks it.
+  /// Returns the line that now holds it.
+  Future<ShoppingItem> addShopping({
     required String name,
     double quantity = 1,
     String unit = '',
     Store store = Store.any,
     String? stockItemId,
   }) async {
-    _shopping.add(
-      ShoppingItem(
-        id: newId(),
-        name: name.trim(),
-        quantity: quantity <= 0 ? 1 : quantity,
-        unit: unit.trim(),
-        store: store,
-        addedBy: _user,
-        stockItemId: stockItemId,
-      ),
+    final line = _stack(
+      name: name,
+      quantity: quantity <= 0 ? 1 : quantity,
+      unit: unit,
+      store: store,
+      stockItemId: stockItemId,
     );
     await _commit();
+    return line;
   }
 
-  /// Puts everything that is under target on the list, for the amount
-  /// needed to get back to target. Skips items already on the list.
-  /// Returns how many were added.
-  Future<int> addRunningLowToShopping() async {
-    final onList = _shopping.map((s) => s.stockItemId).whereType<String>().toSet();
-    var added = 0;
-    for (final low in runningLow) {
-      if (onList.contains(low.id)) continue;
-      _shopping.add(
-        ShoppingItem(
-          id: newId(),
-          name: low.name,
-          quantity: low.shortfall,
-          unit: low.unit,
-          store: Store.any,
-          addedBy: _user,
-          stockItemId: low.id,
-        ),
-      );
-      added++;
+  ShoppingItem _stack({
+    required String name,
+    required double quantity,
+    required String unit,
+    required Store store,
+    String? stockItemId,
+  }) {
+    final trimmedName = name.trim();
+    var linkedId = stockItemId;
+    var lineUnit = unit.trim();
+    if (linkedId == null) {
+      final match = _stockByName(trimmedName);
+      if (match != null) {
+        linkedId = match.id;
+        if (lineUnit.isEmpty) lineUnit = match.unit;
+      }
     }
-    if (added > 0) await _commit();
-    return added;
+    final index = _findStackTarget(name: trimmedName, unit: lineUnit, stockItemId: linkedId);
+    if (index >= 0) {
+      final existing = _shopping[index];
+      final merged = existing.copyWith(
+        quantity: existing.quantity + quantity,
+        unit: existing.unit.isEmpty ? lineUnit : existing.unit,
+        stockItemId: existing.stockItemId ?? linkedId,
+      );
+      _shopping[index] = merged;
+      return merged;
+    }
+    final line = ShoppingItem(
+      id: newId(),
+      name: trimmedName,
+      quantity: quantity,
+      unit: lineUnit,
+      store: store,
+      addedBy: _user,
+      stockItemId: linkedId,
+    );
+    _shopping.add(line);
+    return line;
+  }
+
+  StockItem? _stockByName(String name) {
+    final key = nameKey(name);
+    for (final i in _items) {
+      if (nameKey(i.name) == key) return i;
+    }
+    return null;
+  }
+
+  /// The not-yet-bought line that [name] / [stockItemId] should stack onto, or -1.
+  int _findStackTarget({required String name, required String unit, String? stockItemId}) {
+    final key = nameKey(name);
+    for (var i = 0; i < _shopping.length; i++) {
+      final s = _shopping[i];
+      if (s.bought) continue;
+      if (!_sameThing(s.stockItemId, s.name, s.unit, stockItemId, key, unit)) continue;
+      return i;
+    }
+    return -1;
+  }
+
+  static bool _sameThing(String? idA, String nameA, String unitA, String? idB, String keyB, String unitB) {
+    if (idA != null && idB != null) {
+      if (idA != idB) return false; // two different stock items, even if named alike
+    } else if (nameKey(nameA) != keyB) {
+      return false;
+    }
+    // Amounts only stack in the same unit (or where one side has none).
+    return unitA.isEmpty || unitB.isEmpty || unitA.toLowerCase() == unitB.toLowerCase();
+  }
+
+  /// Merges not-yet-bought lines that are the same thing. Lists saved by
+  /// v0.1.0 could hold such duplicates. Returns true if anything merged.
+  bool _consolidateShopping() {
+    final result = <ShoppingItem>[];
+    var merged = false;
+    for (final s in _shopping) {
+      final index = s.bought
+          ? -1
+          : result.indexWhere(
+              (r) => !r.bought && _sameThing(r.stockItemId, r.name, r.unit, s.stockItemId, nameKey(s.name), s.unit),
+            );
+      if (index < 0) {
+        result.add(s);
+      } else {
+        final r = result[index];
+        result[index] = r.copyWith(
+          quantity: r.quantity + s.quantity,
+          unit: r.unit.isEmpty ? s.unit : r.unit,
+          stockItemId: r.stockItemId ?? s.stockItemId,
+        );
+        merged = true;
+      }
+    }
+    _shopping = result;
+    return merged;
+  }
+
+  /// Puts everything that is under target on the list, for the amount needed
+  /// to get back to target. An item already on the list is not added twice:
+  /// its line is linked and raised to the shortfall if it was less.
+  /// Returns how many items were added or raised.
+  Future<int> addRunningLowToShopping() async {
+    var changed = 0;
+    for (final low in runningLow) {
+      final index = _findStackTarget(name: low.name, unit: low.unit, stockItemId: low.id);
+      if (index < 0) {
+        _shopping.add(
+          ShoppingItem(
+            id: newId(),
+            name: low.name,
+            quantity: low.shortfall,
+            unit: low.unit,
+            store: Store.any,
+            addedBy: _user,
+            stockItemId: low.id,
+          ),
+        );
+        changed++;
+        continue;
+      }
+      final existing = _shopping[index];
+      if (existing.stockItemId == low.id && existing.quantity >= low.shortfall) continue;
+      _shopping[index] = existing.copyWith(
+        stockItemId: low.id,
+        unit: existing.unit.isEmpty ? low.unit : existing.unit,
+        quantity: existing.quantity >= low.shortfall ? existing.quantity : low.shortfall,
+      );
+      changed++;
+    }
+    if (changed > 0) await _commit();
+    return changed;
   }
 
   Future<void> setBought(String shoppingId, bool bought) async {

@@ -144,16 +144,25 @@ const starterRecipes = <Recipe>[
 ];
 
 /// True when a stock item with some quantity left matches the ingredient.
-bool hasIngredient(Ingredient ingredient, List<StockItem> stock) {
+bool hasIngredient(Ingredient ingredient, List<StockItem> stock) =>
+    stockItemFor(ingredient, stock, inStockOnly: true) != null;
+
+/// The stock item an ingredient refers to, if the household tracks one.
+/// With [inStockOnly] false it also finds items that have run out, which is
+/// what a shopping line should be linked to.
+StockItem? stockItemFor(Ingredient ingredient, List<StockItem> stock, {bool inStockOnly = false}) {
+  StockItem? fallback;
   for (final item in stock) {
-    if (item.isOut) continue;
     final name = item.name.toLowerCase();
-    for (final keyword in ingredient.keywords) {
-      if (_containsWord(name, keyword)) return true;
-    }
+    if (!ingredient.keywords.any((k) => _containsWord(name, k))) continue;
+    if (!item.isOut) return item;
+    if (!inStockOnly) fallback ??= item;
   }
-  return false;
+  return fallback;
 }
+
+/// "tinned tomatoes" -> "Tinned tomatoes".
+String sentenceCase(String text) => text.isEmpty ? text : text[0].toUpperCase() + text.substring(1);
 
 bool _containsWord(String haystack, String needle) {
   final pattern = RegExp('(^|[^a-z])${RegExp.escape(needle)}s?(\$|[^a-z])');

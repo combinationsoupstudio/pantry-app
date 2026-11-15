@@ -66,6 +66,19 @@ void main() {
       expect(hasIngredient(const Ingredient('rice'), [item('Jasmine rice', 1)]), isTrue);
     });
 
+    test('a missing ingredient still finds the stock item that ran out', () {
+      const pasta = Ingredient('pasta', ['spaghetti']);
+      final stock = [item('Spaghetti', 0)];
+      expect(hasIngredient(pasta, stock), isFalse);
+      expect(stockItemFor(pasta, stock)!.name, 'Spaghetti');
+      expect(stockItemFor(pasta, stock, inStockOnly: true), isNull);
+    });
+
+    test('sentence case', () {
+      expect(sentenceCase('tinned tomatoes'), 'Tinned tomatoes');
+      expect(sentenceCase(''), '');
+    });
+
     test('ready recipes come first', () {
       final matches = matchRecipes([item('Bread', 1), item('Baked beans', 1)]);
       expect(matches.first.recipe.name, 'Beans on toast');
