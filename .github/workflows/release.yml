@@ -1,0 +1,71 @@
+name: Release
+
+# Push a tag like v0.1.0 and this builds a signed APK and publishes it as a
+# GitHub Release. The APK is what gets installed on the phones.
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to (re)build, e.g. v0.1.0'
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: '3.50.0'
+
+jobs:
+  release:
+    name: Signed APK and GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - name: Signing key must be set
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ] || [ -z "$KEYSTORE_PASSWORD" ]; then
+            echo "::error::ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD repository secrets are not set. See docs/RELEASING.md."
+            exit 1
+          fi
+          echo "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/pantry-release.jks"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter test
+      - name: Build signed release APK
+        env:
+          PANTRY_KEYSTORE_PATH: ${{ runner.temp }}/pantry-release.jks
+          PANTRY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk "pantry-${TAG}.apk"
+          sha256sum "pantry-${TAG}.apk" > "pantry-${TAG}.apk.sha256"
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          notes=$(awk -v v="${TAG#v}" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md)
+          gh release create "$TAG" "pantry-${TAG}.apk" "pantry-${TAG}.apk.sha256" \
+            --title "Pantry ${TAG}" --notes "${notes:-See CHANGELOG.md}" 2>/dev/null \
+          || gh release upload "$TAG" "pantry-${TAG}.apk" "pantry-${TAG}.apk.sha256" --clobber
+      - name: Remove the key file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/pantry-release.jks"
