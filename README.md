@@ -63,7 +63,7 @@ test/         unit tests for the store and logic, widget tests at phone size
 | Pull request | GitHub | The template asks what changed, why, and how it was tested. |
 | CI | [`ci.yml`](.github/workflows/ci.yml) | Formatting, `flutter analyze --fatal-infos`, all tests with coverage, then a debug APK build. Must pass to merge. |
 | Merge | `main` | Squash merge. `main` is always releasable. |
-| Release | [`release.yml`](.github/workflows/release.yml) | Tag `vX.Y.Z`. CI tests, builds a signed release APK, and publishes it with a SHA-256 checksum and the changelog notes. |
+| Release | [`release.yml`](.github/workflows/release.yml) | Bump `version:` in `pubspec.yaml` and merge. CI tests, builds a signed release APK, tags `vX.Y.Z` and publishes it with a SHA-256 checksum and the changelog notes. |
 | Dependencies | [Dependabot](.github/dependabot.yml) | Weekly update PRs for packages, monthly for Actions. |
 
 Release process and signing: [docs/RELEASING.md](docs/RELEASING.md). How to contribute: [CONTRIBUTING.md](CONTRIBUTING.md).
