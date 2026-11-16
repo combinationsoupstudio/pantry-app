@@ -17,6 +17,8 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
   <img src="docs/screens/10-use-some.jpg" width="200" alt="Use some: 3 tbsp of olive oil takes 60 ml and leaves 1090 ml">
   <img src="docs/screens/11-edit-measured.jpg" width="200" alt="Editing a measured item: scan barcode, take photo, pack size, left in the open one">
   <img src="docs/screens/12-find-picture.jpg" width="200" alt="Find picture: Australian washed potato products with their pictures">
+  <img src="docs/screens/13-use-by-dates.jpg" width="200" alt="Use-by dates grouped: past its date, within a week, within a month, later">
+  <img src="docs/screens/14-stocktake.jpg" width="200" alt="Stocktake: one item at a time, That's right or count it">
 </p>
 
 <sub>Screenshots use made-up demo data. They are rendered by <code>tool/screens/screens_test.dart</code>. Product pictures in them are from <a href="https://world.openfoodfacts.org">Open Food Facts</a>, CC BY-SA 3.0.</sub>
@@ -106,11 +108,13 @@ flutter run         # on a connected phone or emulator
 | **0** | 0.1 to 0.3 | Six pages, stock on each phone, CSV, saved recipes, I cooked this, runs out in, price memory, weekly spend, CI, signed releases. **Done.** |
 | **1** | 0.4 | Measured stock, *Use some…* in any measure, recipes against the amount left, barcode scan (Open Food Facts), item photos. **Done.** |
 | **2** | 0.5 | Product pictures (barcode or name search, cached on the phone), picture piles that show the amount, − / + on the list. **Done.** |
-| 3 | 0.6 | Receipt scan (on-device text recognition) into spend, prices and stock; use-by batches, "eat me first". |
-| 4 | 0.7 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
-| 5 | 0.8 | Meal planner, family and pet pages, shop mode, days of food; home-screen widget and printable stock sheet. |
-| 6 | 0.9 | Sync between the two phones through a Cloudflare Worker and D1. |
-| 7 | 0.10 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
+| **3** | 0.6 | Back up and restore, stocktake, scan to use, use-by dates (medical too), water days. **Done.** |
+| 4 | 0.7 | Reminders (running low on shop day, use-by alerts); say it to add it (voice). |
+| 5 | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock; use-by batches, "eat me first". |
+| 6 | 0.9 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
+| 7 | 0.10 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
+| 8 | 0.11 | Sync between the two phones through a Cloudflare Worker and D1. |
+| 9 | 0.12 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
 
 Decisions are recorded as [ADRs](docs/adr/). Changes are listed in the [changelog](CHANGELOG.md).
 
