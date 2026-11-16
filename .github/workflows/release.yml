@@ -81,8 +81,13 @@ jobs:
           PANTRY_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           TAG: ${{ steps.version.outputs.tag }}
         run: |
-          flutter build apk --release
-          cp build/app/outputs/flutter-apk/app-release.apk "pantry-${TAG}.apk"
+          # One APK per processor type keeps the download small (the ML Kit text
+          # model is native code). Both household phones are arm64-v8a, as is
+          # every Android phone of the last several years; that one is the
+          # release download. Version codes gain the ABI's offset, so later
+          # releases must stay split.
+          flutter build apk --release --split-per-abi --target-platform android-arm64
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "pantry-${TAG}.apk"
           sha256sum "pantry-${TAG}.apk" > "pantry-${TAG}.apk.sha256"
 
       - name: Tag and publish GitHub Release
@@ -94,7 +99,7 @@ jobs:
           notes=$(awk -v v="${TAG#v}" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md)
           gh release create "$TAG" "pantry-${TAG}.apk" "pantry-${TAG}.apk.sha256" \
             --target "$GITHUB_SHA" --title "Pantry ${TAG}" \
-            --notes "${notes:-See CHANGELOG.md}"$'\n\n'"Install: open this page on the phone, download the .apk and open it."
+            --notes "${notes:-See CHANGELOG.md}"$'\n\n'"Install: open this page on the phone, download the .apk and open it (64-bit Android phones)."
 
       - name: Remove the key file
         if: always()

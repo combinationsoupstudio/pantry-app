@@ -19,6 +19,7 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
   <img src="docs/screens/12-find-picture.jpg" width="200" alt="Find picture: Australian washed potato products with their pictures">
   <img src="docs/screens/13-use-by-dates.jpg" width="200" alt="Use-by dates grouped: past its date, within a week, within a month, later">
   <img src="docs/screens/14-stocktake.jpg" width="200" alt="Stocktake: one item at a time, That's right or count it">
+  <img src="docs/screens/15-receipt.jpg" width="200" alt="Checking a scanned Woolworths receipt: lines matched to stock, total matches">
 </p>
 
 <sub>Screenshots use made-up demo data. They are rendered by <code>tool/screens/screens_test.dart</code>. Product pictures in them are from <a href="https://world.openfoodfacts.org">Open Food Facts</a>, CC BY-SA 3.0.</sub>
@@ -110,7 +111,8 @@ flutter run         # on a connected phone or emulator
 | **2** | 0.5 | Product pictures (barcode or name search, cached on the phone), picture piles that show the amount, − / + on the list. **Done.** |
 | **3** | 0.6 | Back up and restore, stocktake, scan to use, use-by dates (medical too), water days. **Done.** |
 | **4** | 0.7 | Reminders (shop day, use-by alerts, backup nudge); say it to add it (voice). **Done.** |
-| 5 | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock; use-by batches, "eat me first". |
+| **5** | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock. **Done.** |
+| 5b | 0.8.x | Use-by batches, "eat me first". |
 | 6 | 0.9 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
 | 7 | 0.10 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
 | 8 | 0.11 | Sync between the two phones through a Cloudflare Worker and D1. |

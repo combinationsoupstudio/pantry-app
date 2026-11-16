@@ -24,5 +24,5 @@ If either is missing, the Release workflow stops at its first step with an error
 To build a signed APK locally:
 
 ```sh
-PANTRY_KEYSTORE_PATH=/path/to/pantry-release.jks PANTRY_KEYSTORE_PASSWORD=… flutter build apk --release
+PANTRY_KEYSTORE_PATH=/path/to/pantry-release.jks PANTRY_KEYSTORE_PASSWORD=… flutter build apk --release --split-per-abi --target-platform android-arm64
 ```
