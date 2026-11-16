@@ -4,6 +4,15 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-16
+
+### Changed
+- **Warm pantry look** (Chris picked it): a cream page, olive green for doing things, mustard for low, tomato red for out. Headings in Fraunces, everything else in Nunito Sans (both bundled, SIL Open Font License). Softer, rounder cards and chips.
+- **Four tabs instead of six:** Home, Pantry, Shopping, Recipes. **Pantry holds everything kept**: the kitchen first (pantry, fridge, freezer), then the extra stock "Stored away" further down (prep pantry, spare cupboard, garage, medical, hygiene). Each place is still a chip at the top. **Insights** opens from the House stock card on Home, and from the button under Running low.
+- **Icons instead of letters.** Things without a photo show an icon for what they are (bread, eggs, milk, tins, rice, pasta, batteries, torch, bandages, tablets and more) on their family's colour, or where they are kept when the name says nothing.
+- **Lighter stock rows.** The amount reads in plain words ("2 loaves · need 1", "1 loaf", "30 ml of 500 ml"), the place and "about 1 day left" sit on a small line under it, the bar is thinner, and − / + are light round buttons so the row reads first.
+- **Tidier shopping list.** A round tick on the left; tap anywhere on a line to put it in the trolley. − amount + on the right. Ticked lines sink to the bottom of their shop. Each shop's heading says how many to get and how many are in the trolley. "Added by" shows only when someone else added it. Hold a line to choose its shop.
+
 ## [0.9.1] - 2026-11-16
 
 ### Added

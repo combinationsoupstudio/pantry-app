@@ -3,11 +3,9 @@ import 'package:material_ui/material_ui.dart';
 import 'data/household_store.dart';
 import 'data/store_scope.dart';
 import 'ui/pages/home_page.dart';
-import 'ui/pages/insights_page.dart';
 import 'ui/pages/pantry_page.dart';
 import 'ui/pages/recipes_page.dart';
 import 'ui/pages/shopping_page.dart';
-import 'ui/pages/storage_page.dart';
 import 'ui/theme.dart';
 
 class PantryApp extends StatelessWidget {
@@ -30,14 +28,13 @@ class PantryApp extends StatelessWidget {
   }
 }
 
-/// The six pages. Order here is the order in the bottom bar.
+/// The four pages (v0.10: Storage is inside Pantry, Insights opens from
+/// Home). Order here is the order in the bottom bar.
 enum AppTab {
-  home('Home', Icons.dashboard_outlined, Icons.dashboard),
+  home('Home', Icons.home_outlined, Icons.home),
   pantry('Pantry', Icons.kitchen_outlined, Icons.kitchen),
-  storage('Storage', Icons.inventory_2_outlined, Icons.inventory_2),
-  shopping('Shopping', Icons.shopping_cart_outlined, Icons.shopping_cart),
-  recipes('Recipes', Icons.restaurant_menu_outlined, Icons.restaurant_menu),
-  insights('Insights', Icons.insights_outlined, Icons.insights);
+  shopping('Shopping', Icons.shopping_basket_outlined, Icons.shopping_basket),
+  recipes('Recipes', Icons.menu_book_outlined, Icons.menu_book);
 
   const AppTab(this.label, this.icon, this.selectedIcon);
   final String label;
@@ -64,10 +61,8 @@ class _AppShellState extends State<AppShell> {
     final pages = <AppTab, Widget>{
       AppTab.home: HomePage(onGo: go),
       AppTab.pantry: const PantryPage(),
-      AppTab.storage: const StoragePage(),
       AppTab.shopping: const ShoppingPage(),
       AppTab.recipes: const RecipesPage(),
-      AppTab.insights: const InsightsPage(),
     };
     return Scaffold(
       body: IndexedStack(index: _tab.index, children: [for (final t in AppTab.values) pages[t]!]),

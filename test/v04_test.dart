@@ -252,7 +252,7 @@ void main() {
     await tester.pumpWidget(PantryApp(store: s));
     await tester.tap(find.byKey(const ValueKey('nav-pantry')));
     await tester.pumpAndSettle();
-    expect(find.textContaining('/ 500 ml', findRichText: true), findsOneWidget);
+    expect(find.textContaining('of 500 ml', findRichText: true), findsOneWidget);
 
     await tester.tap(find.byKey(ValueKey('minus-${soy.id}')));
     await tester.pumpAndSettle();

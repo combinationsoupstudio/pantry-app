@@ -34,6 +34,17 @@ Future<void> loadFonts() async {
     ..addFont(f('Roboto-Medium.ttf'))
     ..addFont(f('Roboto-Bold.ttf'));
   await roboto.load();
+  Future<ByteData> a(String name) async => ByteData.sublistView(File('assets/fonts/$name').readAsBytesSync());
+  await (FontLoader('Fraunces')
+        ..addFont(a('Fraunces-SemiBold.ttf'))
+        ..addFont(a('Fraunces-Bold.ttf')))
+      .load();
+  await (FontLoader('Nunito Sans')
+        ..addFont(a('NunitoSans-Regular.ttf'))
+        ..addFont(a('NunitoSans-SemiBold.ttf'))
+        ..addFont(a('NunitoSans-Bold.ttf'))
+        ..addFont(a('NunitoSans-ExtraBold.ttf')))
+      .load();
   final icons = FontLoader('MaterialIcons')..addFont(f('MaterialIcons-Regular.otf'));
   await icons.load();
 }
@@ -148,10 +159,8 @@ void main() {
     await shot(tester, '1-home');
     for (final (key, name) in [
       ('nav-pantry', '2-pantry'),
-      ('nav-storage', '3-storage'),
       ('nav-shopping', '4-shopping'),
       ('nav-recipes', '5-recipes'),
-      ('nav-insights', '8-insights'),
     ]) {
       await tester.tap(find.byKey(ValueKey(key)));
       await shot(tester, name);
@@ -190,6 +199,10 @@ void main() {
         await tester.pumpAndSettle();
         Navigator.of(tester.element(find.byKey(const ValueKey('save-item')))).pop();
         await tester.pumpAndSettle();
+        // The extra stock, stored away, further down the same page.
+        await tester.scrollUntilVisible(find.text('STORED AWAY'), 300, scrollable: find.byType(Scrollable).last);
+        await tester.drag(find.byType(Scrollable).last, const Offset(0, -500));
+        await shot(tester, '3-pantry-stored');
       }
       if (name == '5-recipes') {
         await tester.tap(find.text('Weeknight fried rice'));
@@ -200,6 +213,11 @@ void main() {
         await tester.pumpAndSettle();
       }
     }
+    // Insights now opens from the House stock card on Home.
+    await tester.tap(find.byKey(const ValueKey('nav-home')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-stock')));
+    await shot(tester, '8-insights');
   });
 
   testWidgets('v0.6 screens', (tester) async {

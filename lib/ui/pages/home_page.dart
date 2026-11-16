@@ -11,6 +11,7 @@ import '../widgets/common.dart';
 import '../widgets/stock_tile.dart';
 import '../theme.dart';
 import 'household_page.dart';
+import 'insights_page.dart';
 import 'settings_page.dart';
 
 /// The dashboard: how the house is going at a glance, and what needs doing.
@@ -51,42 +52,60 @@ class HomePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Card(
                 color: scheme.primaryContainer,
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: 84,
-                        height: 84,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            CircularProgressIndicator(
-                              value: ins.readiness ?? 0,
-                              strokeWidth: 8,
-                              backgroundColor: scheme.surface.withValues(alpha: 0.5),
-                            ),
-                            Center(
-                              child: Text(
-                                ins.readiness == null ? '—' : '${(ins.readiness! * 100).round()}%',
-                                style: text.titleLarge?.copyWith(color: scheme.onPrimaryContainer),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  key: const ValueKey('home-stock'),
+                  onTap: () => _openInsights(context),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 84,
+                          height: 84,
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: [
+                              CircularProgressIndicator(
+                                value: ins.readiness ?? 0,
+                                strokeWidth: 8,
+                                backgroundColor: scheme.surface.withValues(alpha: 0.5),
                               ),
-                            ),
-                          ],
+                              Center(
+                                child: Text(
+                                  ins.readiness == null ? '—' : '${(ins.readiness! * 100).round()}%',
+                                  style: text.titleLarge?.copyWith(color: scheme.onPrimaryContainer),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('House stock', style: text.titleMedium?.copyWith(color: scheme.onPrimaryContainer)),
-                            const SizedBox(height: 4),
-                            Text(_assessment(ins), style: text.bodyMedium?.copyWith(color: scheme.onPrimaryContainer)),
-                          ],
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      'House stock',
+                                      style: text.titleLarge?.copyWith(color: scheme.onPrimaryContainer),
+                                    ),
+                                  ),
+                                  Icon(Icons.chevron_right, color: scheme.onPrimaryContainer),
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _assessment(ins),
+                                style: text.bodyMedium?.copyWith(color: scheme.onPrimaryContainer),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -162,7 +181,7 @@ class HomePage extends StatelessWidget {
               child: EmptyState(
                 icon: Icons.kitchen_outlined,
                 title: 'No stock yet',
-                body: 'Add items on the Pantry and Storage pages, or import your stock list in Settings.',
+                body: 'Add items on the Pantry page, or import your stock list in Settings.',
                 action: FilledButton.tonal(onPressed: () => onGo(AppTab.pantry), child: const Text('Go to Pantry')),
               ),
             )
@@ -175,18 +194,27 @@ class HomePage extends StatelessWidget {
             )
           else
             SliverList.list(children: [for (final i in low.take(6)) StockTile(item: i, showLocation: true)]),
-          if (low.length > 6)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text('and ${low.length - 6} more on the Insights page', style: text.bodySmall),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: OutlinedButton.icon(
+                key: const ValueKey('home-insights'),
+                onPressed: () => _openInsights(context),
+                icon: const Icon(Icons.insights_outlined),
+                label: Text(
+                  low.length > 6 ? 'All ${low.length} running low, spending and more' : 'Spending, places and more',
+                ),
               ),
             ),
+          ),
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
     );
   }
+
+  void _openInsights(BuildContext context) =>
+      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const InsightsPage()));
 
   String _assessment(Insights ins) {
     if (ins.totalItems == 0) return 'Add your first items to see how the house is tracking.';
