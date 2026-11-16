@@ -134,21 +134,3 @@ Future<String?> takeItemPhoto() async {
   await shot.saveTo(path);
   return path;
 }
-
-/// A small square of the item's photo, or nothing when it has none (or the
-/// file has gone).
-class ItemPhoto extends StatelessWidget {
-  const ItemPhoto({super.key, required this.path, this.size = 44});
-  final String? path;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = path;
-    if (p == null || !File(p).existsSync()) return const SizedBox.shrink();
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: Image.file(File(p), width: size, height: size, fit: BoxFit.cover, cacheWidth: (size * 3).round()),
-    );
-  }
-}

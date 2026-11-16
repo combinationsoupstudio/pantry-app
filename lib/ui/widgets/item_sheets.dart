@@ -6,6 +6,8 @@ import '../../logic/amounts.dart';
 import '../../logic/usage.dart';
 import '../../models/models.dart';
 import 'capture.dart';
+import 'picture_search.dart';
+import 'pictures.dart';
 import 'use_some_sheet.dart';
 
 const commonUnits = ['', 'items', 'cans', 'packs', 'bottles', 'jars', 'boxes', 'rolls', 'kg', 'g', 'L', 'mL'];
@@ -61,6 +63,7 @@ class _ItemEditorState extends State<_ItemEditor> {
 
   String? _barcode;
   String? _photoPath;
+  String? _imageUrl;
   bool _looking = false;
 
   /// What the scan found, shown under the buttons.
@@ -78,6 +81,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     _locationId = e?.locationId ?? widget.locationId ?? '';
     _barcode = e?.barcode;
     _photoPath = e?.photoPath;
+    _imageUrl = e?.imageUrl;
 
     _measured = e?.isMeasured ?? false;
     _mUnit = _keptUnit(e?.unit ?? 'ml');
@@ -165,7 +169,7 @@ class _ItemEditorState extends State<_ItemEditor> {
       _found = null;
     });
     try {
-      final info = await OpenFoodFacts().lookup(code);
+      final info = await OpenFoodFacts.instance.lookup(code);
       if (!mounted) return;
       setState(() {
         if (info == null) {
@@ -174,6 +178,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         }
         final name = info.displayName;
         if (name.isNotEmpty && (widget.existing == null || _name.text.trim().isEmpty)) _name.text = name;
+        if (info.imageUrl != null) _imageUrl = info.imageUrl;
         if (info.hasPackSize) {
           _measured = true;
           _mUnit = _keptUnit(info.unit);
@@ -194,6 +199,27 @@ class _ItemEditorState extends State<_ItemEditor> {
       if (mounted) setState(() => _looking = false);
     }
   }
+
+  Future<void> _findPicture() async {
+    final picked = await showPictureSearch(context, initial: _name.text.trim());
+    if (picked == null || !mounted) return;
+    setState(() {
+      if (picked.imageUrl != null) _imageUrl = picked.imageUrl;
+      if (_name.text.trim().isEmpty) _name.text = picked.displayName;
+      _found = [
+        'Picture: ${picked.displayName}',
+        if (picked.quantityText.isNotEmpty) picked.quantityText,
+      ].join('  ·  ');
+    });
+  }
+
+  void _removePicture() => setState(() {
+    if (_photoPath != null) {
+      _photoPath = null;
+    } else {
+      _imageUrl = null;
+    }
+  });
 
   Future<void> _photo() async {
     try {
@@ -237,6 +263,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         packSize: packSize,
         barcode: _barcode,
         photoPath: _photoPath,
+        imageUrl: _imageUrl,
       );
     } else {
       await store.updateItem(
@@ -253,6 +280,8 @@ class _ItemEditorState extends State<_ItemEditor> {
           clearBarcode: _barcode == null,
           photoPath: _photoPath,
           clearPhoto: _photoPath == null,
+          imageUrl: _imageUrl,
+          clearImage: _imageUrl == null,
         ),
       );
     }
@@ -432,31 +461,64 @@ class _ItemEditorState extends State<_ItemEditor> {
             children: [
               Row(
                 children: [
-                  if (_photoPath != null) ...[ItemPhoto(path: _photoPath, size: 56), const SizedBox(width: 12)],
-                  Expanded(child: Text(widget.existing == null ? 'Add item' : 'Edit item', style: text.titleLarge)),
+                  ProductPicture(
+                    key: const ValueKey('editor-picture'),
+                    name: _name.text.isEmpty ? '?' : _name.text,
+                    photoPath: _photoPath,
+                    imageUrl: _imageUrl,
+                    size: 80,
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.existing == null ? 'Add item' : 'Edit item', style: text.titleLarge),
+                        const SizedBox(height: 2),
+                        Text(
+                          _photoPath != null
+                              ? 'Your photo'
+                              : _imageUrl != null
+                              ? 'Picture: Open Food Facts'
+                              : 'No picture yet',
+                          style: text.bodySmall,
+                        ),
+                        if (_photoPath != null || _imageUrl != null)
+                          TextButton(
+                            key: const ValueKey('remove-picture'),
+                            style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
+                            onPressed: _removePicture,
+                            child: const Text('Remove picture'),
+                          ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
-              Row(
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      key: const ValueKey('scan-barcode'),
-                      onPressed: _looking ? null : _scan,
-                      icon: _looking
-                          ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                          : const Icon(Icons.qr_code_scanner),
-                      label: Text(_looking ? 'Looking up' : 'Scan barcode'),
-                    ),
+                  OutlinedButton.icon(
+                    key: const ValueKey('scan-barcode'),
+                    onPressed: _looking ? null : _scan,
+                    icon: _looking
+                        ? const SizedBox.square(dimension: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.qr_code_scanner),
+                    label: Text(_looking ? 'Looking up' : 'Scan barcode'),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      key: const ValueKey('take-photo'),
-                      onPressed: _photo,
-                      icon: const Icon(Icons.photo_camera_outlined),
-                      label: Text(_photoPath == null ? 'Take photo' : 'New photo'),
-                    ),
+                  OutlinedButton.icon(
+                    key: const ValueKey('find-picture'),
+                    onPressed: _findPicture,
+                    icon: const Icon(Icons.image_search),
+                    label: const Text('Find picture'),
+                  ),
+                  OutlinedButton.icon(
+                    key: const ValueKey('take-photo'),
+                    onPressed: _photo,
+                    icon: const Icon(Icons.photo_camera_outlined),
+                    label: Text(_photoPath == null ? 'Take photo' : 'New photo'),
                   ),
                 ],
               ),

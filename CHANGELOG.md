@@ -4,6 +4,18 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-11-16
+
+### Added
+- **Product pictures**: items show a picture of the product. Your own photo comes first; else the product's picture from Open Food Facts, found by barcode (items scanned in v0.4 get theirs automatically) or picked with **Find picture**, a name search of Australian products that shows each one's picture and pack size. Nothing is bundled: each picture (about 4-13 KB) is downloaded the first time it is needed and kept on the phone. No picture: a plain tinted square with the item's first letter, never a wrong picture. ADR 0006.
+- **Picture piles**: a card shows one picture per item or pack, fanned out with a "×4" badge: 4 washed potatoes is four, 9 tins is nine, a measured item shows its packs. Things counted by weight or volume without a pack size (3 kg pasta) show one picture, so the pile never claims 3 kg is three packs.
+- **− / + on shopping lines**: change how many to buy right on the list; the pile grows and shrinks with it.
+
+### Changed
+- Find picture ranks products whose names hold your words first ("washed potatoes" before a facial wash).
+- Settings credits Open Food Facts pictures (CC BY-SA 3.0); the editor says "Picture: Open Food Facts" when one is used.
+- `tool/screens/fetch_pictures.py` fetches real product pictures for the README screenshots (not committed).
+
 ## [0.4.0] - 2026-11-16
 
 ### Added

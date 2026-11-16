@@ -65,6 +65,7 @@ class StockItem {
     this.packSize = 0,
     this.barcode,
     this.photoPath,
+    this.imageUrl,
   });
 
   final String id;
@@ -82,6 +83,29 @@ class StockItem {
 
   /// A photo of the item, kept in the app's own folder on the phone.
   final String? photoPath;
+
+  /// A product picture from Open Food Facts (small, 200 px), found by
+  /// barcode or picked from a name search. Downloaded once and kept on the
+  /// phone. The household's own [photoPath] always shows first.
+  final String? imageUrl;
+
+  /// How many to draw in a picture pile: whole items for a counted item
+  /// (2 potatoes, 4 tins), whole packs for a measured one. Something counted
+  /// by weight or volume without a pack size ("3 kg" of pasta) is one
+  /// picture: 3 kg is not three packs, and the pile never claims it is.
+  int get pileCount {
+    if (quantity <= 0) return 0;
+    if (isMeasured) return (quantity / packSize - 1e-9).ceil();
+    if (const {'g', 'kg', 'ml', 'l'}.contains(unit.trim().toLowerCase())) return 1;
+    return quantity < 1 ? 1 : quantity.round();
+  }
+
+  /// [pileCount] for [amount] of this item in its [shoppingUnit] (a list line).
+  int pileFor(double amount) {
+    if (amount <= 0) return 0;
+    if (!isMeasured && const {'g', 'kg', 'ml', 'l'}.contains(unit.trim().toLowerCase())) return 1;
+    return amount < 1 ? 1 : amount.round();
+  }
 
   /// How many we have now.
   final double quantity;
@@ -140,6 +164,8 @@ class StockItem {
     bool clearBarcode = false,
     String? photoPath,
     bool clearPhoto = false,
+    String? imageUrl,
+    bool clearImage = false,
   }) => StockItem(
     id: id,
     name: name ?? this.name,
@@ -154,6 +180,7 @@ class StockItem {
     packSize: packSize ?? this.packSize,
     barcode: clearBarcode ? null : (barcode ?? this.barcode),
     photoPath: clearPhoto ? null : (photoPath ?? this.photoPath),
+    imageUrl: clearImage ? null : (imageUrl ?? this.imageUrl),
   );
 
   Map<String, Object?> toJson() => {
@@ -170,6 +197,7 @@ class StockItem {
     if (packSize > 0) 'packSize': packSize,
     if (barcode != null) 'barcode': barcode,
     if (photoPath != null) 'photoPath': photoPath,
+    if (imageUrl != null) 'imageUrl': imageUrl,
   };
 
   factory StockItem.fromJson(Map<String, Object?> json) => StockItem(
@@ -186,6 +214,7 @@ class StockItem {
     packSize: (json['packSize'] as num? ?? 0).toDouble(),
     barcode: json['barcode'] as String?,
     photoPath: json['photoPath'] as String?,
+    imageUrl: json['imageUrl'] as String?,
   );
 }
 

@@ -67,8 +67,10 @@ class SettingsPage extends StatelessWidget {
           const ListTile(
             title: Text('Product data'),
             subtitle: Text(
-              'Scanned barcodes are looked up on Open Food Facts (openfoodfacts.org), the free open food database. '
-              'Its data is available under the Open Database Licence. Only the barcode number is sent.',
+              'Product names, pack sizes and pictures come from Open Food Facts (openfoodfacts.org), the free open '
+              'food database: data under the Open Database Licence, pictures under Creative Commons BY-SA 3.0. '
+              'Only a barcode number or the words you search for are sent. Pictures are downloaded once and kept '
+              'on this phone.',
             ),
           ),
           const SizedBox(height: 24),

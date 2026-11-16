@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/pictures.dart';
 import '../widgets/put_away_sheet.dart';
 
 class ShoppingPage extends StatelessWidget {
@@ -197,6 +198,16 @@ class _ShoppingRow extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
     final amount = '${formatQty(item.quantity)}${item.unit.isEmpty ? '' : ' ${item.unit}'}';
+    final stock = item.stockItemId == null ? null : store.item(item.stockItemId!);
+    final count = item.quantity < 1 ? 1 : item.quantity.round();
+    final pile = stock != null
+        ? ItemPile(key: ValueKey('shop-pile-${item.id}'), item: stock, count: stock.pileFor(item.quantity), size: 40)
+        : PicturePile(
+            key: ValueKey('shop-pile-${item.id}'),
+            count: count,
+            size: 40,
+            picture: () => ProductPicture(name: item.name, size: 40),
+          );
     return Dismissible(
       key: ValueKey('shop-${item.id}'),
       direction: DismissDirection.endToStart,
@@ -214,26 +225,67 @@ class _ShoppingRow extends StatelessWidget {
           child: Row(
             children: [
               Checkbox(value: item.bought, onChanged: (v) => store.setBought(item.id, v ?? false)),
-              const SizedBox(width: 4),
+              SizedBox(
+                width: PicturePile.slotWidth(40),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Opacity(opacity: item.bought ? 0.5 : 1, child: pile),
+                ),
+              ),
+              const SizedBox(width: 8),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       item.name,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: text.titleSmall?.copyWith(
                         decoration: item.bought ? TextDecoration.lineThrough : null,
                         color: item.bought ? scheme.onSurfaceVariant : null,
                       ),
                     ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        _Step(
+                          key: ValueKey('shop-less-${item.id}'),
+                          icon: Icons.remove,
+                          tooltip: 'One less',
+                          onPressed: item.quantity <= 1
+                              ? null
+                              : () => store.setShoppingQuantity(item.id, item.quantity - 1),
+                        ),
+                        const SizedBox(width: 6),
+                        Flexible(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: scheme.surfaceContainerHigh,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              amount,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: text.labelLarge?.copyWith(fontWeight: FontWeight.w800),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        _Step(
+                          key: ValueKey('shop-more-${item.id}'),
+                          icon: Icons.add,
+                          tooltip: 'One more',
+                          filled: true,
+                          onPressed: () => store.setShoppingQuantity(item.id, item.quantity + 1),
+                        ),
+                      ],
+                    ),
                     Text('added by ${item.addedBy}', style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
                   ],
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: scheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(8)),
-                child: Text(amount, style: text.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
               ),
               PopupMenuButton<Store>(
                 tooltip: 'Choose shop',
@@ -245,6 +297,40 @@ class _ShoppingRow extends StatelessWidget {
                 ],
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A small round - or + for a shopping line's amount.
+class _Step extends StatelessWidget {
+  const _Step({super.key, required this.icon, required this.tooltip, this.onPressed, this.filled = false});
+  final IconData icon;
+  final String tooltip;
+  final VoidCallback? onPressed;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final on = onPressed != null;
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: !on ? scheme.surfaceContainerHighest : (filled ? scheme.primary : scheme.secondaryContainer),
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: SizedBox.square(
+            dimension: 30,
+            child: Icon(
+              icon,
+              size: 18,
+              color: !on ? scheme.outline : (filled ? scheme.onPrimary : scheme.onSecondaryContainer),
+            ),
           ),
         ),
       ),

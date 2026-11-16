@@ -216,6 +216,7 @@ class HouseholdStore extends ChangeNotifier {
     double packSize = 0,
     String? barcode,
     String? photoPath,
+    String? imageUrl,
   }) async {
     final item = StockItem(
       id: newId(),
@@ -231,6 +232,7 @@ class HouseholdStore extends ChangeNotifier {
       packSize: packSize < 0 ? 0 : packSize,
       barcode: (barcode == null || barcode.trim().isEmpty) ? null : barcode.trim(),
       photoPath: photoPath,
+      imageUrl: imageUrl,
     );
     _items.add(item);
     _log(item.name, 'added', delta: item.quantity, unit: item.unit);
@@ -254,6 +256,15 @@ class HouseholdStore extends ChangeNotifier {
       if (i.barcode == c) return i;
     }
     return null;
+  }
+
+  /// Sets (or clears, with null) an item's product picture. Not logged as an
+  /// edit: it changes how the item looks, not what the household has.
+  Future<void> setPicture(String itemId, String? imageUrl) async {
+    final index = _items.indexWhere((i) => i.id == itemId);
+    if (index < 0 || _items[index].imageUrl == imageUrl) return;
+    _items[index] = _items[index].copyWith(imageUrl: imageUrl, clearImage: imageUrl == null);
+    await _commit();
   }
 
   /// Adds one pack of a measured item, or one of a counted one.
@@ -312,6 +323,7 @@ class HouseholdStore extends ChangeNotifier {
           packSize: source.packSize,
           barcode: source.barcode,
           photoPath: source.photoPath,
+          imageUrl: source.imageUrl,
         ),
       );
     }
@@ -505,6 +517,17 @@ class HouseholdStore extends ChangeNotifier {
     final index = _shopping.indexWhere((s) => s.id == shoppingId);
     if (index < 0) return;
     _shopping[index] = _shopping[index].copyWith(bought: bought);
+    await _commit();
+  }
+
+  /// Sets how many of a shopping line to buy. Below one, the line stays at one;
+  /// swipe it away to remove it.
+  Future<void> setShoppingQuantity(String shoppingId, double quantity) async {
+    final index = _shopping.indexWhere((s) => s.id == shoppingId);
+    if (index < 0) return;
+    final q = quantity < 1 ? 1.0 : quantity;
+    if (_shopping[index].quantity == q) return;
+    _shopping[index] = _shopping[index].copyWith(quantity: q);
     await _commit();
   }
 
