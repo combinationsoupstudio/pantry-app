@@ -337,4 +337,18 @@ void main() {
     );
     await shot(tester, '17-recipe-names');
   });
+
+  testWidgets('v0.12 drawings', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final store = await demoStore();
+    await store.setSetting('pictures', 'drawings');
+    await tester.pumpWidget(PantryApp(store: store));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('nav-pantry')));
+    await shot(tester, '18-pantry-drawings');
+    await tester.tap(find.byKey(const ValueKey('nav-shopping')));
+    await shot(tester, '19-shopping-drawings');
+  });
 }

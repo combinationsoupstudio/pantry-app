@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../logic/names.dart';
+
 /// What an item looks like when it has no photo: an icon for what it is, on
 /// the colour of its family (greens for fresh food, wheat for bread, blue for
 /// dairy). Replaces the plain first letter (v0.10).
@@ -142,4 +144,57 @@ ItemLook lookFor(String name, {String? locationId}) {
   final byPlace = _byLocation[locationId];
   if (byPlace != null) return ItemLook(byPlace.$1, byPlace.$2);
   return const ItemLook(Icons.shopping_basket, LookFamily.other);
+}
+
+/// Drawn pictures (assets/food/), each with the names it is for, most
+/// specific first. Names are compared folded (names.dart), word by word:
+/// "Shallots" is spring onions, "Tins: fish" is the tuna tin.
+const List<(String, List<String>)> _art = [
+  ('tinned-tomatoes', ['tin tomato', 'tomato tin', 'diced tomato', 'crushed tomato', 'chopped tomato', 'passata']),
+  ('baked-beans', ['baked bean']),
+  ('tuna', ['tuna', 'tin fish', 'fish tin', 'sardine']),
+  ('spring-onions', ['spring onion']),
+  ('olive-oil', ['olive oil']),
+  ('soy-sauce', ['soy sauce', 'tamari']),
+  ('frozen-peas', ['frozen pea', 'pea']),
+  ('mince', ['beef mince', 'pork mince', 'lamb mince', 'chicken mince', 'turkey mince', 'mince']),
+  ('chicken', ['chicken']),
+  ('eggs', ['egg']),
+  ('bread', ['bread', 'loaf', 'toast', 'sandwich bread']),
+  ('milk', ['milk', 'uht', 'full cream milk', 'skim milk']),
+  ('cheese', ['cheese', 'cheddar', 'parmesan', 'mozzarella', 'feta']),
+  ('butter', ['butter', 'margarine']),
+  ('yoghurt', ['yoghurt']),
+  ('rice', ['rice']),
+  ('pasta', ['pasta', 'spaghetti', 'penne', 'macaroni', 'fettuccine', 'lasagne', 'fusilli']),
+  ('flour', ['flour', 'plain flour', 'self raising flour', 'cornflour']),
+  ('sugar', ['sugar', 'brown sugar', 'icing sugar', 'caster sugar', 'raw sugar']),
+  ('onions', ['onion']),
+  ('garlic', ['garlic']),
+  ('potatoes', ['potato']),
+  ('carrots', ['carrot']),
+  ('tomatoes', ['tomato', 'cherry tomato']),
+  ('apples', ['apple']),
+  ('bananas', ['banana']),
+  ('oats', ['oat', 'rolled oat', 'porridge', 'muesli']),
+  ('coffee', ['coffee']),
+  ('tea', ['tea']),
+  ('honey', ['honey']),
+];
+
+/// The drawn picture for [name] (an asset path), or null. A name of its own
+/// that only shares a word ("coconut milk", "peanut butter", "chicken
+/// stock", "sweet potato") gets none rather than the wrong one.
+String? artFor(String name) {
+  final n = ' ${canonicalName(name)} ';
+  if (n.trim().isEmpty) return null;
+  for (final (art, phrases) in _art) {
+    for (final p in phrases) {
+      if (!n.contains(' $p ')) continue;
+      final clash = ownThings.any((t) => n.contains(' $t ') && !phrases.contains(t));
+      if (clash) break;
+      return 'assets/food/$art.png';
+    }
+  }
+  return null;
 }

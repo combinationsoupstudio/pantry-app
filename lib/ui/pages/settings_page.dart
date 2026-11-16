@@ -71,6 +71,26 @@ class SettingsPage extends StatelessWidget {
             subtitle: const Text('Replaces what is on this phone with the backup'),
             onTap: () => _restore(context),
           ),
+          const SectionHeader('Pictures'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SegmentedButton<String>(
+              key: const ValueKey('picture-style'),
+              segments: const [
+                ButtonSegment(value: 'photos', label: Text('Product photos'), icon: Icon(Icons.photo_outlined)),
+                ButtonSegment(value: 'drawings', label: Text('Drawings'), icon: Icon(Icons.brush_outlined)),
+              ],
+              selected: {store.setting<String>('pictures', 'photos')},
+              onSelectionChanged: (s) => store.setSetting('pictures', s.first),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Text(
+              'Your own photos always show first. Then product photos or the drawings, whichever you pick; '
+              'the other fills in where there is none. Shared with the household.',
+            ),
+          ),
           const SectionHeader('Stock list'),
           ListTile(
             leading: const Icon(Icons.upload_file_outlined),
