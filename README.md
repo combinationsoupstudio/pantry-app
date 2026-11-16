@@ -114,8 +114,8 @@ flutter run         # on a connected phone or emulator
 | **4** | 0.7 | Reminders (shop day, use-by alerts, backup nudge); say it to add it (voice). **Done.** |
 | **5** | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock. **Done.** |
 | 5b | 0.8.x | Use-by batches, "eat me first". |
-| **6** | 0.9 | Household sync between phones (Cloudflare Worker, one database per household), live while the app is open. **Done.** |
-| 6b | 0.9.x | Instant updates (websocket) and shared own photos (R2). |
+| **6** | 0.9 | Household sync between phones (Cloudflare Worker, one database per household); instant updates over a live line while the app is open. **Done.** |
+| 6b | 0.9.x | Shared own photos (R2); look and feel pass. |
 | 7 | 0.10 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
 | 8 | 0.11 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
 | 9 | 0.12 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |

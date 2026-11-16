@@ -6,7 +6,9 @@
 //   POST /households                 start a household -> { household, token, code }
 //   POST /h/:household/join          { code } -> { token }              (code from the first phone)
 //   POST /h/:household/invite        (token) -> { code }                 a fresh join code
-//   POST /h/:household/sync          (token) { since, changes[] } -> { cursor, records[] }
+//   POST /h/:household/sync          (token) { since, changes[], phone } -> { cursor, records[] }
+//   GET  /h/:household/live          (token) websocket: { cursor, from } is sent the moment the
+//                                    household changes; the phone then syncs. "ping" -> "pong".
 // The token is a long random secret kept on each phone; only its SHA-256 is
 // stored. Join codes last 48 hours.
 
@@ -34,6 +36,12 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (request.method === 'GET' && url.pathname === '/') return reply({ ok: true, service: 'pantry-sync' });
+    const live = url.pathname.match(/^\/h\/([A-Z0-9]{8})\/live$/);
+    if (live && request.method === 'GET') {
+      if (request.headers.get('upgrade') !== 'websocket') return reply({ error: 'websocket only' }, 426);
+      const stub = env.HOUSEHOLD.get(env.HOUSEHOLD.idFromName(live[1]));
+      return stub.fetch(new Request('https://do/live', request));
+    }
     if (request.method !== 'POST') return reply({ error: 'POST only' }, 405);
     const length = Number(request.headers.get('content-length') || 0);
     if (length > MAX_BODY) return reply({ error: 'too big' }, 413);
@@ -65,6 +73,29 @@ export class Household extends DurableObject {
       kind TEXT NOT NULL, id TEXT NOT NULL, data TEXT, updated_at INTEGER NOT NULL,
       deleted INTEGER NOT NULL DEFAULT 0, seq INTEGER NOT NULL, PRIMARY KEY (kind, id))`);
     this.sql.exec(`CREATE INDEX IF NOT EXISTS records_seq ON records (seq)`);
+    // Keep-alive pings are answered without waking the household.
+    ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
+  }
+
+  // Tells every open phone the household moved on (each then syncs).
+  tell(cursor, from) {
+    const note = JSON.stringify({ cursor, from: from || null });
+    for (const ws of this.ctx.getWebSockets()) {
+      try {
+        ws.send(note);
+      } catch {
+        // A phone that has gone drops off by itself.
+      }
+    }
+  }
+
+  async webSocketMessage() {}
+
+  async webSocketClose(ws, code, reason) {
+    try {
+      ws.close(code, reason);
+    } catch {
+    }
   }
 
   meta(key) {
@@ -129,11 +160,20 @@ export class Household extends DurableObject {
 
     if (route === 'invite') return reply({ code: await this.newInvite() });
 
+    if (route === 'live') {
+      if (request.headers.get('upgrade') !== 'websocket') return reply({ error: 'websocket only' }, 426);
+      const [client, server] = Object.values(new WebSocketPair());
+      this.ctx.acceptWebSocket(server);
+      server.send(JSON.stringify({ cursor: Number(this.meta('seq') || 0), from: null }));
+      return new Response(null, { status: 101, webSocket: client });
+    }
+
     if (route === 'sync') {
       const since = Number.isFinite(body.since) ? body.since : 0;
       const changes = Array.isArray(body.changes) ? body.changes : [];
       if (changes.length > MAX_CHANGES) return reply({ error: 'too many changes' }, 413);
       let seq = Number(this.meta('seq') || 0);
+      const before = seq;
       const refused = [];
       for (const c of changes) {
         const why = invalid(c);
@@ -154,6 +194,7 @@ export class Household extends DurableObject {
         );
       }
       this.setMeta('seq', String(seq));
+      if (seq > before) this.tell(seq, typeof body.phone === 'string' ? body.phone.slice(0, 40) : null);
       const records = this.sql
         .exec('SELECT kind, id, data, updated_at, deleted, seq FROM records WHERE seq > ? ORDER BY seq', since)
         .toArray()

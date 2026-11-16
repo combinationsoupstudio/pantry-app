@@ -1,8 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'household_store.dart';
 import 'storage_backend.dart';
@@ -21,6 +24,11 @@ enum JoinMode {
   /// This phone's things are added to the household's list.
   addMine,
 }
+
+/// Opens the household's live line (a websocket).
+typedef LiveConnect = WebSocketChannel Function(Uri uri, Map<String, String> headers);
+
+WebSocketChannel _connect(Uri uri, Map<String, String> headers) => IOWebSocketChannel.connect(uri, headers: headers);
 
 class SyncException implements Exception {
   const SyncException(this.message);
@@ -42,9 +50,12 @@ class SyncService extends ChangeNotifier {
     http.Client? client,
     this.server = syncServer,
     DateTime Function()? clock,
+    LiveConnect? connect,
+    this.pushDelay = const Duration(milliseconds: 800),
   }) : _backend = backend ?? FileBackend(fileName: 'sync.json'),
        _client = client ?? http.Client(),
-       _clock = clock ?? DateTime.now;
+       _clock = clock ?? DateTime.now,
+       _connectLive = connect ?? _connect;
 
   static SyncService? instance;
 
@@ -53,6 +64,13 @@ class SyncService extends ChangeNotifier {
   final StorageBackend _backend;
   final http.Client _client;
   final DateTime Function() _clock;
+  final LiveConnect _connectLive;
+
+  /// How long after a change it is sent (changes made together go together).
+  final Duration pushDelay;
+
+  /// This phone, so it can ignore news of its own changes.
+  String _phone = _randomId();
 
   String? _household;
   String? _token;
@@ -67,6 +85,16 @@ class SyncService extends ChangeNotifier {
   Timer? _pushTimer;
   Timer? _pollTimer;
   bool _live = false;
+
+  WebSocketChannel? _channel;
+  StreamSubscription<Object?>? _socketSub;
+  Timer? _pingTimer;
+  Timer? _reconnectTimer;
+  bool _lineUp = false;
+  int _retries = 0;
+
+  /// True while the household's live line is open: changes arrive within a second or two.
+  bool get liveLine => _lineUp;
 
   String? get household => _household;
   bool get joined => _household != null && _token != null;
@@ -83,6 +111,7 @@ class SyncService extends ChangeNotifier {
     _household = d['household'] as String?;
     _token = d['token'] as String?;
     _cursor = (d['cursor'] as num?)?.toInt() ?? 0;
+    _phone = (d['phone'] as String?) ?? _phone;
     final last = d['lastSync'] as String?;
     _lastSync = last == null ? null : DateTime.tryParse(last);
     _snapshot = {
@@ -95,6 +124,7 @@ class SyncService extends ChangeNotifier {
     'household': _household,
     'token': _token,
     'cursor': _cursor,
+    'phone': _phone,
     'lastSync': _lastSync?.toIso8601String(),
     'snapshot': _snapshot,
   });
@@ -220,7 +250,7 @@ class SyncService extends ChangeNotifier {
     final current = store.syncRecords();
     final sent = _encodeAll(current);
     final changes = _changes(current);
-    final r = await _post('/h/$_household/sync', {'since': _cursor, 'changes': changes}, auth: true);
+    final r = await _post('/h/$_household/sync', {'since': _cursor, 'changes': changes, 'phone': _phone}, auth: true);
 
     // In step with what was sent (edits made while it was on its way stay changes).
     final snap = {
@@ -292,13 +322,19 @@ class SyncService extends ChangeNotifier {
 
   // ------------------------------------------------------------------ live
 
-  /// Stage 2: changes go 2 seconds after they are made, and the household is
-  /// asked every 5 seconds while the app is open.
+  /// While the app is open: a change goes [pushDelay] after it is made, and
+  /// the household's live line says the moment another phone changed
+  /// something, so it shows here within a second or two. If the line is down
+  /// the household is asked every 5 seconds instead (every 30 while it is up).
   void startLive() {
-    if (_live) return;
+    if (_live || !joined) return;
     _live = true;
     store.addListener(_onStoreChanged);
-    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) => syncNow());
+    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final last = _lastSync;
+      if (!_lineUp || last == null || _clock().difference(last) >= const Duration(seconds: 30)) syncNow();
+    });
+    _openLine();
     syncNow();
   }
 
@@ -308,12 +344,80 @@ class SyncService extends ChangeNotifier {
     store.removeListener(_onStoreChanged);
     _pollTimer?.cancel();
     _pushTimer?.cancel();
+    _closeLine();
   }
 
   void _onStoreChanged() {
     if (!joined || _busy) return;
     _pushTimer?.cancel();
-    _pushTimer = Timer(const Duration(seconds: 2), syncNow);
+    _pushTimer = Timer(pushDelay, syncNow);
+  }
+
+  Future<void> _openLine() async {
+    if (!_live || !joined || _channel != null) return;
+    final base = Uri.parse(server);
+    final uri = base.replace(scheme: base.scheme == 'http' ? 'ws' : 'wss', path: '/h/$_household/live');
+    final WebSocketChannel channel;
+    try {
+      channel = _connectLive(uri, {'authorization': 'Bearer $_token'});
+      _channel = channel;
+      await channel.ready;
+    } catch (_) {
+      _lineDown();
+      return;
+    }
+    if (_channel != channel) return; // closed while opening
+    _lineUp = true;
+    _retries = 0;
+    notifyListeners();
+    _socketSub = channel.stream.listen(_onNote, onDone: _lineDown, onError: (Object _) => _lineDown());
+    _pingTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      try {
+        channel.sink.add('ping');
+      } catch (_) {}
+    });
+  }
+
+  void _onNote(Object? message) {
+    if (message is! String || message == 'pong') return;
+    try {
+      final note = (jsonDecode(message) as Map).cast<String, Object?>();
+      final cursor = (note['cursor'] as num?)?.toInt() ?? 0;
+      if (note['from'] == _phone || cursor <= _cursor) return;
+      syncNow();
+    } catch (_) {}
+  }
+
+  void _lineDown() {
+    final wasUp = _lineUp;
+    _shutLine();
+    if (wasUp) notifyListeners();
+    if (!_live) return;
+    // Try again: 2, 4, 8 ... up to 60 seconds.
+    final wait = Duration(seconds: min(60, 2 << min(_retries, 5)));
+    _retries++;
+    _reconnectTimer = Timer(wait, _openLine);
+  }
+
+  void _closeLine() {
+    final wasUp = _lineUp;
+    _shutLine();
+    if (wasUp) notifyListeners();
+  }
+
+  void _shutLine() {
+    _reconnectTimer?.cancel();
+    _pingTimer?.cancel();
+    _socketSub?.cancel();
+    _socketSub = null;
+    final c = _channel;
+    _channel = null;
+    _lineUp = false;
+    if (c != null) {
+      try {
+        c.sink.close();
+      } catch (_) {}
+    }
   }
 
   @override
@@ -347,6 +451,12 @@ class SyncService extends ChangeNotifier {
 }
 
 /// Same JSON, counting 6 and 6.0 as the same number.
+String _randomId() {
+  final r = Random.secure();
+  const a = 'abcdefghijkmnpqrstuvwxyz23456789';
+  return List.generate(12, (_) => a[r.nextInt(a.length)]).join();
+}
+
 bool _same(Object? a, Object? b) {
   if (a is num && b is num) return a.toDouble() == b.toDouble();
   if (a is Map && b is Map) {
