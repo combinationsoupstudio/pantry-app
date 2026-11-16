@@ -4,6 +4,16 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-11-16
+
+### Fixed
+- **Pictures for typed and imported items.** v0.5 only found pictures for scanned items or ones you picked, so a household loaded from a stock list saw letters only. A background finder now looks every item up, one search every few seconds (Open Food Facts limits searches), by barcode when it has one, else by its name. A name match is used only when the product's name holds every word and is about the same thing ("Sugar" takes "Raw sugar", not "Sugar free V"; "Tins: fish" never takes "Fish fingers"). Pictures found this way say "Found by name. Check it is your pack" in the editor. Items with nothing trustworthy keep their letter and are not searched again until renamed, or *Settings > Find pictures again*.
+- **I cooked this**: the bottom button sat under the phone's own navigation buttons. Every bottom sheet now keeps clear of them.
+- **I cooked this** starting amounts: a line with no amount now starts at one tin / item, 250 g or ml, or a quarter kilo or litre, instead of "1 kg" or "0.1 tins".
+
+### Added
+- **I cooked this: type the amount.** Tap any amount to type what you used, in any measure that converts (g, kg, ml, L, cups, tbsp, tsp), with "= 420 g of 1200 g" shown before it is set.
+
 ## [0.5.0] - 2026-11-16
 
 ### Added

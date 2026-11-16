@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 
 import '../../data/household_store.dart';
+import '../../data/picture_finder.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
@@ -63,6 +64,20 @@ class SettingsPage extends StatelessWidget {
           const ListTile(
             title: Text('Pantry'),
             subtitle: Text('Stock is kept on this phone for now. Syncing between phones comes in a later release.'),
+          ),
+          ListTile(
+            key: const ValueKey('find-pictures-again'),
+            leading: const Icon(Icons.image_search),
+            title: const Text('Find pictures again'),
+            subtitle: const Text('Looks again for items still showing a letter. Pictures appear over a few minutes.'),
+            onTap: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              final n = await StoreScope.read(context).retryPictures();
+              PictureFinder.instance?.nudge();
+              messenger.showSnackBar(
+                SnackBar(content: Text(n == 0 ? 'Already looking for every picture' : 'Looking again for $n pictures')),
+              );
+            },
           ),
           const ListTile(
             title: Text('Product data'),

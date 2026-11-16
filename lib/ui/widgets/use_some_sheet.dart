@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'common.dart';
+
 import '../../data/store_scope.dart';
 import '../../logic/amounts.dart';
 import '../../models/models.dart';
@@ -75,7 +77,7 @@ class _UseSomeSheetState extends State<_UseSomeSheet> {
     final over = t != null && t > item.quantity + 1e-9;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.viewInsetsOf(context).bottom + 16),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, sheetBottom(context)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
