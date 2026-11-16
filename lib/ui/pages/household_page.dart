@@ -41,7 +41,7 @@ class SyncButton extends StatelessWidget {
           tip = sync.error!;
         } else {
           icon = Icons.cloud_done_outlined;
-          tip = syncedAgo(sync.lastSync, DateTime.now());
+          tip = sync.liveLine ? 'Live with the household' : syncedAgo(sync.lastSync, DateTime.now());
         }
         return IconButton(
           key: const ValueKey('sync-button'),
@@ -120,6 +120,7 @@ class _NotJoined extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final code = await sync.start();
+      sync.startLive();
       if (context.mounted) await _showCode(context, code);
     } catch (e) {
       messenger.showSnackBar(SnackBar(content: Text(_why(e))));
@@ -183,6 +184,7 @@ class _NotJoined extends StatelessWidget {
         saved = file.path;
       }
       await sync.join(code, mode);
+      sync.startLive();
       messenger.showSnackBar(
         SnackBar(
           content: Text(
@@ -211,7 +213,10 @@ class _Joined extends StatelessWidget {
           title: Text('Household ${sync.household}'),
           subtitle: Text(
             [
-              sync.error ?? syncedAgo(sync.lastSync, DateTime.now()),
+              sync.error ??
+                  (sync.liveLine
+                      ? 'Live: changes from the other phones show within seconds'
+                      : syncedAgo(sync.lastSync, DateTime.now())),
               if (waiting > 0) '$waiting change${waiting == 1 ? '' : 's'} waiting to go',
             ].join('\n'),
           ),
@@ -222,7 +227,7 @@ class _Joined extends StatelessWidget {
               ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
               : const Icon(Icons.sync),
           title: const Text('Sync now'),
-          subtitle: const Text('It also syncs by itself every few seconds while the app is open'),
+          subtitle: const Text('It also syncs by itself while the app is open'),
           onTap: sync.busy ? null : sync.syncNow,
         ),
         const SectionHeader('Phones'),

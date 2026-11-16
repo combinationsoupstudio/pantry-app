@@ -4,6 +4,12 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.9.1] - 2026-11-16
+
+### Added
+- **Instant updates.** While the app is open, each phone keeps a live line (a websocket) to the household. The moment one phone's change lands, the others are told and fetch it: about a second on the same network, two to three seconds across the internet. Changes go 0.8 s after they are made. If the line drops it is opened again (2, 4, 8 … up to 60 s), and the 5-second check carries on until it is back; with the line up, that check eases to every 30 s.
+- Household page and the cloud on Home say "Live" while the line is open.
+
 ## [0.9.0] - 2026-11-16
 
 ### Added

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,47 @@ import 'package:http/testing.dart';
 import 'package:pantry_app/data/household_store.dart';
 import 'package:pantry_app/data/storage_backend.dart';
 import 'package:pantry_app/data/sync_service.dart';
+import 'package:stream_channel/stream_channel.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+/// A live line in memory.
+class FakeSocket with StreamChannelMixin<dynamic> implements WebSocketChannel {
+  final incoming = StreamController<dynamic>();
+  final sent = <dynamic>[];
+  bool closed = false;
+  late final _FakeSink _sink = _FakeSink(this);
+
+  @override
+  Stream<dynamic> get stream => incoming.stream;
+  @override
+  WebSocketSink get sink => _sink;
+  @override
+  Future<void> get ready => Future.value();
+  @override
+  String? get protocol => null;
+  @override
+  int? get closeCode => null;
+  @override
+  String? get closeReason => null;
+
+  /// The server end hangs up.
+  void drop() => incoming.close();
+}
+
+class _FakeSink implements WebSocketSink {
+  _FakeSink(this.socket);
+  final FakeSocket socket;
+  @override
+  void add(dynamic data) => socket.sent.add(data);
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) {}
+  @override
+  Future<void> addStream(Stream<dynamic> stream) => stream.forEach(add);
+  @override
+  Future<void> close([int? closeCode, String? closeReason]) async => socket.closed = true;
+  @override
+  Future<void> get done => Future.value();
+}
 
 /// The Worker's rules (server/src/merge.js) in Dart, for phone-to-phone tests.
 class FakeServer {
@@ -15,6 +57,17 @@ class FakeServer {
   int seq = 0;
   int tokenCount = 0;
   bool offline = false;
+  int syncCalls = 0;
+  final sockets = <FakeSocket>[];
+
+  WebSocketChannel connect(Uri uri, Map<String, String> headers) {
+    if (offline) throw http.ClientException('offline');
+    final token = headers['authorization']?.replaceFirst('Bearer ', '');
+    if (!tokens.contains(token)) throw http.ClientException('not allowed');
+    final s = FakeSocket();
+    sockets.add(s);
+    return s;
+  }
 
   late final client = MockClient((req) async {
     if (offline) throw http.ClientException('offline');
@@ -38,6 +91,8 @@ class FakeServer {
       return _ok({'code': code});
     }
     final since = (body['since'] as num).toInt();
+    syncCalls++;
+    final before = seq;
     for (final c in (body['changes'] as List).cast<Map<String, Object?>>()) {
       final key = '${c['kind']}|${c['id']}';
       final existing = records[key];
@@ -60,6 +115,11 @@ class FakeServer {
       }
       records[key] = {...next, 'kind': c['kind'], 'id': c['id'], 'seq': ++seq};
     }
+    if (seq > before) {
+      for (final s in sockets.where((s) => !s.closed && !s.incoming.isClosed)) {
+        s.incoming.add(jsonEncode({'cursor': seq, 'from': body['phone']}));
+      }
+    }
     final out = records.values.where((r) => (r['seq'] as int) > since).toList()
       ..sort((a, b) => (a['seq'] as int).compareTo(b['seq'] as int));
     return _ok({'cursor': seq, 'records': out, 'refused': []});
@@ -77,7 +137,14 @@ class FakeServer {
 Future<(HouseholdStore, SyncService)> phone(FakeServer server, {DateTime Function()? clock}) async {
   final store = HouseholdStore(MemoryBackend(), clock: clock);
   await store.load();
-  final sync = SyncService(store, backend: MemoryBackend(), client: server.client, server: 'https://x', clock: clock);
+  final sync = SyncService(
+    store,
+    backend: MemoryBackend(),
+    client: server.client,
+    server: 'https://x',
+    clock: clock,
+    connect: server.connect,
+  );
   return (store, sync);
 }
 
@@ -239,5 +306,67 @@ void main() {
     await again.load();
     expect(again.household, 'ABCD2345');
     expect(again.waiting, 0);
+  });
+
+  group('live line (v0.9.1)', () {
+    test('a change on one phone shows on the other within about a second', () async {
+      final server = FakeServer();
+      final (chris, chrisSync) = await phone(server);
+      final rice = await chris.addItem(name: 'Rice', locationId: 'pantry', quantity: 5);
+      final code = await chrisSync.start();
+      final (emily, emilySync) = await phone(server);
+      await emilySync.join(code, JoinMode.useHousehold);
+      chrisSync.startLive();
+      emilySync.startLive();
+      addTearDown(chrisSync.stopLive);
+      addTearDown(emilySync.stopLive);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(chrisSync.liveLine, isTrue);
+      expect(emilySync.liveLine, isTrue);
+
+      await chris.adjust(rice.id, -2);
+      await Future<void>.delayed(const Duration(milliseconds: 1500)); // well under the 5 s check
+      expect(emily.item(rice.id)?.quantity, 3);
+    });
+
+    test('a phone does not sync again on news of its own change', () async {
+      final server = FakeServer();
+      final (chris, chrisSync) = await phone(server);
+      final rice = await chris.addItem(name: 'Rice', locationId: 'pantry', quantity: 5);
+      await chrisSync.start();
+      chrisSync.startLive();
+      addTearDown(chrisSync.stopLive);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      final calls = server.syncCalls;
+      await chris.adjust(rice.id, 1);
+      await Future<void>.delayed(const Duration(milliseconds: 1500));
+      expect(server.syncCalls, calls + 1);
+    });
+
+    test('when the line drops it is opened again', () async {
+      final server = FakeServer();
+      final (_, chrisSync) = await phone(server);
+      await chrisSync.start();
+      chrisSync.startLive();
+      addTearDown(chrisSync.stopLive);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      server.sockets.single.drop();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      expect(chrisSync.liveLine, isFalse);
+      await Future<void>.delayed(const Duration(milliseconds: 2500));
+      expect(chrisSync.liveLine, isTrue);
+      expect(server.sockets, hasLength(2));
+    });
+
+    test('stopping (app in the background) closes the line', () async {
+      final server = FakeServer();
+      final (_, chrisSync) = await phone(server);
+      await chrisSync.start();
+      chrisSync.startLive();
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      chrisSync.stopLive();
+      expect(chrisSync.liveLine, isFalse);
+      expect(server.sockets.single.closed, isTrue);
+    });
   });
 }
