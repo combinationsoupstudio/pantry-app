@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../data/reminder_service.dart';
 import '../../data/backup.dart';
 
 import 'package:flutter/services.dart';
@@ -39,6 +40,8 @@ class SettingsPage extends StatelessWidget {
             padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Text('Changes are signed with this name in the history.'),
           ),
+          const SectionHeader('Reminders'),
+          const _Reminders(),
           const SectionHeader('Backup'),
           ListTile(
             key: const ValueKey('backup-now'),
@@ -243,5 +246,89 @@ Future<void> _restore(BuildContext context) async {
     messenger.showSnackBar(SnackBar(content: Text(e.message)));
   } catch (e) {
     messenger.showSnackBar(SnackBar(content: Text('Restore failed: $e')));
+  }
+}
+
+const _days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+/// Shop-day, use-by and backup reminders. Turning one on asks the phone for
+/// permission to show notifications.
+class _Reminders extends StatelessWidget {
+  const _Reminders();
+
+  Future<void> _set(BuildContext context, String key, Object? value) async {
+    final store = StoreScope.read(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final service = ReminderService.instance;
+    if (value != null && value != false && service != null) {
+      final ok = await service.askPermission();
+      if (!ok) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text('Notifications are off for this app. Turn them on in the phone settings.')),
+        );
+      }
+    }
+    await store.setSetting(key, value);
+    await service?.sync();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final store = StoreScope.of(context);
+    final shopDay = store.setting<int?>('remindShopDay', null);
+    final shopHour = store.setting<int>('remindShopHour', 9);
+    final backupDay = store.setting<int?>('remindBackupDay', null);
+    final useBy = store.setting<bool>('remindUseBy', true);
+    Widget dayPicker(String key, int? value) => DropdownButton<int>(
+      value: value,
+      hint: const Text('Off'),
+      items: [
+        const DropdownMenuItem<int>(value: 0, child: Text('Off')),
+        for (var d = 1; d <= 7; d++) DropdownMenuItem(value: d, child: Text(_days[d - 1])),
+      ],
+      onChanged: (v) => _set(context, key, v == 0 ? null : v),
+    );
+    return Column(
+      children: [
+        ListTile(
+          key: const ValueKey('remind-shop'),
+          leading: const Icon(Icons.shopping_cart_outlined),
+          title: const Text('Shop day'),
+          subtitle: Text(
+            shopDay == null
+                ? 'What is running low and on the list, the morning you shop'
+                : '${_days[shopDay - 1]}s at ${shopHour > 12 ? shopHour - 12 : shopHour} ${shopHour >= 12 ? 'pm' : 'am'}',
+          ),
+          trailing: dayPicker('remindShopDay', shopDay),
+        ),
+        if (shopDay != null)
+          ListTile(
+            title: const Text('Time'),
+            trailing: DropdownButton<int>(
+              value: shopHour,
+              items: [
+                for (var h = 6; h <= 20; h++)
+                  DropdownMenuItem(value: h, child: Text('${h > 12 ? h - 12 : h} ${h >= 12 ? 'pm' : 'am'}')),
+              ],
+              onChanged: (v) => _set(context, 'remindShopHour', v),
+            ),
+          ),
+        SwitchListTile(
+          key: const ValueKey('remind-useby'),
+          secondary: const Icon(Icons.event_outlined),
+          title: const Text('Use-by alerts'),
+          subtitle: const Text('Two days before a date, at 9 am'),
+          value: useBy,
+          onChanged: (v) => _set(context, 'remindUseBy', v),
+        ),
+        ListTile(
+          key: const ValueKey('remind-backup'),
+          leading: const Icon(Icons.cloud_upload_outlined),
+          title: const Text('Backup reminder'),
+          subtitle: Text(backupDay == null ? 'A weekly nudge to back up' : '${_days[backupDay - 1]}s at 7 pm'),
+          trailing: dayPicker('remindBackupDay', backupDay),
+        ),
+      ],
+    );
   }
 }

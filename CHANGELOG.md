@@ -4,6 +4,15 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-11-16
+
+### Added
+- **Reminders** (Settings > Reminders): a **shop-day** reminder on the day and hour you pick ("8 running low, 12 on the list"), **use-by alerts** two days before a date at 9 am (or the day before), and a weekly **backup reminder**. The words are re-booked a few seconds after any stock change, so the counts are current. The phone asks for notification permission when one is turned on. Times are Sydney time.
+- **Say it to add it** (microphone on Shopping, Pantry and Storage): say "two tins of tomatoes and a dozen eggs, milk", check the lines, add them to the list or to stock. Number words, "a couple of", "half a kilo", tins / packets / bottles and measures are understood; stock that exists goes up in its own unit (a pack for a measured item), new names become new items. Uses the phone's own speech recognition (Australian English); the phone asks for microphone permission on first use.
+
+### Changed
+- Android: core library desugaring on (needed by the notification library); permissions for notifications, restart re-booking and the microphone; a query for the speech service. ADR 0008.
+
 ## [0.6.0] - 2026-11-16
 
 ### Added
