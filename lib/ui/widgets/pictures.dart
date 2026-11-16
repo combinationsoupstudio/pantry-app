@@ -4,12 +4,15 @@ import 'dart:typed_data';
 import 'package:material_ui/material_ui.dart';
 
 import '../../data/picture_cache.dart';
+import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import 'item_look.dart';
 
 /// One product's picture: the household's own photo first, then the product
-/// picture (downloaded once, then read from the phone), else an icon for what
-/// it is on its family's colour (item_look.dart), never a wrong picture.
+/// picture (downloaded once, then read from the phone), then a drawing of
+/// the food (assets/food/, v0.12; first of all when Settings > Pictures says
+/// Drawings), else an icon for what it is on its family's colour
+/// (item_look.dart), never a wrong picture.
 class ProductPicture extends StatefulWidget {
   const ProductPicture({
     super.key,
@@ -78,6 +81,21 @@ class _ProductPictureState extends State<ProductPicture> {
   /// Decoded at about three times the drawn size: sharp, and small in memory.
   ImageProvider cacheWidthOf(ImageProvider image) => ResizeImage(image, width: (widget.size * 3).round());
 
+  /// One of the drawn food pictures (assets/food/) on the cream it was drawn on.
+  Widget _drawing(BuildContext context, String asset) => Container(
+    key: const ValueKey('picture-drawing'),
+    width: widget.size,
+    height: widget.size,
+    color: Theme.of(context).colorScheme.surfaceContainerLow,
+    padding: EdgeInsets.all(widget.size * 0.06),
+    child: Image.asset(
+      asset,
+      fit: BoxFit.contain,
+      cacheWidth: (widget.size * 3).round(),
+      errorBuilder: (_, _, _) => _blank(context),
+    ),
+  );
+
   Widget _blank(BuildContext context) {
     final b = Theme.of(context).brightness;
     final look = lookFor(widget.name, locationId: widget.item?.locationId);
@@ -96,8 +114,13 @@ class _ProductPictureState extends State<ProductPicture> {
     final scheme = Theme.of(context).colorScheme;
     Widget child;
     final own = widget.photoPath;
+    final art = artFor(widget.name);
+    // Settings > Pictures: drawings first, or product photos first (default).
+    final drawingsFirst = StoreScope.maybeOf(context)?.setting<String>('pictures', 'photos') == 'drawings';
     if (own != null && File(own).existsSync()) {
       child = _image(FileImage(File(own)));
+    } else if (art != null && (drawingsFirst || _bytes == null)) {
+      child = _drawing(context, art);
     } else if (_bytes != null) {
       child = FutureBuilder<Uint8List?>(
         future: _bytes,

@@ -4,6 +4,13 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-16
+
+### Added
+- **Drawn food pictures.** 30 soft ink-and-wash drawings in the style of *The 90 Day Blackout* (bread, eggs, milk, cheese, butter, yoghurt, rice, pasta, flour, sugar, tinned tomatoes, baked beans, tuna, olive oil, soy sauce, onions, garlic, potatoes, carrots, spring onions, tomatoes, apples, bananas, oats, coffee, tea, chicken, mince, frozen peas, honey), trimmed to sit on the cards and bundled in the app (1.4 MB, no download).
+- They go on by name, however it is typed: Shallots get the spring onions, "Tins: fish" the tuna tin, "Diced tomatoes" the tin. Names of their own that share a word (coconut milk, peanut butter, chicken stock, sweet potato) get none rather than the wrong one.
+- **Settings > Pictures: Product photos / Drawings.** Your own photos always come first; then whichever you pick, with the other filling in. Shared with the household.
+
 ## [0.11.0] - 2026-11-16
 
 ### Added

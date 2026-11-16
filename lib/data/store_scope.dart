@@ -13,6 +13,10 @@ class StoreScope extends InheritedNotifier<HouseholdStore> {
     return scope!.notifier!;
   }
 
+  /// The store, listening, or null where there is none (tests of a widget).
+  static HouseholdStore? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<StoreScope>()?.notifier;
+
   /// Reads the store without listening (for callbacks).
   static HouseholdStore read(BuildContext context) {
     final element = context.getElementForInheritedWidgetOfExactType<StoreScope>();
