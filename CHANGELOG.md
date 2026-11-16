@@ -4,6 +4,13 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-16
+
+### Added
+- **Scan a receipt** (Shopping, receipt button: camera or a photo already taken). The phone reads the text itself (Google ML Kit, on the phone; nothing is sent anywhere) and finds the shop, the date, each line with its price, "QTY 3 @ $1.10" and "1.250 kg @ $3.50/kg" quantities, discounts ("Promotional Price -1.50" comes off the line above) and the total.
+- **Check the receipt** page before anything is saved: the shop and date, a green "matches the receipt total" check (amber with the difference if a line was missed or misread), each line matched to a stock item where its name fits ("KIKKOMAN SOY SAUCE 600ML" is Soy sauce) and what it adds to stock ("+12" for a 12-pack of eggs, "+600 ml" from the size printed on the receipt). Tap a line to fix it, tap the stock chip to change or clear the match, untick to leave a line out. Weighed lines that cannot become a count (1.25 kg into potatoes counted as items) are not added and say so.
+- **Save receipt**: a price for every line (price memory and this week's spend), stock added for ticked lines, and matching shopping-list lines taken off the list. ADR 0009.
+
 ## [0.7.0] - 2026-11-16
 
 ### Added

@@ -13,6 +13,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pantry_app/data/household_store.dart';
+import 'package:pantry_app/logic/receipt_parse.dart';
+import 'package:pantry_app/ui/pages/receipt_page.dart';
 import 'package:pantry_app/ui/theme.dart';
 import 'package:pantry_app/data/store_scope.dart';
 import 'package:pantry_app/ui/pages/stocktake_page.dart';
@@ -221,5 +223,36 @@ void main() {
       ),
     );
     await shot(tester, '14-stocktake');
+  });
+
+  testWidgets('v0.8 receipt', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final store = await demoStore();
+    final receipt = parseReceipt(const [
+      'Woolworths',
+      '16/11/26 10:42',
+      'WW FREE RANGE EGGS 12PK 700G   6.50',
+      'KIKKOMAN SOY SAUCE 600ML   5.20',
+      'WW DICED TOMATOES 400G',
+      'QTY 3 @ \$1.10 EACH   3.30',
+      'POTATOES WASHED LOOSE',
+      '1.250 kg NET @ \$3.50/kg   4.38',
+      'CADBURY DAIRY MILK 180G   6.00',
+      'Promotional Price   -1.50',
+      'TOTAL   \$23.88',
+    ]);
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: MaterialApp(
+          theme: buildTheme(Brightness.light),
+          debugShowCheckedModeBanner: false,
+          home: ReceiptPage(receipt: receipt),
+        ),
+      ),
+    );
+    await shot(tester, '15-receipt');
   });
 }

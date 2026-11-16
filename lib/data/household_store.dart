@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../logic/recipe_link.dart';
 import '../logic/usage.dart';
+import '../logic/amounts.dart';
 import '../models/models.dart';
 import 'csv_import.dart';
 import 'storage_backend.dart';
@@ -698,6 +699,51 @@ class HouseholdStore extends ChangeNotifier {
     return latest;
   }
 
+  /// Saves a scanned receipt: a price for every line (so it counts in the
+  /// week's spend and price memory), stock added for lines with
+  /// [ReceiptEntry.toStock], and matching unbought shopping lines taken off
+  /// the list. Returns how many lines went into stock.
+  Future<int> recordReceipt({required Store store, required DateTime at, required List<ReceiptEntry> lines}) async {
+    var stocked = 0;
+    for (final l in lines) {
+      final index = l.stockItemId == null ? -1 : _items.indexWhere((i) => i.id == l.stockItemId);
+      final item = index >= 0 ? _items[index] : null;
+      final unit = l.unit.isNotEmpty ? l.unit : (item?.shoppingUnit ?? '');
+      _prices.add(
+        PricePoint(
+          id: newId(),
+          name: item?.name ?? l.name,
+          stockItemId: item?.id,
+          store: store,
+          total: l.total,
+          quantity: l.quantity <= 0 ? 1 : l.quantity,
+          unit: unit,
+          at: at,
+          by: _user,
+        ),
+      );
+      if (item != null && l.toStock) {
+        // Packs of a measured item go in as their amount; weighed produce in kg
+        // goes into a kg item as kg; anything else as a count.
+        final added =
+            l.stockAmount ??
+            (item.isMeasured && !isMeasureUnitName(l.unit)
+                ? l.quantity * item.packSize
+                : (l.unit.isNotEmpty
+                      ? (convertUnits(l.quantity, l.unit, item.unit) ?? l.quantity)
+                      : l.quantity * l.perPack));
+        _items[index] = item.copyWith(quantity: item.quantity + added, updatedAt: _clock(), updatedBy: _user);
+        _log(item.name, 'bought', delta: added, unit: item.unit);
+        stocked++;
+      }
+      if (item != null) {
+        _shopping.removeWhere((s) => !s.bought && s.stockItemId == item.id);
+      }
+    }
+    await _commit();
+    return stocked;
+  }
+
   /// Dollars spent per shop since Monday (the start of [now]'s week).
   Map<Store, double> spendThisWeek(DateTime now) {
     final monday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
@@ -872,3 +918,33 @@ class CsvImportResult {
   final int updated;
   final int skipped;
 }
+
+/// One line of a scanned receipt, as checked by the person.
+class ReceiptEntry {
+  const ReceiptEntry({
+    required this.name,
+    required this.total,
+    this.quantity = 1,
+    this.unit = '',
+    this.stockItemId,
+    this.toStock = true,
+    this.perPack = 1,
+    this.stockAmount,
+  });
+  final String name;
+  final double total;
+  final double quantity;
+  final String unit;
+  final String? stockItemId;
+  final bool toStock;
+
+  /// For a counted item: how many are in each pack bought (eggs 12pk = 12).
+  final double perPack;
+
+  /// What goes into stock, in the item's own unit, when the receipt says it
+  /// exactly (2 x 600 ml = 1200 ml). Overrides the reckoning from packs.
+  final double? stockAmount;
+}
+
+/// True for g, kg, ml and L (a line weighed or measured, not counted).
+bool isMeasureUnitName(String unit) => const {'g', 'kg', 'ml', 'l'}.contains(unit.trim().toLowerCase());

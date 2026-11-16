@@ -1,3 +1,7 @@
+import 'package:image_picker/image_picker.dart';
+
+import 'receipt_page.dart';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../widgets/voice_add.dart';
@@ -27,6 +31,16 @@ class ShoppingPage extends StatelessWidget {
           SliverAppBar.medium(
             title: const Text('Shopping list'),
             actions: [
+              PopupMenuButton<ImageSource>(
+                key: const ValueKey('scan-receipt'),
+                tooltip: 'Scan a receipt',
+                icon: const Icon(Icons.receipt_long_outlined),
+                onSelected: (src) => scanReceipt(context, source: src),
+                itemBuilder: (_) => const [
+                  PopupMenuItem(value: ImageSource.camera, child: Text('Scan a receipt')),
+                  PopupMenuItem(value: ImageSource.gallery, child: Text('Receipt from photos')),
+                ],
+              ),
               IconButton(
                 key: const ValueKey('voice-shopping'),
                 tooltip: 'Say it to add it',
