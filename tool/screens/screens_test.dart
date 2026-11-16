@@ -12,7 +12,8 @@ import 'package:pantry_app/data/storage_backend.dart';
 import 'package:pantry_app/models/models.dart';
 
 Future<void> loadFonts() async {
-  final dir = '${Platform.environment['FLUTTER_ROOT'] ?? '/home/claude/sdk/flutter'}/bin/cache/artifacts/material_fonts';
+  final dir =
+      '${Platform.environment['FLUTTER_ROOT'] ?? '/home/claude/sdk/flutter'}/bin/cache/artifacts/material_fonts';
   Future<ByteData> f(String name) async => ByteData.sublistView(File('$dir/$name').readAsBytesSync());
   final roboto = FontLoader('Roboto')
     ..addFont(f('Roboto-Regular.ttf'))
@@ -54,7 +55,8 @@ Future<HouseholdStore> demoStore() async {
     name: 'Weeknight fried rice',
     minutes: 25,
     ingredients: ['3 cups cooked white rice', '2 eggs', '1 cup frozen peas', '2 tbsp soy sauce', '2 garlic cloves'],
-    method: 'Scramble the eggs in a hot wok and set aside.\nFry the garlic, then the rice until hot.\n'
+    method:
+        'Scramble the eggs in a hot wok and set aside.\nFry the garlic, then the rice until hot.\n'
         'Add the peas and soy sauce.\nFold the egg back through and serve.',
   );
   await s.addRecipe(
