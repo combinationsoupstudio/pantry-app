@@ -5,6 +5,7 @@
 library;
 
 import '../models/models.dart';
+import 'names.dart';
 
 /// One piece of text the reader found, with where it sits on the photo.
 class TextBox {
@@ -201,8 +202,9 @@ Set<String> _nameWords(String s) {
   var t = s.toLowerCase().replaceAll(RegExp(r'\(.*?(\)|$)'), ' ');
   final colon = t.indexOf(':');
   if (colon >= 0) t = t.substring(colon + 1);
+  // Folded as names.dart folds them: "SPRING ONIONS" and Shallots agree.
   return RegExp(r'[a-z]+')
-      .allMatches(t)
+      .allMatches(canonicalName(t))
       .map((m) => m.group(0)!)
       .where((w) => w.length > 1 && !_filler.contains(w))
       .map(_stem)
@@ -216,12 +218,16 @@ StockItem? matchStock(String receiptName, Iterable<StockItem> items) {
   final have = _nameWords(receiptName);
   StockItem? best;
   var bestWords = 0;
+  final key = canonicalName(receiptName);
   for (final i in items) {
-    final want = _nameWords(i.name);
-    if (want.isEmpty || !have.containsAll(want)) continue;
-    if (want.length > bestWords) {
-      best = i;
-      bestWords = want.length;
+    if (i.notAliases.any((a) => canonicalName(a) == key)) continue;
+    for (final name in [i.name, ...i.aliases]) {
+      final want = _nameWords(name);
+      if (want.isEmpty || !have.containsAll(want)) continue;
+      if (want.length > bestWords) {
+        best = i;
+        bestWords = want.length;
+      }
     }
   }
   return best;

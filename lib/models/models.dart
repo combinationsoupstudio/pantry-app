@@ -2,6 +2,8 @@
 /// so they can be tested and later shared with the sync layer.
 library;
 
+import '../logic/names.dart';
+
 /// Where a location shows up in the app.
 enum LocationKind {
   /// Everyday food: shown on the Pantry page.
@@ -68,11 +70,20 @@ class StockItem {
     this.imageUrl,
     this.pictureByName = false,
     this.pictureTried = false,
+    this.aliases = const [],
+    this.notAliases = const [],
   });
 
   final String id;
   final String name;
   final String locationId;
+
+  /// Other names the household calls this ("spring onions" for Shallots),
+  /// added by hand or by answering "Is this your …?" (v0.11).
+  final List<String> aliases;
+
+  /// Names someone said are NOT this item, so it is never guessed again.
+  final List<String> notAliases;
 
   /// For a measured item (kept in g, kg, ml or L): how much one pack holds,
   /// in [unit], e.g. 500 for a 500 ml bottle. 0 for an item that is counted.
@@ -181,6 +192,8 @@ class StockItem {
     bool clearImage = false,
     bool? pictureByName,
     bool? pictureTried,
+    List<String>? aliases,
+    List<String>? notAliases,
   }) => StockItem(
     id: id,
     name: name ?? this.name,
@@ -198,6 +211,8 @@ class StockItem {
     imageUrl: clearImage ? null : (imageUrl ?? this.imageUrl),
     pictureByName: pictureByName ?? this.pictureByName,
     pictureTried: pictureTried ?? this.pictureTried,
+    aliases: aliases ?? this.aliases,
+    notAliases: notAliases ?? this.notAliases,
   );
 
   Map<String, Object?> toJson() => {
@@ -217,6 +232,8 @@ class StockItem {
     if (imageUrl != null) 'imageUrl': imageUrl,
     if (pictureByName) 'pictureByName': true,
     if (pictureTried) 'pictureTried': true,
+    if (aliases.isNotEmpty) 'aliases': aliases,
+    if (notAliases.isNotEmpty) 'notAliases': notAliases,
   };
 
   factory StockItem.fromJson(Map<String, Object?> json) => StockItem(
@@ -236,6 +253,8 @@ class StockItem {
     imageUrl: json['imageUrl'] as String?,
     pictureByName: json['pictureByName'] == true,
     pictureTried: json['pictureTried'] == true,
+    aliases: [for (final a in (json['aliases'] as List? ?? const [])) a as String],
+    notAliases: [for (final a in (json['notAliases'] as List? ?? const [])) a as String],
   );
 }
 
@@ -339,7 +358,9 @@ class ActivityEntry {
 }
 
 /// The form two names are compared in: "  Tinned  Tomatoes" and "tinned tomatoes" match.
-String nameKey(String name) => name.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
+/// Two names are the same thing when their keys are equal: case, plurals,
+/// punctuation and names that mean the same are folded (names.dart).
+String nameKey(String name) => canonicalName(name);
 
 /// Formats a quantity without a trailing ".0" (2.0 -> "2", 1.5 -> "1.5").
 String formatQty(double value) {

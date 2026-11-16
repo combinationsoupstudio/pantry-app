@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../logic/recipe_link.dart';
 import '../logic/usage.dart';
 import '../logic/amounts.dart';
+import '../logic/names.dart';
 import '../models/models.dart';
 import 'csv_import.dart';
 import 'storage_backend.dart';
@@ -574,15 +575,68 @@ class HouseholdStore extends ChangeNotifier {
     return line;
   }
 
-  /// The stock item called [name] (ignoring case, plurals and punctuation).
+  /// The stock item [name] surely means: the same name once case, plurals,
+  /// punctuation and names that mean the same are folded, a name the
+  /// household taught it, or one inside the other (names.dart). Never a
+  /// close spelling; see [matchFor].
   StockItem? itemByName(String name) => _stockByName(name);
 
-  StockItem? _stockByName(String name) {
-    final key = nameKey(name);
-    for (final i in _items) {
-      if (nameKey(i.name) == key) return i;
-    }
-    return null;
+  StockItem? _stockByName(String name) => matchName(name, _items, allowClose: false)?.item;
+
+  /// What [name] matches, sure or only close, for the app to ask about.
+  NameMatch? matchFor(String name) => matchName(name, _items);
+
+  // ------------------------------------------------------------------ names
+
+  /// "Yes, [name] is this item": it becomes one of the item's names, on every
+  /// phone, and is matched surely from now on.
+  Future<void> teachName(String itemId, String name) async {
+    final i = item(itemId);
+    final n = name.trim();
+    if (i == null || n.isEmpty) return;
+    final key = canonicalName(n);
+    final notAliases = i.notAliases.where((a) => canonicalName(a) != key).toList();
+    final known = canonicalName(i.name) == key || i.aliases.any((a) => canonicalName(a) == key);
+    if (known && notAliases.length == i.notAliases.length) return;
+    final index = _items.indexWhere((x) => x.id == itemId);
+    _items[index] = i.copyWith(
+      aliases: known ? i.aliases : [...i.aliases, n],
+      notAliases: notAliases,
+      updatedAt: _clock(),
+      updatedBy: _user,
+    );
+    await _commit();
+  }
+
+  /// "No, [name] is not this item": never guessed again.
+  Future<void> rejectName(String itemId, String name) async {
+    final i = item(itemId);
+    final n = name.trim();
+    if (i == null || n.isEmpty) return;
+    final key = canonicalName(n);
+    if (i.notAliases.any((a) => canonicalName(a) == key)) return;
+    final index = _items.indexWhere((x) => x.id == itemId);
+    _items[index] = i.copyWith(
+      aliases: i.aliases.where((a) => canonicalName(a) != key).toList(),
+      notAliases: [...i.notAliases, n],
+      updatedAt: _clock(),
+      updatedBy: _user,
+    );
+    await _commit();
+  }
+
+  /// The item's other names, as edited by hand.
+  Future<void> setAliases(String itemId, List<String> aliases) async {
+    final i = item(itemId);
+    if (i == null) return;
+    final seen = <String>{canonicalName(i.name)};
+    final clean = [
+      for (final a in aliases.map((a) => a.trim()))
+        if (a.isNotEmpty && seen.add(canonicalName(a))) a,
+    ];
+    final index = _items.indexWhere((x) => x.id == itemId);
+    _items[index] = i.copyWith(aliases: clean, updatedAt: _clock(), updatedBy: _user);
+    await _commit();
   }
 
   /// The not-yet-bought line that [name] / [stockItemId] should stack onto, or -1.

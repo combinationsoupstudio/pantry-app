@@ -21,6 +21,7 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
   <img src="docs/screens/13-use-by-dates.jpg" width="200" alt="Use-by dates grouped: past its date, within a week, within a month, later">
   <img src="docs/screens/14-stocktake.jpg" width="200" alt="Stocktake: one item at a time, That's right or count it">
   <img src="docs/screens/15-receipt.jpg" width="200" alt="Checking a scanned Woolworths receipt: lines matched to stock, total matches">
+  <img src="docs/screens/17-recipe-names.jpg" width="200" alt="A recipe asks: Is it your Shallots? for 3 spring onoins">
   <img src="docs/screens/16-household.jpg" width="200" alt="Household sync: synced just now, add another phone">
 </p>
 
@@ -116,10 +117,11 @@ flutter run         # on a connected phone or emulator
 | 5b | 0.8.x | Use-by batches, "eat me first". |
 | **6** | 0.9 | Household sync between phones (Cloudflare Worker, one database per household); instant updates over a live line while the app is open. **Done.** |
 | **6b** | 0.10 | Warm pantry look; four tabs (Pantry holds the stored-away stock); icons for things without a photo; lighter rows; tidier shopping list. **Done.** |
-| 6c | 0.10.x | Shared own photos (R2). |
-| 7 | 0.11 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
-| 8 | 0.12 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
-| 9 | 0.13 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
+| **6c** | 0.11 | Names match however they are typed: same-thing names folded, close spellings asked once and remembered, "also called". **Done.** |
+| 6d | 0.11.x | Shared own photos (R2). |
+| 7 | 0.12 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
+| 8 | 0.13 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
+| 9 | 0.14 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
 
 Decisions are recorded as [ADRs](docs/adr/). Changes are listed in the [changelog](CHANGELOG.md).
 

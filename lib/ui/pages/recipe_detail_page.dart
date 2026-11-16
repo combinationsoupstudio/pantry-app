@@ -7,6 +7,7 @@ import '../../logic/recipes.dart';
 import '../../models/models.dart';
 import '../theme.dart';
 import '../widgets/cook_sheet.dart';
+import '../widgets/name_match.dart';
 import 'recipe_editor_page.dart';
 import 'recipes_page.dart';
 
@@ -170,16 +171,58 @@ class _IngredientsTab extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
 
+    // Each line says which of the household's things it is, and can be put
+    // right with a tap (v0.11): the answer is remembered on every phone.
     Widget row(Ingredient i, {required bool have}) {
-      final stock = have ? stockItemFor(i, store.items, inStockOnly: true) : null;
-      return ListTile(
-        visualDensity: VisualDensity.compact,
-        leading: Icon(
-          have ? Icons.check_circle : Icons.add_shopping_cart,
-          color: have ? StatusColors.of(context).ok : StatusColors.of(context).low,
-        ),
-        title: Text(sentenceCase(i.line), style: text.bodyLarge),
-        subtitle: stock == null ? null : Text('You have: ${stock.name}'),
+      final stock = have ? stockItemFor(i, store.items, inStockOnly: true) : stockItemFor(i, store.items);
+      final close = have || stock != null ? null : closeStockFor(i, store.items);
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(
+            key: ValueKey('ingredient-${i.label}'),
+            visualDensity: VisualDensity.compact,
+            leading: Icon(
+              have ? Icons.check_circle : Icons.add_shopping_cart,
+              color: have ? StatusColors.of(context).ok : StatusColors.of(context).low,
+            ),
+            title: Text(sentenceCase(i.line), style: text.bodyLarge),
+            subtitle: Text(
+              stock != null
+                  ? (have ? 'You have: ${stock.name}' : 'Your ${stock.name} has run out')
+                  : close != null
+                  ? 'Not sure which of yours this is'
+                  : 'Not something you keep yet · tap to match',
+              style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+            trailing: Icon(Icons.swap_horiz, size: 20, color: scheme.onSurfaceVariant),
+            onTap: () => pickStockFor(context, i.label, current: stock),
+          ),
+          if (close != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(72, 0, 16, 8),
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text('Is it your ${close.item.name}?', style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w700)),
+                  FilledButton.tonal(
+                    key: ValueKey('close-yes-${i.label}'),
+                    style: FilledButton.styleFrom(minimumSize: const Size(0, 36)),
+                    onPressed: () => store.teachName(close.item.id, i.label),
+                    child: const Text('Yes'),
+                  ),
+                  OutlinedButton(
+                    key: ValueKey('close-no-${i.label}'),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 36)),
+                    onPressed: () => store.rejectName(close.item.id, i.label),
+                    child: const Text('No'),
+                  ),
+                ],
+              ),
+            ),
+        ],
       );
     }
 

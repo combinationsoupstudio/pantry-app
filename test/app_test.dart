@@ -85,6 +85,8 @@ void main() {
     await tester.enterText(find.byKey(const ValueKey('field-name')), 'Torch batteries');
     await tester.enterText(find.byKey(const ValueKey('field-qty')), '8');
     await tester.enterText(find.byKey(const ValueKey('field-target')), '16');
+    await tester.ensureVisible(find.byKey(const ValueKey('save-item')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('save-item')));
     await tester.pumpAndSettle();
 
