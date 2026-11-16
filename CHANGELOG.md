@@ -11,6 +11,10 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 - **Check the receipt** page before anything is saved: the shop and date, a green "matches the receipt total" check (amber with the difference if a line was missed or misread), each line matched to a stock item where its name fits ("KIKKOMAN SOY SAUCE 600ML" is Soy sauce) and what it adds to stock ("+12" for a 12-pack of eggs, "+600 ml" from the size printed on the receipt). Tap a line to fix it, tap the stock chip to change or clear the match, untick to leave a line out. Weighed lines that cannot become a count (1.25 kg into potatoes counted as items) are not added and say so.
 - **Save receipt**: a price for every line (price memory and this week's spend), stock added for ticked lines, and matching shopping-list lines taken off the list. ADR 0009.
 
+### Changed
+- The release download is built for 64-bit ARM phones only (both household phones, and every recent Android phone), so it stays small now the receipt reader's text model is included: about a third of the size of a build for every processor type.
+- Release builds keep R8 rules for the ML Kit languages that are deliberately not bundled.
+
 ## [0.7.0] - 2026-11-16
 
 ### Added
