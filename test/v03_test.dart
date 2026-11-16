@@ -57,7 +57,7 @@ void main() {
       expect(rates['milk'], closeTo(12 / 30, 0.01));
       expect(daysLeft(item('Milk', 6), rates), closeTo(15, 0.2));
       // Seen for only 20 days: the span is 20 days.
-      expect(usePerDay([used('Oats', 6, 2), used('Oats', 6, 20)], now)['oats'], closeTo(12 / 20, 0.01));
+      expect(usePerDay([used('Oats', 6, 2), used('Oats', 6, 20)], now)[nameKey('Oats')], closeTo(12 / 20, 0.01));
     });
 
     test('a single early burst is spread over at least three days', () {

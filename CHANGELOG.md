@@ -4,6 +4,20 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-16
+
+### Added
+- **Names match however they are typed** (Chris: "We can't have a customer relying on their spelling"). Case, plurals and punctuation never matter, and names that mean the same thing are one thing: shallots, spring onions, scallions; capsicum and bell pepper; coriander and cilantro; cornflour and cornstarch; Panadol and paracetamol; glad wrap and cling wrap, and about 60 more. ADR 0011.
+- **Close spellings are asked about, never guessed.** "spring onoins" in a recipe shows *Is it your Shallots? Yes / No*; the shopping list and the item editor ask the same. The answer is remembered on every phone in the household.
+- **Every recipe line says which of your things it is.** Tap any line to match it to something else, or to "Not something we keep".
+- **Also called** on each item: other names, with commas. Recipes, the list and receipts use them.
+- **No twins.** Adding an item you already keep, under any name, offers to add to the one you have.
+- Receipts learn: a line matched by hand is matched by itself next time.
+
+### Changed
+- One matcher for recipes, the shopping list, voice, receipts and history. Metrics count sure matches only: "onion" no longer counts your spring onions, "milk" no longer counts coconut milk, "rice wine" is not rice.
+- Both phones should update: an older version drops the "also called" names when it edits an item.
+
 ## [0.10.0] - 2026-11-16
 
 ### Changed

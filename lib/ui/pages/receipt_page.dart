@@ -111,9 +111,12 @@ Future<void> _whatItSaw(BuildContext context, String message, List<String> rows)
 );
 
 class _Line {
-  _Line(this.name, this.total, this.quantity, this.unit, this.stock, this.packOf, this.size) {
+  _Line(this.name, this.total, this.quantity, this.unit, this.stock, this.packOf, this.size) : auto = stock {
     toStock = stock != null && stockAmount != null;
   }
+
+  /// What the app matched by itself; a different pick by hand is learnt.
+  final StockItem? auto;
 
   /// The pack size printed in the name ("600ML"), if any.
   final (double, String)? size;
@@ -281,6 +284,11 @@ class _ReceiptPageState extends State<ReceiptPage> {
           ),
       ],
     );
+    // Matches put right by hand are remembered for the next receipt.
+    for (final l in kept) {
+      if (l.stock != null && l.stock!.id != l.auto?.id) await store.teachName(l.stock!.id, l.name);
+      if (l.stock == null && l.auto != null) await store.rejectName(l.auto!.id, l.name);
+    }
     nav.pop();
     messenger.showSnackBar(SnackBar(content: Text('Receipt saved: ${kept.length} prices, $n into stock')));
   }

@@ -1,5 +1,6 @@
 import '../models/models.dart';
 import 'amounts.dart';
+import 'names.dart';
 import 'recipe_link.dart';
 
 /// One ingredient, with the words a stock item might be called.
@@ -230,31 +231,36 @@ const starterRecipes = <Recipe>[
 bool hasIngredient(Ingredient ingredient, List<StockItem> stock) =>
     stockItemFor(ingredient, stock, inStockOnly: true) != null;
 
-/// The stock item an ingredient refers to, if the household tracks one.
-/// With [inStockOnly] false it also finds items that have run out, which is
-/// what a shopping line should be linked to.
+/// The stock item an ingredient surely refers to, if the household tracks
+/// one (names.dart: the same name, a name the household taught it, or one
+/// inside the other with nothing that changes the thing). With [inStockOnly]
+/// false it also finds items that have run out, which is what a shopping
+/// line should be linked to. A close spelling is never used here; see
+/// [closeStockFor].
 StockItem? stockItemFor(Ingredient ingredient, List<StockItem> stock, {bool inStockOnly = false}) {
-  StockItem? fallback;
-  for (final item in stock) {
-    final name = item.name.toLowerCase();
-    // "garlic" stock matches the ingredient "garlic cloves", and the other way.
-    final matches = ingredient.keywords.any(
-      (k) => _containsWord(name, k) || (name.length >= 3 && _containsWord(k, name)),
-    );
-    if (!matches) continue;
-    if (!item.isOut) return item;
-    if (!inStockOnly) fallback ??= item;
+  NameMatch? best;
+  for (final k in ingredient.keywords) {
+    final m = matchName(k, stock, inStockOnly: inStockOnly, allowClose: false);
+    if (m != null && (best == null || m.rank < best.rank)) best = m;
   }
-  return fallback;
+  return best?.item;
+}
+
+/// A stock item the ingredient is close to but not surely ("spring onoins"
+/// and Spring onions, "rice" and White rice): the app asks "Is this your …?".
+/// Null when there is a sure match or nothing close.
+NameMatch? closeStockFor(Ingredient ingredient, List<StockItem> stock) {
+  if (stockItemFor(ingredient, stock) != null) return null;
+  NameMatch? best;
+  for (final k in ingredient.keywords) {
+    final m = matchName(k, stock);
+    if (m != null && !m.sure && (best == null || m.rank < best.rank)) best = m;
+  }
+  return best;
 }
 
 /// "tinned tomatoes" -> "Tinned tomatoes".
 String sentenceCase(String text) => text.isEmpty ? text : text[0].toUpperCase() + text.substring(1);
-
-bool _containsWord(String haystack, String needle) {
-  final pattern = RegExp('(^|[^a-z])${RegExp.escape(needle)}s?(\$|[^a-z])');
-  return pattern.hasMatch(haystack);
-}
 
 /// Every recipe with what we have and what is missing, best first.
 List<RecipeMatch> matchRecipes(List<StockItem> stock, {List<Recipe> recipes = starterRecipes}) {

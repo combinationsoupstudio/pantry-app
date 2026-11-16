@@ -6,9 +6,11 @@ import '../../data/open_food_facts.dart';
 import '../../data/picture_finder.dart';
 import '../../data/store_scope.dart';
 import '../../logic/amounts.dart';
+import '../../logic/names.dart';
 import '../../logic/usage.dart';
 import '../../models/models.dart';
 import 'capture.dart';
+import 'name_match.dart';
 import 'picture_search.dart';
 import 'pictures.dart';
 import 'use_some_sheet.dart';
@@ -54,6 +56,7 @@ class _ItemEditor extends StatefulWidget {
 class _ItemEditorState extends State<_ItemEditor> {
   final _form = GlobalKey<FormState>();
   late final TextEditingController _name;
+  late final TextEditingController _aliases;
   late final TextEditingController _qty;
   late final TextEditingController _target;
   late String _unit;
@@ -82,6 +85,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     super.initState();
     final e = widget.existing;
     _name = TextEditingController(text: e?.name ?? '');
+    _aliases = TextEditingController(text: e?.aliases.join(', ') ?? '');
     _qty = TextEditingController(text: e == null ? '1' : formatQty(e.quantity));
     _target = TextEditingController(text: e == null || !e.hasTarget ? '' : formatQty(e.target));
     _unit = e?.unit ?? '';
@@ -122,7 +126,7 @@ class _ItemEditorState extends State<_ItemEditor> {
 
   @override
   void dispose() {
-    for (final c in [_name, _qty, _target, _packSize, _packs, _left, _targetPacks]) {
+    for (final c in [_name, _aliases, _qty, _target, _packSize, _packs, _left, _targetPacks]) {
       c.dispose();
     }
     super.dispose();
@@ -276,8 +280,23 @@ class _ItemEditorState extends State<_ItemEditor> {
       unit = _unit;
     }
     final e = widget.existing;
+    final aliases = _aliases.text.split(',').map((a) => a.trim()).where((a) => a.isNotEmpty).toList();
     if (e == null) {
-      await store.addItem(
+      // Already kept under another name or spelling? Add to that, never a twin.
+      final same = store.matchFor(_name.text.trim());
+      if (same != null) {
+        final yes = same.sure
+            ? await _askAddToExisting(same.item)
+            : await askSameThing(context, _name.text, same.item, yesLabel: 'Yes, add to it', noLabel: 'No, it is new');
+        if (yes == null || !mounted) return;
+        if (yes) {
+          await store.adjust(same.item.id, qty);
+          if (aliases.isNotEmpty) await store.setAliases(same.item.id, [...same.item.aliases, ...aliases]);
+          if (mounted) Navigator.of(context).pop();
+          return;
+        }
+      }
+      final added = await store.addItem(
         name: _name.text,
         locationId: _locationId,
         quantity: qty,
@@ -289,6 +308,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         photoPath: _photoPath,
         imageUrl: _imageUrl,
       );
+      if (aliases.isNotEmpty) await store.setAliases(added.id, aliases);
       PictureFinder.instance?.nudge();
     } else {
       await store.updateItem(
@@ -310,12 +330,38 @@ class _ItemEditorState extends State<_ItemEditor> {
           pictureByName: _imageUrl != null && _byName,
           // A new name is worth a fresh look for a picture.
           pictureTried: e.pictureTried && _name.text.trim() == e.name,
+          aliases: aliases,
         ),
       );
       PictureFinder.instance?.nudge();
     }
     if (mounted) Navigator.of(context).pop();
   }
+
+  /// "You already keep Spring onions (called Shallots here). Add to it?"
+  Future<bool?> _askAddToExisting(StockItem item) => showDialog<bool>(
+    context: context,
+    builder: (c) => AlertDialog(
+      title: Text('You already keep ${item.name}'),
+      content: Text(
+        canonicalName(item.name) == canonicalName(_name.text)
+            ? 'Add this to it, so it is counted once?'
+            : '"${_name.text.trim()}" is the same thing. Add this to it, so it is counted once?',
+      ),
+      actions: [
+        TextButton(
+          key: const ValueKey('existing-new'),
+          onPressed: () => Navigator.pop(c, false),
+          child: const Text('Keep it separate'),
+        ),
+        FilledButton(
+          key: const ValueKey('existing-add'),
+          onPressed: () => Navigator.pop(c, true),
+          child: const Text('Add to it'),
+        ),
+      ],
+    ),
+  );
 
   Future<void> _delete() async {
     final e = widget.existing!;
@@ -569,6 +615,17 @@ class _ItemEditorState extends State<_ItemEditor> {
                 textCapitalization: TextCapitalization.sentences,
                 decoration: const InputDecoration(labelText: 'Name', hintText: 'e.g. Tinned tomatoes'),
                 validator: (v) => (v == null || v.trim().isEmpty) ? 'Give it a name' : null,
+              ),
+              const SizedBox(height: 8),
+              TextFormField(
+                key: const ValueKey('field-aliases'),
+                controller: _aliases,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  labelText: 'Also called (optional)',
+                  hintText: 'e.g. spring onions, scallions',
+                  helperText: 'Other names for it, with commas. Recipes, lists and receipts use them.',
+                ),
               ),
               const SizedBox(height: 4),
               SwitchListTile(

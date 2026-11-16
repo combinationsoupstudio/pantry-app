@@ -8,6 +8,7 @@ import '../widgets/voice_add.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/name_match.dart';
 import '../widgets/pictures.dart';
 import '../widgets/put_away_sheet.dart';
 
@@ -195,9 +196,16 @@ class ShoppingPage extends StatelessWidget {
       ),
     );
     if (ok == true && name.text.trim().isNotEmpty && context.mounted) {
+      final household = StoreScope.read(context);
+      var typed = name.text.trim();
+      // A close spelling of something kept is asked about, never guessed.
+      final m = household.matchFor(typed);
+      if (m != null && !m.sure) {
+        final yes = await askSameThing(context, typed, m.item);
+        if (yes == true) typed = m.item.name;
+      }
       // The store stacks it onto a matching line and links it to stock.
-      await StoreScope.read(context)
-          .addShopping(name: name.text, quantity: double.tryParse(qty.text.trim()) ?? 1, store: store);
+      await household.addShopping(name: typed, quantity: double.tryParse(qty.text.trim()) ?? 1, store: store);
     }
     name.dispose();
     qty.dispose();

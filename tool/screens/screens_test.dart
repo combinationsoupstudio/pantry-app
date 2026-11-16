@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:pantry_app/ui/pages/recipe_detail_page.dart';
 import 'package:pantry_app/data/sync_service.dart';
 import 'package:pantry_app/ui/pages/household_page.dart';
 import 'package:pantry_app/app.dart';
@@ -305,5 +306,35 @@ void main() {
       ),
     );
     await shot(tester, '16-household');
+  });
+
+  testWidgets('v0.11 names', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final store = await demoStore();
+    await store.addItem(name: 'Shallots', locationId: 'fridge', quantity: 1, unit: 'bunch');
+    final r = await store.addRecipe(
+      name: 'Egg fried rice',
+      minutes: 20,
+      ingredients: [
+        '3 cups cooked white rice',
+        '2 eggs',
+        '3 spring onoins, sliced',
+        '2 tbsp soy sauce',
+        '1 tsp sesame oil',
+      ],
+    );
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: MaterialApp(
+          theme: buildTheme(Brightness.light),
+          debugShowCheckedModeBanner: false,
+          home: RecipeDetailPage(recipeId: r.id),
+        ),
+      ),
+    );
+    await shot(tester, '17-recipe-names');
   });
 }
