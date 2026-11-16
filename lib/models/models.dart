@@ -66,6 +66,8 @@ class StockItem {
     this.barcode,
     this.photoPath,
     this.imageUrl,
+    this.pictureByName = false,
+    this.pictureTried = false,
   });
 
   final String id;
@@ -88,6 +90,17 @@ class StockItem {
   /// barcode or picked from a name search. Downloaded once and kept on the
   /// phone. The household's own [photoPath] always shows first.
   final String? imageUrl;
+
+  /// The picture was found by matching the item's name, not picked or
+  /// scanned: the editor asks for it to be checked.
+  final bool pictureByName;
+
+  /// A name search found nothing it could trust; not searched again until the
+  /// name changes or "Find pictures again" is pressed.
+  final bool pictureTried;
+
+  /// True when this item still wants a picture looked up for it.
+  bool get wantsPicture => photoPath == null && imageUrl == null && !pictureTried;
 
   /// How many to draw in a picture pile: whole items for a counted item
   /// (2 potatoes, 4 tins), whole packs for a measured one. Something counted
@@ -166,6 +179,8 @@ class StockItem {
     bool clearPhoto = false,
     String? imageUrl,
     bool clearImage = false,
+    bool? pictureByName,
+    bool? pictureTried,
   }) => StockItem(
     id: id,
     name: name ?? this.name,
@@ -181,6 +196,8 @@ class StockItem {
     barcode: clearBarcode ? null : (barcode ?? this.barcode),
     photoPath: clearPhoto ? null : (photoPath ?? this.photoPath),
     imageUrl: clearImage ? null : (imageUrl ?? this.imageUrl),
+    pictureByName: pictureByName ?? this.pictureByName,
+    pictureTried: pictureTried ?? this.pictureTried,
   );
 
   Map<String, Object?> toJson() => {
@@ -198,6 +215,8 @@ class StockItem {
     if (barcode != null) 'barcode': barcode,
     if (photoPath != null) 'photoPath': photoPath,
     if (imageUrl != null) 'imageUrl': imageUrl,
+    if (pictureByName) 'pictureByName': true,
+    if (pictureTried) 'pictureTried': true,
   };
 
   factory StockItem.fromJson(Map<String, Object?> json) => StockItem(
@@ -215,6 +234,8 @@ class StockItem {
     barcode: json['barcode'] as String?,
     photoPath: json['photoPath'] as String?,
     imageUrl: json['imageUrl'] as String?,
+    pictureByName: json['pictureByName'] == true,
+    pictureTried: json['pictureTried'] == true,
   );
 }
 

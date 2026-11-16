@@ -1,6 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'common.dart';
+
 import '../../data/open_food_facts.dart';
+import '../../data/picture_finder.dart';
 import '../../data/store_scope.dart';
 import '../../logic/amounts.dart';
 import '../../logic/usage.dart';
@@ -64,6 +67,7 @@ class _ItemEditorState extends State<_ItemEditor> {
   String? _barcode;
   String? _photoPath;
   String? _imageUrl;
+  bool _byName = false;
   bool _looking = false;
 
   /// What the scan found, shown under the buttons.
@@ -82,6 +86,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     _barcode = e?.barcode;
     _photoPath = e?.photoPath;
     _imageUrl = e?.imageUrl;
+    _byName = e?.pictureByName ?? false;
 
     _measured = e?.isMeasured ?? false;
     _mUnit = _keptUnit(e?.unit ?? 'ml');
@@ -178,7 +183,10 @@ class _ItemEditorState extends State<_ItemEditor> {
         }
         final name = info.displayName;
         if (name.isNotEmpty && (widget.existing == null || _name.text.trim().isEmpty)) _name.text = name;
-        if (info.imageUrl != null) _imageUrl = info.imageUrl;
+        if (info.imageUrl != null) {
+          _imageUrl = info.imageUrl;
+          _byName = false;
+        }
         if (info.hasPackSize) {
           _measured = true;
           _mUnit = _keptUnit(info.unit);
@@ -204,7 +212,10 @@ class _ItemEditorState extends State<_ItemEditor> {
     final picked = await showPictureSearch(context, initial: _name.text.trim());
     if (picked == null || !mounted) return;
     setState(() {
-      if (picked.imageUrl != null) _imageUrl = picked.imageUrl;
+      if (picked.imageUrl != null) {
+        _imageUrl = picked.imageUrl;
+        _byName = false;
+      }
       if (_name.text.trim().isEmpty) _name.text = picked.displayName;
       _found = [
         'Picture: ${picked.displayName}',
@@ -218,6 +229,7 @@ class _ItemEditorState extends State<_ItemEditor> {
       _photoPath = null;
     } else {
       _imageUrl = null;
+      _byName = false;
     }
   });
 
@@ -265,6 +277,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         photoPath: _photoPath,
         imageUrl: _imageUrl,
       );
+      PictureFinder.instance?.nudge();
     } else {
       await store.updateItem(
         e.copyWith(
@@ -282,8 +295,12 @@ class _ItemEditorState extends State<_ItemEditor> {
           clearPhoto: _photoPath == null,
           imageUrl: _imageUrl,
           clearImage: _imageUrl == null,
+          pictureByName: _imageUrl != null && _byName,
+          // A new name is worth a fresh look for a picture.
+          pictureTried: e.pictureTried && _name.text.trim() == e.name,
         ),
       );
+      PictureFinder.instance?.nudge();
     }
     if (mounted) Navigator.of(context).pop();
   }
@@ -452,7 +469,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     if (_locationId.isEmpty || store.location(_locationId) == null) _locationId = locations.first.id;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.viewInsetsOf(context).bottom + 16),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, sheetBottom(context)),
       child: Form(
         key: _form,
         child: SingleChildScrollView(
@@ -478,6 +495,8 @@ class _ItemEditorState extends State<_ItemEditor> {
                         Text(
                           _photoPath != null
                               ? 'Your photo'
+                              : _imageUrl != null && _byName
+                              ? 'Found by name. Check it is your pack; Find picture to change it.'
                               : _imageUrl != null
                               ? 'Picture: Open Food Facts'
                               : 'No picture yet',
@@ -646,7 +665,7 @@ class _MoveSheetState extends State<_MoveSheet> {
     final max = item.quantity;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.viewInsetsOf(context).bottom + 16),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, sheetBottom(context)),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,

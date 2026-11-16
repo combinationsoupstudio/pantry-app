@@ -3,10 +3,7 @@ import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
 
-import '../../data/household_store.dart';
-import '../../data/open_food_facts.dart';
 import '../../data/picture_cache.dart';
-import '../../data/store_scope.dart';
 import '../../models/models.dart';
 
 /// One product's picture: the household's own photo first, then the product
@@ -23,8 +20,8 @@ class ProductPicture extends StatefulWidget {
     this.item,
   });
 
-  /// The picture of a stock item. A scanned item with no picture yet has one
-  /// looked up once, in the background.
+  /// The picture of a stock item. Items with none get one from the
+  /// background PictureFinder.
   factory ProductPicture.of(StockItem item, {Key? key, double size = 44}) => ProductPicture(
     key: key,
     name: item.name,
@@ -52,14 +49,10 @@ class _ProductPictureState extends State<ProductPicture> {
   Future<Uint8List?>? _bytes;
   String? _url;
 
-  /// Items whose picture was already looked up this session.
-  static final _triedBarcodes = <String>{};
-
   @override
   void initState() {
     super.initState();
     _load();
-    _backfill();
   }
 
   @override
@@ -71,25 +64,6 @@ class _ProductPictureState extends State<ProductPicture> {
   void _load() {
     _url = widget.imageUrl;
     _bytes = _url == null ? null : PictureCache.instance.bytesFor(_url!);
-  }
-
-  /// Items scanned before pictures existed (v0.4) get theirs by barcode.
-  void _backfill() {
-    final item = widget.item;
-    final code = item?.barcode;
-    if (item == null || code == null || item.imageUrl != null || !_triedBarcodes.add(code)) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      if (!mounted) return;
-      final HouseholdStore store = StoreScope.read(context);
-      try {
-        final info = await OpenFoodFacts.instance.lookup(code);
-        final url = info?.imageUrl;
-        if (url != null) await store.setPicture(item.id, url);
-      } catch (_) {
-        // No signal: tried again next time the app opens.
-        _triedBarcodes.remove(code);
-      }
-    });
   }
 
   Widget _image(ImageProvider image) => Image(

@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'common.dart';
+
 import '../../data/open_food_facts.dart';
 import 'pictures.dart';
 
@@ -67,7 +69,7 @@ class _PictureSearchState extends State<_PictureSearch> {
     final scheme = Theme.of(context).colorScheme;
     final results = _results ?? const <ProductInfo>[];
     return Padding(
-      padding: EdgeInsets.fromLTRB(16, 0, 16, MediaQuery.viewInsetsOf(context).bottom),
+      padding: EdgeInsets.fromLTRB(16, 0, 16, sheetBottom(context, extra: 0)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

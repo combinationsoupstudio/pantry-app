@@ -125,3 +125,11 @@ String friendlyTime(DateTime when, DateTime now) {
   final ampm = when.hour < 12 ? 'am' : 'pm';
   return '${friendlyDate(when, now)} $h:$m$ampm';
 }
+
+/// Bottom padding for a bottom sheet: clear of the keyboard when it is up,
+/// and of the phone's own buttons (the navigation bar) when it is not.
+double sheetBottom(BuildContext context, {double extra = 16}) {
+  final keyboard = MediaQuery.viewInsetsOf(context).bottom;
+  final bar = MediaQuery.viewPaddingOf(context).bottom;
+  return (keyboard > bar ? keyboard : bar) + extra;
+}

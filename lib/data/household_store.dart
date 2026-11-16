@@ -260,11 +260,35 @@ class HouseholdStore extends ChangeNotifier {
 
   /// Sets (or clears, with null) an item's product picture. Not logged as an
   /// edit: it changes how the item looks, not what the household has.
-  Future<void> setPicture(String itemId, String? imageUrl) async {
+  /// [byName] marks a picture the app matched by name, for checking.
+  Future<void> setPicture(String itemId, String? imageUrl, {bool byName = false}) async {
     final index = _items.indexWhere((i) => i.id == itemId);
-    if (index < 0 || _items[index].imageUrl == imageUrl) return;
-    _items[index] = _items[index].copyWith(imageUrl: imageUrl, clearImage: imageUrl == null);
+    if (index < 0) return;
+    final i = _items[index];
+    if (i.imageUrl == imageUrl && i.pictureByName == byName) return;
+    _items[index] = i.copyWith(imageUrl: imageUrl, clearImage: imageUrl == null, pictureByName: byName);
     await _commit();
+  }
+
+  /// Records that a name search found no picture it could trust.
+  Future<void> markPictureTried(String itemId) async {
+    final index = _items.indexWhere((i) => i.id == itemId);
+    if (index < 0 || _items[index].pictureTried) return;
+    _items[index] = _items[index].copyWith(pictureTried: true);
+    await _commit();
+  }
+
+  /// Lets every item without a picture be searched for again. Returns how many.
+  Future<int> retryPictures() async {
+    var n = 0;
+    for (var k = 0; k < _items.length; k++) {
+      if (_items[k].pictureTried) {
+        _items[k] = _items[k].copyWith(pictureTried: false);
+        n++;
+      }
+    }
+    if (n > 0) await _commit();
+    return n;
   }
 
   /// Adds one pack of a measured item, or one of a counted one.

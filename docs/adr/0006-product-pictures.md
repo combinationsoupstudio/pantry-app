@@ -21,3 +21,6 @@ Piles draw one picture per item, or per pack for a measured item, up to five, wi
 - Coverage is good for big brands, patchy for small ones and loose produce; the household's own photo fills gaps. Search results can include unrelated products, so names holding the search words are ranked first and the person picks.
 - Credits: Settings, the editor ("Picture: Open Food Facts") and the README.
 - With sync (v0.9), picture URLs and own photos travel with the item; Open Food Facts pictures are fetched again per phone.
+
+## Amendment, 16 Nov 2026 (v0.5.1)
+Chris found no pictures on his phone: his 58 items came from a stock list, so none had a barcode. Pictures are now also found by NAME, in the background (`PictureFinder`, one request every 6 s). A name match must hold every word of the item's cleaned name and share its last word ("head"), and the plainest name wins; it is flagged `pictureByName` so the editor asks for it to be checked. Tested against his real list before release; misses keep the letter square and are flagged `pictureTried` so they are not searched on every start.
