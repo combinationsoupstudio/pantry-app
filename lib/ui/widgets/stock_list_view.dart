@@ -9,11 +9,15 @@ import 'common.dart';
 import 'item_sheets.dart';
 import 'stock_tile.dart';
 
-/// The shared body of the Pantry and Storage pages: location chips,
-/// a search box, and a scrolling list of stock with - / +.
+/// The Pantry page's body (v0.10: one page for everything kept): a search
+/// box, location chips (kitchen first, then the places extra stock is stored
+/// away), and the stock with - / +. With no place picked, kitchen stock comes
+/// first and the stored-away stock follows under its own heading.
 class StockListView extends StatefulWidget {
-  const StockListView({super.key, required this.kind, required this.title, required this.emptyHint});
-  final LocationKind kind;
+  const StockListView({super.key, this.kind, required this.title, required this.emptyHint});
+
+  /// Only one kind of place (null: every place).
+  final LocationKind? kind;
   final String title;
   final String emptyHint;
 
@@ -29,14 +33,26 @@ class _StockListViewState extends State<StockListView> {
   @override
   Widget build(BuildContext context) {
     final store = StoreScope.of(context);
-    final locations = store.locationsOf(widget.kind);
+    final kinds = widget.kind == null ? LocationKind.values : [widget.kind!];
     if (_locationId != null && store.location(_locationId!) == null) _locationId = null;
-    var items = store.itemsOf(widget.kind, locationId: _locationId);
-    if (_query.isNotEmpty) {
-      final q = _query.toLowerCase();
-      items = items.where((i) => i.name.toLowerCase().contains(q)).toList();
+    final picked = _locationId == null ? null : store.location(_locationId!);
+    List<StockItem> itemsIn(LocationKind k) {
+      var list = store.itemsOf(k, locationId: _locationId);
+      if (_query.isNotEmpty) {
+        final q = _query.toLowerCase();
+        list = list.where((i) => i.name.toLowerCase().contains(q)).toList();
+      }
+      if (_lowOnly) list = list.where((i) => i.isLow).toList();
+      return list;
     }
-    if (_lowOnly) items = items.where((i) => i.isLow).toList();
+
+    final groups = <(LocationKind, List<StockItem>)>[
+      for (final k in kinds)
+        if (picked == null || picked.kind == k) (k, itemsIn(k)),
+    ].where((g) => g.$2.isNotEmpty).toList();
+    final items = [for (final g in groups) ...g.$2];
+    final headed = picked == null && kinds.length > 1;
+    final addKind = picked?.kind ?? widget.kind ?? LocationKind.pantry;
 
     return Scaffold(
       body: CustomScrollView(
@@ -46,28 +62,31 @@ class _StockListViewState extends State<StockListView> {
             floating: true,
             actions: [
               IconButton(
-                key: ValueKey('voice-${widget.kind.name}'),
+                key: ValueKey('voice-${widget.kind?.name ?? 'all'}'),
                 tooltip: 'Say it to add it',
                 icon: const Icon(Icons.mic_none),
                 onPressed: () => showVoiceAdd(
                   context,
                   target: VoiceTarget.stock,
-                  locationId: _locationId ?? (widget.kind == LocationKind.pantry ? 'pantry' : 'prep'),
+                  locationId: _locationId ?? (widget.kind == LocationKind.storage ? 'prep' : 'pantry'),
                 ),
               ),
               IconButton(
-                key: ValueKey('scan-use-${widget.kind.name}'),
+                key: ValueKey('scan-use-${widget.kind?.name ?? 'all'}'),
                 tooltip: 'Scan to use',
                 icon: const Icon(Icons.qr_code_scanner),
-                onPressed: () => scanToUse(context, kind: widget.kind),
+                onPressed: () => scanToUse(context, kind: addKind),
               ),
               IconButton(
-                key: ValueKey('stocktake-${widget.kind.name}'),
+                key: ValueKey('stocktake-${widget.kind?.name ?? 'all'}'),
                 tooltip: 'Stocktake',
                 icon: const Icon(Icons.fact_check_outlined),
                 onPressed: () {
-                  final place = _locationId == null ? null : store.location(_locationId!)?.name;
-                  final list = store.itemsOf(widget.kind, locationId: _locationId);
+                  final place = picked?.name;
+                  final list = [
+                    for (final k in kinds)
+                      if (picked == null || picked.kind == k) ...store.itemsOf(k, locationId: _locationId),
+                  ];
                   if (list.isEmpty) return;
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
@@ -97,8 +116,17 @@ class _StockListViewState extends State<StockListView> {
               child: Row(
                 children: [
                   _chip('All', _locationId == null, () => setState(() => _locationId = null)),
-                  for (final l in locations)
-                    _chip(l.name, _locationId == l.id, () => setState(() => _locationId = l.id)),
+                  for (final (n, k) in kinds.indexed) ...[
+                    if (n > 0)
+                      Container(
+                        width: 1,
+                        height: 24,
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        color: Theme.of(context).colorScheme.outlineVariant,
+                      ),
+                    for (final l in store.locationsOf(k))
+                      _chip(l.name, _locationId == l.id, () => setState(() => _locationId = l.id)),
+                  ],
                   const SizedBox(width: 8),
                   FilterChip(
                     label: const Text('Running low'),
@@ -121,19 +149,34 @@ class _StockListViewState extends State<StockListView> {
               ),
             )
           else
-            SliverPadding(
-              padding: const EdgeInsets.only(top: 8),
-              sliver: SliverList.builder(
-                itemCount: items.length,
-                itemBuilder: (_, i) => StockTile(item: items[i], showLocation: _locationId == null),
+            for (final (k, list) in groups) ...[
+              if (headed)
+                SliverToBoxAdapter(
+                  child: SectionHeader(
+                    k == LocationKind.pantry ? 'In the kitchen' : 'Stored away',
+                    trailing: Padding(
+                      padding: const EdgeInsets.only(right: 12),
+                      child: Text(
+                        '${list.length}',
+                        style: Theme.of(context).textTheme.labelLarge
+                            ?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                      ),
+                    ),
+                  ),
+                )
+              else
+                const SliverToBoxAdapter(child: SizedBox(height: 8)),
+              SliverList.builder(
+                itemCount: list.length,
+                itemBuilder: (_, i) => StockTile(item: list[i], showLocation: _locationId == null),
               ),
-            ),
+            ],
           const SliverToBoxAdapter(child: SizedBox(height: 88)),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'add-${widget.kind.name}',
-        onPressed: () => showItemEditor(context, kind: widget.kind, locationId: _locationId),
+        heroTag: 'add-${widget.kind?.name ?? 'all'}',
+        onPressed: () => showItemEditor(context, kind: addKind, locationId: _locationId),
         icon: const Icon(Icons.add),
         label: const Text('Add item'),
       ),

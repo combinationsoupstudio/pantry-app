@@ -66,14 +66,18 @@ void main() {
     await tester.tap(find.byKey(ValueKey('plus-${rice.id}')).hitTestable());
     await tester.pumpAndSettle();
     expect(store.item(rice.id)!.quantity, 2);
-    expect(find.textContaining('2 / 5 kg').hitTestable(), findsOneWidget);
+    expect(find.textContaining('2 kg', findRichText: true).hitTestable(), findsWidgets);
   });
 
   testWidgets('adding an item through the editor', (tester) async {
     phoneSize(tester);
     final store = await seededStore();
     await tester.pumpWidget(PantryApp(store: store));
-    await tester.tap(find.byKey(const ValueKey('nav-storage')));
+    await tester.tap(find.byKey(const ValueKey('nav-pantry')));
+    await tester.pumpAndSettle();
+    // Extra stock is stored away: pick the place first.
+    await tester.ensureVisible(find.widgetWithText(ChoiceChip, 'Prep pantry'));
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Prep pantry'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Add item').hitTestable());
@@ -101,8 +105,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(store.shopping, hasLength(2));
 
-    for (final box in find.byType(Checkbox).hitTestable().evaluate().toList()) {
-      await tester.tap(find.byWidget(box.widget));
+    for (final line in store.shopping.toList()) {
+      await tester.tap(find.byKey(ValueKey('shop-tick-${line.id}')));
       await tester.pumpAndSettle();
     }
     await tester.tap(find.byKey(const ValueKey('put-away')));

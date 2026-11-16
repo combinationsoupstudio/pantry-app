@@ -10,10 +10,11 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
 
 <p>
   <img src="docs/screens/1-home.jpg" width="200" alt="Home: house stock score, list, meals and use-by tiles, running-low items">
-  <img src="docs/screens/2-pantry.jpg" width="200" alt="Pantry: each item a card with a status edge, amount against target and - / + buttons">
+  <img src="docs/screens/2-pantry.jpg" width="200" alt="Pantry: kitchen stock first, each item with its picture or icon, 2 loaves · need 1, light - / + buttons">
+  <img src="docs/screens/3-pantry-stored.jpg" width="200" alt="Further down the Pantry: the extra stock stored away">
   <img src="docs/screens/6-recipe-ingredients.jpg" width="200" alt="A recipe: in-stock bar, Ingredients and Method tabs, add missing to list">
-  <img src="docs/screens/4-shopping.jpg" width="200" alt="Shopping list grouped by shop">
-  <img src="docs/screens/9-pantry-measured.jpg" width="200" alt="Measured items: soy sauce 30 / 500 ml, olive oil 1150 ml with one full bottle spare">
+  <img src="docs/screens/4-shopping.jpg" width="200" alt="Shopping list grouped by shop: tap to tick into the trolley, - amount + on the right">
+  <img src="docs/screens/9-pantry-measured.jpg" width="200" alt="Measured items: soy sauce 30 ml of 500 ml, olive oil 1150 ml with one full bottle spare">
   <img src="docs/screens/10-use-some.jpg" width="200" alt="Use some: 3 tbsp of olive oil takes 60 ml and leaves 1090 ml">
   <img src="docs/screens/11-edit-measured.jpg" width="200" alt="Editing a measured item: scan barcode, take photo, pack size, left in the open one">
   <img src="docs/screens/12-find-picture.jpg" width="200" alt="Find picture: Australian washed potato products with their pictures">
@@ -28,14 +29,13 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
 | Page | What it is for |
 | --- | --- |
 | **Home** | The assessment: a readiness score (share of items at their "keep at least" target), what is on the list, meals ready, use-by soon, and the running-low items with one-tap + / −. |
-| **Pantry** | Everyday food in the pantry, fridge and freezer. Search, filter by location or running low, one tap to use or add. |
-| **Storage** | Bulk and backup stock: prep pantry, spare cupboard, garage, medical, hygiene. Long-press an item to move stock, e.g. from the prep pantry to the pantry. |
-| **Shopping** | A list grouped by shop (Woolworths, Coles, Aldi, IGA). Pull in everything running low in one tap. Tick items as you buy them, then *Put away* adds them to stock. |
+| **Pantry** | Everything kept. The kitchen first (pantry, fridge, freezer), then the extra stock stored away further down (prep pantry, spare cupboard, garage, medical, hygiene). Search, filter by place or running low, one tap to use or add. Long-press an item to move stock, e.g. from the prep pantry to the pantry. |
+| **Shopping** | A list grouped by shop (Woolworths, Coles, Aldi, IGA). Pull in everything running low in one tap. Tap a line to put it in the trolley, then *Put away* adds it all to stock. |
 | **Recipes** | Your saved recipes, matched against what is in stock. Paste a link (the app reads the name, time and ingredients; the method stays on the site, one tap away) or write your own. Add whatever is missing to the list in one tap. Starter ideas fill in the rest. |
 | **Prices** | *Put away* asks what each line cost (optional); each item shows its last price per shop, cheapest first; Insights adds up the week. |
-| **Insights** | Targets met, running low, out of stock, readiness by location, use-by in the next fortnight, most-used items over 30 days, and who changed what. |
+| **Insights** (from Home) | Targets met, running low, out of stock, readiness by location, use-by in the next fortnight, most-used items over 30 days, and who changed what. |
 
-**Measured stock.** Bottles and bags you use bit by bit are kept as an amount: a 500 ml soy sauce with about 300 ml left reads "300 / 500 ml". *Use some…* takes any measure off it (ml, L, cups, tablespoons, teaspoons, g, kg; Australian sizes), + adds a whole pack, and recipes check the amount actually left ("Short 80 ml") so you can buy ahead. Add items by **scanning the barcode** (name and pack size from [Open Food Facts](https://world.openfoodfacts.org)) and a **photo**.
+**Measured stock.** Bottles and bags you use bit by bit are kept as an amount: a 500 ml soy sauce with about 300 ml left reads "300 ml of 500 ml". *Use some…* takes any measure off it (ml, L, cups, tablespoons, teaspoons, g, kg; Australian sizes), + adds a whole pack, and recipes check the amount actually left ("Short 80 ml") so you can buy ahead. Add items by **scanning the barcode** (name and pack size from [Open Food Facts](https://world.openfoodfacts.org)) and a **photo**.
 
 **Product pictures.** Every item shows its product: your photo, or its picture from Open Food Facts (by barcode, or *Find picture* by name). Cards show one picture per item or pack, so 4 potatoes is a pile of four, and − / + on the shopping list grows it. Pictures are fetched once (a few KB each) and kept on the phone; nothing is bundled, so the app stays small.
 
@@ -115,10 +115,11 @@ flutter run         # on a connected phone or emulator
 | **5** | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock. **Done.** |
 | 5b | 0.8.x | Use-by batches, "eat me first". |
 | **6** | 0.9 | Household sync between phones (Cloudflare Worker, one database per household); instant updates over a live line while the app is open. **Done.** |
-| 6b | 0.9.x | Shared own photos (R2); look and feel pass. |
-| 7 | 0.10 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
-| 8 | 0.11 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
-| 9 | 0.12 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
+| **6b** | 0.10 | Warm pantry look; four tabs (Pantry holds the stored-away stock); icons for things without a photo; lighter rows; tidier shopping list. **Done.** |
+| 6c | 0.10.x | Shared own photos (R2). |
+| 7 | 0.11 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
+| 8 | 0.12 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
+| 9 | 0.13 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
 
 Decisions are recorded as [ADRs](docs/adr/). Changes are listed in the [changelog](CHANGELOG.md).
 

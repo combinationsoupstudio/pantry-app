@@ -1,9 +1,31 @@
 import 'package:material_ui/material_ui.dart';
 
-/// Olive green brand with warm neutrals. Surfaces are deliberately distinct:
-/// a tinted page, white cards with a visible edge, so every element reads as
-/// its own thing at a glance.
-const _seed = Color(0xFF4F6B3A);
+/// Warm pantry (v0.10, Chris 16 Nov): a cream page like a pantry shelf
+/// liner, olive green for doing things, tomato red for "out", mustard for
+/// "low". Headings in Fraunces, everything else in Nunito Sans. Cards sit on
+/// the page with a soft edge so each thing reads as its own at a glance.
+const _seed = Color(0xFF5A6B2E);
+const _tomato = Color(0xFFC8452F);
+
+/// The palette, named, for the few places that draw their own colour.
+abstract final class Pantry {
+  static const cream = Color(0xFFF6EFE2);
+  static const shelf = Color(0xFFFFFBF4);
+  static const crust = Color(0xFFE7DBC6);
+  static const olive = Color(0xFF55682A);
+  static const oliveSoft = Color(0xFFE4E8CC);
+  static const tomato = _tomato;
+  static const tomatoSoft = Color(0xFFF8DED6);
+  static const mustard = Color(0xFFB9800F);
+  static const mustardSoft = Color(0xFFF8E8C4);
+  static const ink = Color(0xFF2C2620);
+  static const nightPage = Color(0xFF1B1813);
+  static const nightShelf = Color(0xFF26221B);
+  static const nightCrust = Color(0xFF3D372D);
+}
+
+const headingFont = 'Fraunces';
+const bodyFont = 'Nunito Sans';
 
 /// What a colour means, the same on every page.
 @immutable
@@ -21,23 +43,23 @@ class StatusColors extends ThemeExtension<StatusColors> {
   final Color ok, okContainer, low, lowContainer, out, outContainer, onContainer;
 
   static const light = StatusColors(
-    ok: Color(0xFF2E7D32),
-    okContainer: Color(0xFFDDEFD6),
-    low: Color(0xFFC77700),
-    lowContainer: Color(0xFFFFE7BF),
-    out: Color(0xFFC62828),
-    outContainer: Color(0xFFFADBD8),
-    onContainer: Color(0xFF1C1B17),
+    ok: Pantry.olive,
+    okContainer: Pantry.oliveSoft,
+    low: Pantry.mustard,
+    lowContainer: Pantry.mustardSoft,
+    out: Pantry.tomato,
+    outContainer: Pantry.tomatoSoft,
+    onContainer: Pantry.ink,
   );
 
   static const dark = StatusColors(
-    ok: Color(0xFF8BCF86),
-    okContainer: Color(0xFF1F3A1E),
-    low: Color(0xFFF3B54A),
-    lowContainer: Color(0xFF4A3510),
-    out: Color(0xFFF2908A),
-    outContainer: Color(0xFF4D1D1A),
-    onContainer: Color(0xFFF1EFE8),
+    ok: Color(0xFFB5C98A),
+    okContainer: Color(0xFF333B1F),
+    low: Color(0xFFE9B85A),
+    lowContainer: Color(0xFF4A3812),
+    out: Color(0xFFF0947F),
+    outContainer: Color(0xFF4F2219),
+    onContainer: Color(0xFFF3ECDF),
   );
 
   static StatusColors of(BuildContext context) => Theme.of(context).extension<StatusColors>()!;
@@ -54,40 +76,67 @@ ThemeData buildTheme(Brightness brightness) {
   final scheme = ColorScheme.fromSeed(
     seedColor: _seed,
     brightness: brightness,
-    surface: light ? const Color(0xFFFFFFFF) : const Color(0xFF1B1D18),
-    surfaceContainerLowest: light ? const Color(0xFFFFFFFF) : const Color(0xFF151712),
-    outlineVariant: light ? const Color(0xFFD3D6C8) : const Color(0xFF45493F),
+    primary: light ? Pantry.olive : const Color(0xFFBFD08E),
+    onPrimary: light ? Colors.white : const Color(0xFF263010),
+    primaryContainer: light ? Pantry.oliveSoft : const Color(0xFF3B4720),
+    onPrimaryContainer: light ? const Color(0xFF1E2808) : const Color(0xFFE4ECC4),
+    secondaryContainer: light ? const Color(0xFFEDE3CF) : const Color(0xFF3A3326),
+    onSecondaryContainer: light ? Pantry.ink : const Color(0xFFF0E6D2),
+    tertiary: light ? _tomato : const Color(0xFFF0947F),
+    error: light ? _tomato : const Color(0xFFF0947F),
+    surface: light ? Pantry.shelf : Pantry.nightShelf,
+    onSurface: light ? Pantry.ink : const Color(0xFFF3ECDF),
+    onSurfaceVariant: light ? const Color(0xFF6B6153) : const Color(0xFFC9BEAC),
+    surfaceContainerLowest: light ? Colors.white : const Color(0xFF15120E),
+    surfaceContainerLow: light ? const Color(0xFFFBF5EA) : const Color(0xFF221E18),
+    surfaceContainer: light ? const Color(0xFFF3EBDC) : const Color(0xFF2A251E),
+    surfaceContainerHigh: light ? const Color(0xFFEDE3D1) : const Color(0xFF332D25),
+    outline: light ? const Color(0xFFA89B85) : const Color(0xFF8C8170),
+    outlineVariant: light ? Pantry.crust : Pantry.nightCrust,
   );
-  final page = light ? const Color(0xFFF1F2EA) : const Color(0xFF121410);
+  final page = light ? Pantry.cream : Pantry.nightPage;
   final edge = BorderSide(color: scheme.outlineVariant);
-  final base = ThemeData(colorScheme: scheme, useMaterial3: true, brightness: brightness);
-  final text = base.textTheme;
+  final base = ThemeData(colorScheme: scheme, useMaterial3: true, brightness: brightness, fontFamily: bodyFont);
+  final t = base.textTheme;
+  TextStyle? heading(TextStyle? s, {double? size}) =>
+      s?.copyWith(fontFamily: headingFont, fontWeight: FontWeight.w600, fontSize: size, letterSpacing: -0.2);
+  final text = t.copyWith(
+    displaySmall: heading(t.displaySmall),
+    headlineLarge: heading(t.headlineLarge),
+    headlineMedium: heading(t.headlineMedium, size: 30),
+    headlineSmall: heading(t.headlineSmall),
+    titleLarge: heading(t.titleLarge, size: 22),
+  );
 
   return base.copyWith(
     scaffoldBackgroundColor: page,
     extensions: [light ? StatusColors.light : StatusColors.dark],
     textTheme: text.copyWith(
-      headlineMedium: text.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
-      headlineSmall: text.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-      titleLarge: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-      titleMedium: text.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-      titleSmall: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-      labelLarge: text.labelLarge?.copyWith(fontWeight: FontWeight.w600),
+      titleMedium: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+      titleSmall: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+      labelLarge: text.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+      bodyMedium: text.bodyMedium?.copyWith(height: 1.35),
     ),
-    appBarTheme: AppBarTheme(backgroundColor: page, surfaceTintColor: Colors.transparent, scrolledUnderElevation: 0),
+    appBarTheme: AppBarTheme(
+      backgroundColor: page,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      titleTextStyle: text.titleLarge?.copyWith(color: scheme.onSurface),
+    ),
     cardTheme: CardThemeData(
       elevation: 0,
       color: scheme.surface,
       surfaceTintColor: Colors.transparent,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: edge),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18), side: edge),
       margin: EdgeInsets.zero,
     ),
     navigationBarTheme: NavigationBarThemeData(
       backgroundColor: scheme.surface,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      height: 68,
+      height: 70,
       indicatorColor: scheme.primaryContainer,
+      indicatorShape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
       labelTextStyle: WidgetStateProperty.resolveWith(
         (s) => text.labelSmall?.copyWith(
@@ -103,7 +152,7 @@ ThemeData buildTheme(Brightness brightness) {
       checkmarkColor: scheme.onPrimary,
       labelStyle: text.labelLarge,
       secondaryLabelStyle: text.labelLarge?.copyWith(color: scheme.onPrimary),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     ),
     searchBarTheme: SearchBarThemeData(
       backgroundColor: WidgetStatePropertyAll(scheme.surface),
@@ -115,13 +164,14 @@ ThemeData buildTheme(Brightness brightness) {
       backgroundColor: scheme.primary,
       foregroundColor: scheme.onPrimary,
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      extendedTextStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w800, fontSize: 15),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w700, fontSize: 15),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w800, fontSize: 15),
       ),
     ),
     tabBarTheme: TabBarThemeData(

@@ -5,10 +5,11 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../data/picture_cache.dart';
 import '../../models/models.dart';
+import 'item_look.dart';
 
 /// One product's picture: the household's own photo first, then the product
-/// picture (downloaded once, then read from the phone), else a plain tinted
-/// square with the item's first letter, never a wrong picture.
+/// picture (downloaded once, then read from the phone), else an icon for what
+/// it is on its family's colour (item_look.dart), never a wrong picture.
 class ProductPicture extends StatefulWidget {
   const ProductPicture({
     super.key,
@@ -78,17 +79,15 @@ class _ProductPictureState extends State<ProductPicture> {
   ImageProvider cacheWidthOf(ImageProvider image) => ResizeImage(image, width: (widget.size * 3).round());
 
   Widget _blank(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final letter = widget.name.trim().isEmpty ? '?' : widget.name.trim()[0].toUpperCase();
+    final b = Theme.of(context).brightness;
+    final look = lookFor(widget.name, locationId: widget.item?.locationId);
     return Container(
+      key: const ValueKey('picture-icon'),
       width: widget.size,
       height: widget.size,
       alignment: Alignment.center,
-      color: scheme.secondaryContainer,
-      child: Text(
-        letter,
-        style: TextStyle(fontSize: widget.size * 0.45, fontWeight: FontWeight.w800, color: scheme.onSecondaryContainer),
-      ),
+      color: look.family.bg(b),
+      child: Icon(look.icon, size: widget.size * 0.52, color: look.family.fg(b)),
     );
   }
 
@@ -126,8 +125,8 @@ class _ProductPictureState extends State<ProductPicture> {
       height: widget.size,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(widget.size * 0.2),
-        border: Border.all(color: scheme.outlineVariant, width: 1.5),
+        borderRadius: BorderRadius.circular(widget.size * 0.24),
+        border: Border.all(color: scheme.outlineVariant, width: 1),
       ),
       clipBehavior: Clip.antiAlias,
       child: child,
