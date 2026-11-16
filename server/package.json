@@ -1,0 +1,7 @@
+{
+  "name": "pantry-sync",
+  "private": true,
+  "type": "module",
+  "description": "The pantry app's household sync Worker (Cloudflare Worker + SQLite Durable Object). ADR 0010.",
+  "scripts": { "test": "node --test" }
+}

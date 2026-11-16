@@ -4,7 +4,7 @@ A household stock app for Android. Two people, two phones, one house: what we ha
 
 Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Batemans Bay, NSW. It starts as a private app for one household, and every stage is built the way a production app would be: small pull requests, automated checks on every change, written design decisions, tagged releases.
 
-> **Status: v0.1, phase 0.** All six pages work, and stock is kept on each phone. Syncing between phones is the next phase (see [Roadmap](#roadmap)).
+> **Status: v0.9.** Stock is kept on each phone and works with no signal. Phones in one household sync through a small Cloudflare Worker (v0.9, [ADR 0010](docs/adr/0010-household-sync.md)).
 
 ## What it does
 
@@ -20,6 +20,7 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
   <img src="docs/screens/13-use-by-dates.jpg" width="200" alt="Use-by dates grouped: past its date, within a week, within a month, later">
   <img src="docs/screens/14-stocktake.jpg" width="200" alt="Stocktake: one item at a time, That's right or count it">
   <img src="docs/screens/15-receipt.jpg" width="200" alt="Checking a scanned Woolworths receipt: lines matched to stock, total matches">
+  <img src="docs/screens/16-household.jpg" width="200" alt="Household sync: synced just now, add another phone">
 </p>
 
 <sub>Screenshots use made-up demo data. They are rendered by <code>tool/screens/screens_test.dart</code>. Product pictures in them are from <a href="https://world.openfoodfacts.org">Open Food Facts</a>, CC BY-SA 3.0.</sub>
@@ -60,7 +61,7 @@ flowchart LR
     Store --> Backend[StorageBackend]
     Backend --> File[(JSON file<br/>phase 0)]
   end
-  Backend -. phase 1 .-> API[Cloudflare Worker + D1<br/>sync between phones]
+  Backend -. sync .-> API[Cloudflare Worker<br/>one Durable Object per household]
   API -. phase 2 .-> Claude[Claude, small model<br/>Batemans Bay prices]
 ```
 
@@ -113,9 +114,10 @@ flutter run         # on a connected phone or emulator
 | **4** | 0.7 | Reminders (shop day, use-by alerts, backup nudge); say it to add it (voice). **Done.** |
 | **5** | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock. **Done.** |
 | 5b | 0.8.x | Use-by batches, "eat me first". |
-| 6 | 0.9 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
-| 7 | 0.10 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
-| 8 | 0.11 | Sync between the two phones through a Cloudflare Worker and D1. |
+| **6** | 0.9 | Household sync between phones (Cloudflare Worker, one database per household), live while the app is open. **Done.** |
+| 6b | 0.9.x | Instant updates (websocket) and shared own photos (R2). |
+| 7 | 0.10 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
+| 8 | 0.11 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
 | 9 | 0.12 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
 
 Decisions are recorded as [ADRs](docs/adr/). Changes are listed in the [changelog](CHANGELOG.md).

@@ -36,6 +36,9 @@ jobs:
         run: flutter analyze --fatal-infos
       - name: Test
         run: flutter test --coverage
+      - name: Sync server tests
+        working-directory: server
+        run: node --test
       - name: Coverage summary
         run: |
           total=$(grep -c '^DA:' coverage/lcov.info)

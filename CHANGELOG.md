@@ -4,6 +4,17 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-16
+
+### Added
+- **Household sync** (Settings > Household, and the cloud on Home). Start a household on one phone, give the code to the other (it works once, for 48 hours), and both phones keep one list: stock, the shopping list, recipes, prices, history, locations and household settings. A change goes 2 seconds after it is made and the other phone picks it up within about 5 seconds while the app is open; it also syncs on opening, and the cloud button syncs now. With no signal, changes wait on the phone and go when it is back.
+- Two people using the same thing both count: Emily adds 2 rice while Chris uses 1, and both phones end on +1.
+- Joining with a phone that already has a list: **use theirs** (this phone's list is saved to a backup file first) or **add mine**.
+- The household server: a Cloudflare Worker with one small database per household, in `server/` (ADR 0010). Tokens are stored only as hashes.
+
+### Not yet
+- Your own photos stay on the phone that took them; the other phone shows the product picture.
+
 ## [0.8.1] - 2026-11-16
 
 ### Fixed

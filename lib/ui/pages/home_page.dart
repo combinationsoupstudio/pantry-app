@@ -10,6 +10,7 @@ import '../../logic/recipes.dart';
 import '../widgets/common.dart';
 import '../widgets/stock_tile.dart';
 import '../theme.dart';
+import 'household_page.dart';
 import 'settings_page.dart';
 
 /// The dashboard: how the house is going at a glance, and what needs doing.
@@ -36,6 +37,7 @@ class HomePage extends StatelessWidget {
           SliverAppBar.medium(
             title: Text('G\'day ${store.user}'),
             actions: [
+              const SyncButton(),
               IconButton(
                 tooltip: 'Settings',
                 icon: const Icon(Icons.settings_outlined),

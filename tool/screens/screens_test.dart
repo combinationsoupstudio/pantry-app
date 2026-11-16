@@ -6,6 +6,8 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:pantry_app/data/sync_service.dart';
+import 'package:pantry_app/ui/pages/household_page.dart';
 import 'package:pantry_app/app.dart';
 
 import 'dart:convert';
@@ -254,5 +256,36 @@ void main() {
       ),
     );
     await shot(tester, '15-receipt');
+  });
+
+  testWidgets('v0.9 household', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final store = await demoStore();
+    final sync = SyncService.instance = SyncService(
+      store,
+      backend: MemoryBackend(),
+      server: 'https://x',
+      client: MockClient((req) async {
+        if (req.url.path == '/households') {
+          return http.Response(jsonEncode({'household': 'K7QM4RXT', 'token': 't', 'code': 'K7QM4RXT-482913'}), 200);
+        }
+        return http.Response(jsonEncode({'cursor': 1, 'records': [], 'refused': []}), 200);
+      }),
+    );
+    addTearDown(() => SyncService.instance = null);
+    await tester.runAsync(sync.start);
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: MaterialApp(
+          theme: buildTheme(Brightness.light),
+          debugShowCheckedModeBanner: false,
+          home: const HouseholdPage(),
+        ),
+      ),
+    );
+    await shot(tester, '16-household');
   });
 }
