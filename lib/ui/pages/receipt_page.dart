@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show compute;
+import 'package:flutter/services.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../data/household_store.dart';
 import '../../data/open_food_facts.dart' show parsePackSize;
@@ -11,42 +17,98 @@ import '../../models/models.dart';
 import '../theme.dart';
 
 /// Scan a receipt: take a photo (or pick one), read its text on the phone
-/// (Google ML Kit, nothing sent anywhere), then open the review page.
+/// (Google ML Kit, nothing sent anywhere), then open the review page. A tall
+/// image (a saved e-receipt) is read in overlapping sections at full size.
 Future<void> scanReceipt(BuildContext context, {ImageSource source = ImageSource.camera}) async {
-  final messenger = ScaffoldMessenger.of(context);
-  final shot = await ImagePicker().pickImage(source: source, maxWidth: 2400, imageQuality: 90);
+  final shot = await ImagePicker().pickImage(source: source, imageQuality: 95);
   if (shot == null || !context.mounted) return;
+  final messenger = ScaffoldMessenger.of(context);
+  messenger.showSnackBar(const SnackBar(content: Text('Reading the receipt…'), duration: Duration(seconds: 20)));
   final reader = TextRecognizer(script: TextRecognitionScript.latin);
+  final temp = <File>[];
   try {
-    final found = await reader.processImage(InputImage.fromFilePath(shot.path));
-    final boxes = [
-      for (final block in found.blocks)
-        for (final line in block.lines)
-          TextBox(
-            line.text,
-            left: line.boundingBox.left,
-            top: line.boundingBox.top,
-            right: line.boundingBox.right,
-            bottom: line.boundingBox.bottom,
-          ),
-    ];
-    final receipt = parseReceipt(rowsOf(boxes));
+    final boxes = <TextBox>[];
+    Future<void> read(String path, {double dy = 0, bool Function(double middle)? keep}) async {
+      final found = await reader.processImage(InputImage.fromFilePath(path));
+      for (final block in found.blocks) {
+        for (final line in block.lines) {
+          final r = line.boundingBox;
+          final box = TextBox(line.text, left: r.left, top: r.top + dy, right: r.right, bottom: r.bottom + dy);
+          if (keep == null || keep(box.middle)) boxes.add(box);
+        }
+      }
+    }
+
+    final bytes = await File(shot.path).readAsBytes();
+    final image = await compute(img.decodeImage, bytes);
+    final spans = image == null ? const [(0, 0)] : receiptSpans(image.width, image.height);
+    if (image == null || spans.length == 1) {
+      await read(shot.path);
+    } else {
+      final dir = await getTemporaryDirectory();
+      for (var i = 0; i < spans.length; i++) {
+        final (top, height) = spans[i];
+        final part = img.copyCrop(image, x: 0, y: top, width: image.width, height: height);
+        final f = File('${dir.path}/receipt-part-$i.jpg')..writeAsBytesSync(img.encodeJpg(part, quality: 92));
+        temp.add(f);
+        await read(f.path, dy: top.toDouble(), keep: (m) => keepInSpan(m, i, spans));
+      }
+    }
+
+    final rows = rowsOf(boxes);
+    final receipt = parseReceipt(rows);
+    messenger.hideCurrentSnackBar();
     if (!context.mounted) return;
     if (receipt.lines.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Could not read any lines. Try again flat, in good light, the whole receipt in view.'),
-        ),
+      await _whatItSaw(
+        context,
+        rows.isEmpty
+            ? 'No text was found in the picture. Try a sharper photo, flat, in good light.'
+            : 'Text was found but no lines with prices. This is what it read:',
+        rows,
       );
       return;
     }
     await Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => ReceiptPage(receipt: receipt)));
   } catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text('Could not read the receipt: $e')));
+    messenger.hideCurrentSnackBar();
+    if (context.mounted) await _whatItSaw(context, 'Could not read the receipt: $e', const []);
   } finally {
     await reader.close();
+    for (final f in temp) {
+      if (f.existsSync()) f.deleteSync();
+    }
   }
 }
+
+/// Shows what went wrong, and the text read, with a Copy button so it can be
+/// sent on and the reader tuned.
+Future<void> _whatItSaw(BuildContext context, String message, List<String> rows) => showDialog<void>(
+  context: context,
+  builder: (c) => AlertDialog(
+    title: const Text('Could not read that receipt'),
+    content: SizedBox(
+      width: double.maxFinite,
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Text(message, key: const ValueKey('receipt-problem')),
+          if (rows.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            SelectableText(rows.join('\n'), style: const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+          ],
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Clipboard.setData(ClipboardData(text: '$message\n${rows.join('\n')}')),
+        child: const Text('Copy'),
+      ),
+      FilledButton(onPressed: () => Navigator.pop(c), child: const Text('OK')),
+    ],
+  ),
+);
 
 class _Line {
   _Line(this.name, this.total, this.quantity, this.unit, this.stock, this.packOf, this.size) {
