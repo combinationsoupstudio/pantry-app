@@ -52,6 +52,7 @@ class InsightsPage extends StatelessWidget {
               ]),
             ),
           ),
+          SliverToBoxAdapter(child: _SpendCard(spend: store.spendThisWeek(now))),
           const SliverToBoxAdapter(child: SectionHeader('By location')),
           if (ins.byLocation.isEmpty)
             const SliverToBoxAdapter(
@@ -122,6 +123,67 @@ class InsightsPage extends StatelessWidget {
           const SliverToBoxAdapter(child: SizedBox(height: 24)),
         ],
       ),
+    );
+  }
+}
+
+/// What was paid this week (since Monday), per shop, from prices entered at
+/// Put away.
+class _SpendCard extends StatelessWidget {
+  const _SpendCard({required this.spend});
+  final Map<Store, double> spend;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final total = spend.values.fold<double>(0, (a, b) => a + b);
+    final rows = spend.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SectionHeader('Spent this week'),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: total == 0
+                  ? const Text('Enter prices when you put a shop away and the week adds up here.')
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(formatMoney(total), style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
+                        const SizedBox(height: 8),
+                        for (final e in rows)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3),
+                            child: Row(
+                              children: [
+                                SizedBox(width: 96, child: Text(e.key.label)),
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: LinearProgressIndicator(
+                                      value: e.value / total,
+                                      minHeight: 8,
+                                      backgroundColor: scheme.surfaceContainerHighest,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 72,
+                                  child: Text(formatMoney(e.value), textAlign: TextAlign.right, style: text.labelLarge),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

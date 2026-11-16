@@ -107,6 +107,8 @@ void main() {
     }
     await tester.tap(find.byKey(const ValueKey('put-away')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('confirm-put-away')));
+    await tester.pumpAndSettle();
     expect(store.shopping, isEmpty);
     expect(store.runningLow, isEmpty);
   });
@@ -129,7 +131,7 @@ void main() {
     final count = store.shopping.length;
     expect(count, greaterThan(0));
     expect(find.byKey(const ValueKey('add-missing')), findsNothing);
-    expect(find.text('Missing items are on your shopping list'), findsOneWidget);
+    expect(find.text('On your list'), findsOneWidget);
 
     final keys = store.shopping.map((l) => l.name.toLowerCase()).toList();
     expect(keys.toSet().length, keys.length);

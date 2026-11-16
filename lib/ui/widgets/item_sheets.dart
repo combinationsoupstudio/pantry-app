@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../data/store_scope.dart';
+import '../../logic/usage.dart';
 import '../../models/models.dart';
 
 const commonUnits = ['', 'items', 'cans', 'packs', 'bottles', 'jars', 'boxes', 'rolls', 'kg', 'g', 'L', 'mL'];
@@ -212,6 +213,7 @@ class _ItemEditorState extends State<_ItemEditor> {
                   if (picked != null) setState(() => _useBy = picked);
                 },
               ),
+              if (widget.existing != null) _ItemFacts(item: widget.existing!),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -315,6 +317,68 @@ class _MoveSheetState extends State<_MoveSheet> {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// What the app knows about an existing item: how long it lasts at the
+/// current rate, and what it cost at each shop (cheapest first).
+class _ItemFacts extends StatelessWidget {
+  const _ItemFacts({required this.item});
+  final StockItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    final store = StoreScope.of(context);
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final current = store.item(item.id) ?? item;
+    final left = store.daysLeftFor(current);
+    final prices = store.latestByStore(current);
+    if (left == null && prices.isEmpty) return const SizedBox.shrink();
+    final unit = current.unit.isEmpty ? 'each' : current.unit;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (left != null)
+                Text('Runs out in about ${describeDays(left)} at the current rate', style: text.bodyMedium),
+              if (prices.isNotEmpty) ...[
+                if (left != null) const SizedBox(height: 8),
+                Text('Last paid', style: text.labelLarge),
+                const SizedBox(height: 4),
+                for (var n = 0; n < prices.length; n++)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(prices[n].store.label)),
+                        Text(
+                          '${formatMoney(prices[n].unitPrice)} / ${prices[n].unit.isEmpty ? 'each' : prices[n].unit}',
+                          style: text.bodyMedium?.copyWith(
+                            fontWeight: n == 0 && prices.length > 1 ? FontWeight.w800 : null,
+                            color: n == 0 && prices.length > 1 ? scheme.primary : null,
+                          ),
+                        ),
+                        if (n == 0 && prices.length > 1)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Text('cheapest', style: text.labelSmall?.copyWith(color: scheme.primary)),
+                          ),
+                      ],
+                    ),
+                  ),
+                if (prices.first.unit.isNotEmpty && prices.first.unit != unit)
+                  Text('Shown per unit as bought.', style: text.bodySmall),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
