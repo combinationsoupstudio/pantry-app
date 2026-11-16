@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../logic/recipe_link.dart';
+import '../logic/usage.dart';
 import '../models/models.dart';
 import 'csv_import.dart';
 import 'storage_backend.dart';
@@ -35,12 +36,16 @@ class HouseholdStore extends ChangeNotifier {
   List<ShoppingItem> _shopping = [];
   List<ActivityEntry> _activity = [];
   List<SavedRecipe> _recipes = [];
+  List<PricePoint> _prices = [];
   String _user = householdMembers.first;
   bool _loaded = false;
 
   List<StockLocation> get locations => List.unmodifiable(_locations);
   List<StockItem> get items => List.unmodifiable(_items);
   List<ShoppingItem> get shopping => List.unmodifiable(_shopping);
+
+  /// Prices paid, newest first.
+  List<PricePoint> get prices => List.unmodifiable(_prices);
 
   /// The household's saved recipes, by name.
   List<SavedRecipe> get recipes => List.unmodifiable(_recipes);
@@ -109,11 +114,15 @@ class HouseholdStore extends ChangeNotifier {
       _recipes = (data['recipes'] as List? ?? [])
           .map((e) => SavedRecipe.fromJson((e as Map).cast<String, Object?>()))
           .toList();
+      _prices = (data['prices'] as List? ?? [])
+          .map((e) => PricePoint.fromJson((e as Map).cast<String, Object?>()))
+          .toList();
       _shoppingNeedsSave = _consolidateShopping();
       final savedUser = data['user'] as String?;
       if (savedUser != null && householdMembers.contains(savedUser)) _user = savedUser;
     }
     _loaded = true;
+    _rates = null;
     notifyListeners();
     if (data != null && _shoppingNeedsSave) {
       _shoppingNeedsSave = false;
@@ -131,9 +140,30 @@ class HouseholdStore extends ChangeNotifier {
     'shopping': _shopping.map((s) => s.toJson()).toList(),
     'activity': _activity.map((a) => a.toJson()).toList(),
     'recipes': _recipes.map((r) => r.toJson()).toList(),
+    'prices': _prices.map((p) => p.toJson()).toList(),
   };
 
+  Map<String, double>? _rates;
+
+  /// How much of each item is used per day (by name), from recent history.
+  Map<String, double> get useRates => _rates ??= usePerDay(_activity, _clock());
+
+  /// Days until [item] runs out at its recent rate, or null if not in use.
+  double? daysLeftFor(StockItem item) => daysLeft(item, useRates);
+
+  /// Items that will run out within [days] at their recent rate, soonest first.
+  List<StockItem> runningOutWithin(double days) {
+    final list = <(StockItem, double)>[];
+    for (final i in _items) {
+      final d = daysLeftFor(i);
+      if (d != null && d <= days) list.add((i, d));
+    }
+    list.sort((a, b) => a.$2.compareTo(b.$2));
+    return [for (final e in list) e.$1];
+  }
+
   Future<void> _commit() async {
+    _rates = null;
     notifyListeners();
     await _backend.save(toJson());
   }
@@ -476,13 +506,16 @@ class HouseholdStore extends ChangeNotifier {
   }
 
   /// Everything ticked as bought goes into stock (when it is linked to a
-  /// stock item) and leaves the list. Returns how many were put away.
-  Future<int> putAwayBought() async {
+  /// stock item) and leaves the list. [paid] holds what was paid for a line,
+  /// by its id, in dollars; each one is kept as a price with the line's shop.
+  /// Returns how many were put away.
+  Future<int> putAwayBought({Map<String, double> paid = const {}}) async {
     final bought = _shopping.where((s) => s.bought).toList();
     if (bought.isEmpty) return 0;
     final now = _clock();
     for (final s in bought) {
       final index = s.stockItemId == null ? -1 : _items.indexWhere((i) => i.id == s.stockItemId);
+      final unit = index >= 0 ? _items[index].unit : s.unit;
       if (index >= 0) {
         final current = _items[index];
         _items[index] = current.copyWith(quantity: current.quantity + s.quantity, updatedAt: now, updatedBy: _user);
@@ -490,10 +523,80 @@ class HouseholdStore extends ChangeNotifier {
       } else {
         _log(s.name, 'bought', delta: s.quantity, unit: s.unit);
       }
+      final total = paid[s.id];
+      if (total != null && total > 0) {
+        _prices.insert(
+          0,
+          PricePoint(
+            id: newId(),
+            name: index >= 0 ? _items[index].name : s.name,
+            stockItemId: index >= 0 ? _items[index].id : null,
+            store: s.store,
+            total: total,
+            quantity: s.quantity,
+            unit: unit,
+            at: now,
+            by: _user,
+          ),
+        );
+      }
     }
+    if (_prices.length > maxPrices) _prices.removeRange(maxPrices, _prices.length);
     _shopping.removeWhere((s) => s.bought);
     await _commit();
     return bought.length;
+  }
+
+  static const maxPrices = 2000;
+
+  /// Prices paid for a stock item (or anything of the same name), newest first.
+  List<PricePoint> pricesFor(StockItem item) {
+    final key = nameKey(item.name);
+    return _prices.where((p) => p.stockItemId == item.id || nameKey(p.name) == key).toList();
+  }
+
+  /// The latest price per shop for an item, cheapest per unit first.
+  List<PricePoint> latestByStore(StockItem item) {
+    final seen = <Store>{};
+    final latest = <PricePoint>[];
+    for (final p in pricesFor(item)) {
+      if (seen.add(p.store)) latest.add(p);
+    }
+    latest.sort((a, b) => a.unitPrice.compareTo(b.unitPrice));
+    return latest;
+  }
+
+  /// Dollars spent per shop since Monday (the start of [now]'s week).
+  Map<Store, double> spendThisWeek(DateTime now) {
+    final monday = DateTime(now.year, now.month, now.day).subtract(Duration(days: now.weekday - 1));
+    final out = <Store, double>{};
+    for (final p in _prices) {
+      if (p.at.isBefore(monday)) continue;
+      out[p.store] = (out[p.store] ?? 0) + p.total;
+    }
+    return out;
+  }
+
+  /// Takes what a cooked recipe used out of stock: [uses] maps stock item ids
+  /// to amounts. Each comes off as a "used" entry, so "runs out in" learns
+  /// from cooking too.
+  Future<void> cook(String recipeName, Map<String, double> uses) async {
+    final now = _clock();
+    var changed = false;
+    uses.forEach((id, amount) {
+      final index = _items.indexWhere((i) => i.id == id);
+      if (index < 0 || amount <= 0) return;
+      final current = _items[index];
+      final next = (current.quantity - amount).clamp(0, double.infinity).toDouble();
+      final applied = next - current.quantity;
+      if (applied == 0) return;
+      _items[index] = current.copyWith(quantity: next, updatedAt: now, updatedBy: _user);
+      _log(current.name, 'used', delta: applied, unit: current.unit);
+      changed = true;
+    });
+    if (!changed) return;
+    _log(recipeName, 'cooked');
+    await _commit();
   }
 
   // ---------------------------------------------------------------- recipes

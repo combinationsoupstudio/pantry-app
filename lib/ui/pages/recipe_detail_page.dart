@@ -5,6 +5,7 @@ import '../../data/store_scope.dart';
 import '../../logic/recipes.dart';
 import '../../models/models.dart';
 import '../theme.dart';
+import '../widgets/cook_sheet.dart';
 import 'recipe_editor_page.dart';
 import 'recipes_page.dart';
 
@@ -111,22 +112,46 @@ class RecipeDetailPage extends StatelessWidget {
         bottomNavigationBar: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: match.ready
-                ? const FilledButton.tonal(onPressed: null, child: Text('Everything is in stock'))
-                : toAdd == 0
-                ? const FilledButton.tonal(onPressed: null, child: Text('Missing items are on your shopping list'))
-                : FilledButton.icon(
-                    key: const ValueKey('add-missing'),
-                    onPressed: () async {
-                      final n = await addMissingToShopping(StoreScope.read(context), match);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text('$n added to the shopping list')));
-                      }
-                    },
-                    icon: const Icon(Icons.add_shopping_cart),
-                    label: Text('Add $toAdd missing to shopping list'),
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    key: const ValueKey('cooked'),
+                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
+                    onPressed: match.have.isEmpty
+                        ? null
+                        : () async {
+                            final done = await showCookSheet(context, match);
+                            if (done == true && context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(content: Text('Enjoy! ${recipe.name} came out of stock')));
+                            }
+                          },
+                    icon: const Icon(Icons.restaurant),
+                    label: const Text('I cooked this'),
                   ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: match.ready
+                      ? const FilledButton.tonal(onPressed: null, child: Text('All in stock'))
+                      : toAdd == 0
+                      ? const FilledButton.tonal(onPressed: null, child: Text('On your list'))
+                      : FilledButton.icon(
+                          key: const ValueKey('add-missing'),
+                          onPressed: () async {
+                            final n = await addMissingToShopping(StoreScope.read(context), match);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(content: Text('$n added to the shopping list')));
+                            }
+                          },
+                          icon: const Icon(Icons.add_shopping_cart),
+                          label: Text('Add $toAdd to list'),
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

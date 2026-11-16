@@ -348,3 +348,60 @@ class SavedRecipe {
     createdAt: DateTime.parse(json['createdAt']! as String),
   );
 }
+
+/// What was paid for something, recorded when a shop is put away.
+class PricePoint {
+  const PricePoint({
+    required this.id,
+    required this.name,
+    required this.store,
+    required this.total,
+    required this.quantity,
+    required this.unit,
+    required this.at,
+    required this.by,
+    this.stockItemId,
+  });
+
+  final String id;
+  final String name;
+  final String? stockItemId;
+  final Store store;
+
+  /// Dollars paid for [quantity] [unit].
+  final double total;
+  final double quantity;
+  final String unit;
+  final DateTime at;
+  final String by;
+
+  /// Dollars per one [unit] (or per item).
+  double get unitPrice => quantity > 0 ? total / quantity : total;
+
+  Map<String, Object?> toJson() => {
+    'id': id,
+    'name': name,
+    'stockItemId': stockItemId,
+    'store': store.name,
+    'total': total,
+    'quantity': quantity,
+    'unit': unit,
+    'at': at.toIso8601String(),
+    'by': by,
+  };
+
+  factory PricePoint.fromJson(Map<String, Object?> json) => PricePoint(
+    id: json['id']! as String,
+    name: json['name']! as String,
+    stockItemId: json['stockItemId'] as String?,
+    store: Store.values.byName(json['store'] as String? ?? 'any'),
+    total: (json['total']! as num).toDouble(),
+    quantity: (json['quantity'] as num? ?? 1).toDouble(),
+    unit: json['unit'] as String? ?? '',
+    at: DateTime.parse(json['at']! as String),
+    by: json['by'] as String? ?? '',
+  );
+}
+
+/// "$4.50"
+String formatMoney(double dollars) => '\$${dollars.toStringAsFixed(2)}';

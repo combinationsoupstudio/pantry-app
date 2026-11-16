@@ -51,6 +51,11 @@ Future<HouseholdStore> demoStore() async {
   await s.adjust(pasta.id, 1);
   await s.addRunningLowToShopping();
   await s.addShopping(name: 'Butter', store: Store.aldi);
+  final bread = await s.addShopping(name: 'Bread', store: Store.iga);
+  await s.setBought(bread.id, true);
+  await s.putAwayBought(paid: {bread.id: 4.2});
+  final eggs = s.items.firstWhere((i) => i.name == 'Eggs');
+  await s.adjust(eggs.id, -6);
   await s.addRecipe(
     name: 'Weeknight fried rice',
     minutes: 25,

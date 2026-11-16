@@ -119,6 +119,12 @@ class HomePage extends StatelessWidget {
               ]),
             ),
           ),
+          if (store.runningOutWithin(7).isNotEmpty) ...[
+            const SliverToBoxAdapter(child: SectionHeader('Runs out within a week')),
+            SliverList.list(
+              children: [for (final i in store.runningOutWithin(7).take(5)) StockTile(item: i, showLocation: true)],
+            ),
+          ],
           SliverToBoxAdapter(
             child: SectionHeader(
               'Running low',

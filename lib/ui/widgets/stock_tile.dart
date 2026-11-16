@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
+import '../../logic/usage.dart';
 import '../theme.dart';
 import 'item_sheets.dart';
 
@@ -21,6 +22,7 @@ class StockTile extends StatelessWidget {
     final status = StatusColors.of(context);
     final colour = stockColor(context, out: item.isOut, low: item.isLow);
     final location = store.location(item.locationId)?.name ?? '';
+    final left = store.daysLeftFor(item);
     final unit = item.unit.isEmpty ? '' : ' ${item.unit}';
     final state = item.isOut
         ? 'Out'
@@ -92,6 +94,14 @@ class StockTile extends StatelessWidget {
                                       text: item.hasTarget ? ' / ${formatQty(item.target)}$unit' : unit,
                                       style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                                     ),
+                                    if (left != null)
+                                      TextSpan(
+                                        text: '   ~${describeDays(left)} left',
+                                        style: text.bodySmall?.copyWith(
+                                          color: left <= 7 ? status.low : scheme.onSurfaceVariant,
+                                          fontWeight: left <= 7 ? FontWeight.w700 : null,
+                                        ),
+                                      ),
                                     if (showLocation && location.isNotEmpty)
                                       TextSpan(
                                         text: '   $location',

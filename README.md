@@ -24,7 +24,10 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
 | **Storage** | Bulk and backup stock: prep pantry, spare cupboard, garage, medical, hygiene. Long-press an item to move stock, e.g. from the prep pantry to the pantry. |
 | **Shopping** | A list grouped by shop (Woolworths, Coles, Aldi, IGA). Pull in everything running low in one tap. Tick items as you buy them, then *Put away* adds them to stock. |
 | **Recipes** | Your saved recipes, matched against what is in stock. Paste a link (the app reads the name, time and ingredients; the method stays on the site, one tap away) or write your own. Add whatever is missing to the list in one tap. Starter ideas fill in the rest. |
+| **Prices** | *Put away* asks what each line cost (optional); each item shows its last price per shop, cheapest first; Insights adds up the week. |
 | **Insights** | Targets met, running low, out of stock, readiness by location, use-by in the next fortnight, most-used items over 30 days, and who changed what. |
+
+Stock cards show how long each item lasts at the rate you use it ("~6 days left"), learned from your own history. *I cooked this* on a recipe takes what it used out of stock.
 
 Every change is logged with who made it, so two people can share one stock list without arguing about who used the last of the milk.
 

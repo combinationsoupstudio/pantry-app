@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
+import '../widgets/put_away_sheet.dart';
 
 class ShoppingPage extends StatelessWidget {
   const ShoppingPage({super.key});
@@ -28,7 +29,8 @@ class ShoppingPage extends StatelessWidget {
                 TextButton.icon(
                   key: const ValueKey('put-away'),
                   onPressed: () async {
-                    final n = await store.putAwayBought();
+                    final n = await showPutAwaySheet(context);
+                    if (n == null) return;
                     if (context.mounted) {
                       ScaffoldMessenger.of(context)
                           .showSnackBar(SnackBar(content: Text('$n put away and added to stock')));

@@ -4,6 +4,14 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-16
+
+### Added
+- **I cooked this** on a recipe: lists what comes out of stock, with amounts worked out from the recipe where units convert (500 g pasta from a kg item takes 0.5 kg; 2 eggs takes 2), each adjustable or untickable, then takes it out.
+- **Runs out in**: each item's rate of use is learned from the last 30 days of history; stock cards show "~6 days left" (amber within a week), and Home lists what runs out within a week.
+- **Price memory**: *Put away* asks, optionally, what each line cost. Prices are kept per shop; an item's editor shows the last price per shop per unit, cheapest first.
+- **Spent this week** on Insights: total since Monday, per shop.
+
 ## [0.2.2] - 2026-11-16
 
 ### Changed
