@@ -1,7 +1,10 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'dates_page.dart';
+import '../../logic/supplies.dart';
 import '../../app.dart';
 import '../../data/store_scope.dart';
+import '../../models/models.dart';
 import '../../logic/insights.dart';
 import '../../logic/recipes.dart';
 import '../widgets/common.dart';
@@ -22,6 +25,8 @@ class HomePage extends StatelessWidget {
     final low = store.runningLow;
     final ready = matchRecipes(store.items).where((m) => m.ready).length;
     final toBuy = store.shopping.where((s) => !s.bought).length;
+    final people = store.setting<int>('people', 3);
+    final water = waterDays(store.items, people: people);
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
 
@@ -114,9 +119,16 @@ class HomePage extends StatelessWidget {
                   tone: ins.useBySoon.isEmpty
                       ? null
                       : (StatusColors.of(context).low, StatusColors.of(context).lowContainer),
-                  onTap: () => onGo(AppTab.insights),
+                  key: const ValueKey('home-dates'),
+                  onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DatesPage())),
                 ),
               ]),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+              child: _WaterCard(water: water, people: people),
             ),
           ),
           if (store.runningOutWithin(7).isNotEmpty) ...[
@@ -181,5 +193,66 @@ class HomePage extends StatelessWidget {
     if (ins.out > 0) parts.add('${ins.out} out');
     if (ins.low > 0) parts.add('${ins.low} running low');
     return '${parts.join(', ')}.';
+  }
+}
+
+/// Water days: drinking water in stock against 3 L per person a day.
+class _WaterCard extends StatelessWidget {
+  const _WaterCard({required this.water, required this.people});
+  final WaterDays water;
+  final int people;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final store = StoreScope.read(context);
+    return Card(
+      key: const ValueKey('home-water'),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.water_drop_outlined, color: scheme.primary),
+                const SizedBox(width: 6),
+                Text('Water', style: text.titleSmall),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              water.counted.isEmpty ? 'None counted' : '${water.days} day${water.days == 1 ? '' : 's'}',
+              key: const ValueKey('water-days'),
+              style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            Text('${formatQty(double.parse(water.litres.toStringAsFixed(1)))} L for', style: text.bodySmall),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                InkWell(
+                  key: const ValueKey('people-less'),
+                  onTap: people <= 1 ? null : () => store.setSetting('people', people - 1),
+                  child: const Padding(padding: EdgeInsets.all(4), child: Icon(Icons.remove, size: 18)),
+                ),
+                Text('$people people', style: text.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
+                InkWell(
+                  key: const ValueKey('people-more'),
+                  onTap: () => store.setSetting('people', people + 1),
+                  child: const Padding(padding: EdgeInsets.all(4), child: Icon(Icons.add, size: 18)),
+                ),
+              ],
+            ),
+            Text(
+              water.notCounted.isEmpty
+                  ? '3 L each a day (NSW Health, RFS)'
+                  : '3 L each a day. ${water.notCounted.length} not counted: put litres in the name or unit',
+              style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

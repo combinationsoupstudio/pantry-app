@@ -13,6 +13,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:pantry_app/data/household_store.dart';
+import 'package:pantry_app/ui/theme.dart';
+import 'package:pantry_app/data/store_scope.dart';
+import 'package:pantry_app/ui/pages/stocktake_page.dart';
 import 'package:pantry_app/data/open_food_facts.dart';
 import 'package:pantry_app/data/picture_cache.dart';
 import 'package:pantry_app/data/storage_backend.dart';
@@ -56,6 +59,10 @@ Future<HouseholdStore> demoStore() async {
   await add('Frozen peas', 'freezer', 1, 'kg', 1);
   await add('Toilet paper', 'hygiene', 90, 'rolls', 30);
   await add('Hydralyte sachets', 'medical', 40, 'sachets', 40);
+  await add('Panadol', 'medical', 1, 'packs', 1, useBy: now.subtract(const Duration(days: 12)));
+  await add('Bandages', 'medical', 2, 'packs', 2, useBy: now.add(const Duration(days: 200)));
+  await add('Water jerry cans', 'garage', 40, 'L', 40);
+  await add('Cask water 10 L', 'garage', 2, 'casks', 2);
   await add('LED torch', 'garage', 2, 'items', 4);
   await add('Batteries AAA', 'garage', 48, 'items', 10);
   final soy = await s.addItem(
@@ -189,5 +196,30 @@ void main() {
         await tester.pumpAndSettle();
       }
     }
+  });
+
+  testWidgets('v0.6 screens', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final store = await demoStore();
+    final prep = store.itemsOf(LocationKind.storage, locationId: 'prep');
+    await tester.pumpWidget(PantryApp(store: store));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('home-dates')));
+    await shot(tester, '13-use-by-dates');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      StoreScope(
+        store: store,
+        child: MaterialApp(
+          theme: buildTheme(Brightness.light),
+          debugShowCheckedModeBanner: false,
+          home: StocktakePage(title: 'Prep pantry', itemIds: [for (final i in prep) i.id]),
+        ),
+      ),
+    );
+    await shot(tester, '14-stocktake');
   });
 }

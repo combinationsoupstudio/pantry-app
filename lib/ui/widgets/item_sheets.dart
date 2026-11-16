@@ -28,20 +28,24 @@ Future<void> showItemEditor(
   StockItem? existing,
   LocationKind kind = LocationKind.pantry,
   String? locationId,
+  String? barcode,
 }) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => _ItemEditor(existing: existing, kind: kind, locationId: locationId),
+    builder: (_) => _ItemEditor(existing: existing, kind: kind, locationId: locationId, barcode: barcode),
   );
 }
 
 class _ItemEditor extends StatefulWidget {
-  const _ItemEditor({this.existing, required this.kind, this.locationId});
+  const _ItemEditor({this.existing, required this.kind, this.locationId, this.barcode});
   final StockItem? existing;
   final LocationKind kind;
   final String? locationId;
+
+  /// A barcode already scanned (scan to use found nothing): looked up at once.
+  final String? barcode;
 
   @override
   State<_ItemEditor> createState() => _ItemEditorState();
@@ -85,6 +89,8 @@ class _ItemEditorState extends State<_ItemEditor> {
     _locationId = e?.locationId ?? widget.locationId ?? '';
     _barcode = e?.barcode;
     _photoPath = e?.photoPath;
+    final scanned = widget.barcode;
+    if (e == null && scanned != null) WidgetsBinding.instance.addPostFrameCallback((_) => _lookup(scanned));
     _imageUrl = e?.imageUrl;
     _byName = e?.pictureByName ?? false;
 
@@ -168,6 +174,12 @@ class _ItemEditorState extends State<_ItemEditor> {
         return;
       }
     }
+    await _lookup(code);
+  }
+
+  /// Looks a barcode up and fills in what Open Food Facts knows.
+  Future<void> _lookup(String code) async {
+    if (!mounted) return;
     setState(() {
       _barcode = code;
       _looking = true;

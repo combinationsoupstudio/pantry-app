@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'scan_to_use.dart';
+import '../pages/stocktake_page.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import 'common.dart';
@@ -38,7 +40,34 @@ class _StockListViewState extends State<StockListView> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.medium(title: Text(widget.title), floating: true),
+          SliverAppBar.medium(
+            title: Text(widget.title),
+            floating: true,
+            actions: [
+              IconButton(
+                key: ValueKey('scan-use-${widget.kind.name}'),
+                tooltip: 'Scan to use',
+                icon: const Icon(Icons.qr_code_scanner),
+                onPressed: () => scanToUse(context, kind: widget.kind),
+              ),
+              IconButton(
+                key: ValueKey('stocktake-${widget.kind.name}'),
+                tooltip: 'Stocktake',
+                icon: const Icon(Icons.fact_check_outlined),
+                onPressed: () {
+                  final place = _locationId == null ? null : store.location(_locationId!)?.name;
+                  final list = store.itemsOf(widget.kind, locationId: _locationId);
+                  if (list.isEmpty) return;
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          StocktakePage(title: place ?? widget.title, itemIds: [for (final i in list) i.id]),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),

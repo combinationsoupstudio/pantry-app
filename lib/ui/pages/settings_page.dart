@@ -1,5 +1,14 @@
 import 'package:material_ui/material_ui.dart';
+
+import '../../data/backup.dart';
+
 import 'package:flutter/services.dart';
+
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../data/household_store.dart';
 import '../../data/picture_finder.dart';
@@ -29,6 +38,21 @@ class SettingsPage extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Text('Changes are signed with this name in the history.'),
+          ),
+          const SectionHeader('Backup'),
+          ListTile(
+            key: const ValueKey('backup-now'),
+            leading: const Icon(Icons.cloud_upload_outlined),
+            title: const Text('Back up now'),
+            subtitle: const Text('Everything, with your photos, in one file. Save it to Google Drive.'),
+            onTap: () => _backup(context),
+          ),
+          ListTile(
+            key: const ValueKey('restore-backup'),
+            leading: const Icon(Icons.settings_backup_restore),
+            title: const Text('Restore from a backup'),
+            subtitle: const Text('Replaces what is on this phone with the backup'),
+            onTap: () => _restore(context),
           ),
           const SectionHeader('Stock list'),
           ListTile(
@@ -164,5 +188,60 @@ class SettingsPage extends StatelessWidget {
       await StoreScope.read(context).addLocation(controller.text, kind);
     }
     controller.dispose();
+  }
+}
+
+/// Writes the backup file and opens the phone's share sheet to save it
+/// (Google Drive, email to yourself, Files).
+Future<void> _backup(BuildContext context) async {
+  final store = StoreScope.read(context);
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final now = DateTime.now();
+    final dir = Directory('${(await getTemporaryDirectory()).path}/backups')..createSync(recursive: true);
+    final file = File('${dir.path}/${backupFileName(now)}');
+    await file.writeAsString(makeBackup(store, now: now));
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path, mimeType: 'application/json')],
+        subject: 'Pantry backup ${now.day}/${now.month}/${now.year}',
+        text: 'Pantry app backup. Keep this file; Settings > Restore brings it back.',
+      ),
+    );
+  } catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text('Backup failed: $e')));
+  }
+}
+
+/// Picks a backup file and, after a clear warning, restores it.
+Future<void> _restore(BuildContext context) async {
+  final store = StoreScope.read(context);
+  final messenger = ScaffoldMessenger.of(context);
+  final picked = await FilePicker.pickFile(dialogTitle: 'Pick a pantry backup');
+  if (picked == null || !context.mounted) return;
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (c) => AlertDialog(
+      title: const Text('Restore this backup?'),
+      content: Text(
+        'Everything on this phone (${store.items.length} items, the list, recipes and prices) is replaced by '
+        '${picked.name}. Back up first if you are not sure.',
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Cancel')),
+        FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Replace with backup')),
+      ],
+    ),
+  );
+  if (ok != true) return;
+  try {
+    final text = await picked.xFile.readAsString();
+    final docs = await getApplicationDocumentsDirectory();
+    final r = await restoreBackup(store, text, Directory('${docs.path}/photos'));
+    messenger.showSnackBar(SnackBar(content: Text('Restored ${r.items} items and ${r.photos} photos')));
+  } on FormatException catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text(e.message)));
+  } catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text('Restore failed: $e')));
   }
 }

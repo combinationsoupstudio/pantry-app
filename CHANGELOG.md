@@ -4,6 +4,18 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-16
+
+### Added
+- **Back up now / Restore** (Settings): the whole household (stock, list, recipes, prices, history, settings) and your own photos in one file, saved wherever you choose with the phone's share sheet (Google Drive, Files, email). Restore warns first, then replaces what is on the phone. Product pictures are not copied; they download again. ADR 0007.
+- **Stocktake** (Pantry and Storage, top bar): walk a cupboard one item at a time with its picture: "That's right", or type or step the real count and save; skip; a summary at the end. Logged as "counted", so it never skews "runs out in".
+- **Scan to use** (Pantry and Storage, top bar): scan what you are using or binning: used one, used some, or finished the open pack (spare packs stay). A barcode not in stock offers to add it, looked up already.
+- **Use-by dates**: every dated item, grouped past its date, within a week, within a month, later, with a filter per cupboard (Medical, Fridge ...). Open it from the "use by soon" tile on Home. Counts the items with no date and suggests dating medicines.
+- **Water days** (Home): drinking water in stock against 3 L per person a day (NSW Health and NSW RFS), with - / + for people. Litres come from the unit (40 L) or the name ("Cask water 10 L" x 2 = 20 L); water items it cannot measure are named.
+
+### Not yet
+- Food days need calories per item, which the app does not have; it is not guessed.
+
 ## [0.5.1] - 2026-11-16
 
 ### Fixed

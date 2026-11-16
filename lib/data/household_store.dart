@@ -97,7 +97,30 @@ class HouseholdStore extends ChangeNotifier {
 
   Future<void> load() async {
     final data = await _backend.load();
-    if (data != null) {
+    if (data != null) _apply(data);
+    _loaded = true;
+    _rates = null;
+    notifyListeners();
+    if (data != null && _shoppingNeedsSave) {
+      _shoppingNeedsSave = false;
+      await _backend.save(toJson());
+    }
+  }
+
+  /// Replaces everything with a backup's data (`toJson()` of another store,
+  /// or this one earlier). Refuses something that is not a household.
+  Future<void> restore(Map<String, Object?> data) async {
+    if (data['schema'] is! int || data['items'] is! List || data['locations'] is! List) {
+      throw const FormatException('Not a pantry backup');
+    }
+    _apply(data);
+    _shoppingNeedsSave = false;
+    await _commit();
+  }
+
+  void _apply(Map<String, Object?> data) {
+    {
+      // One block, as load() had it.
       _locations = (data['locations'] as List? ?? [])
           .map((e) => StockLocation.fromJson((e as Map).cast<String, Object?>()))
           .toList();
@@ -120,14 +143,40 @@ class HouseholdStore extends ChangeNotifier {
       _shoppingNeedsSave = _consolidateShopping();
       final savedUser = data['user'] as String?;
       if (savedUser != null && householdMembers.contains(savedUser)) _user = savedUser;
+      _settings = {...?(data['settings'] as Map?)?.cast<String, Object?>()};
     }
-    _loaded = true;
-    _rates = null;
-    notifyListeners();
-    if (data != null && _shoppingNeedsSave) {
-      _shoppingNeedsSave = false;
-      await _backend.save(toJson());
+  }
+
+  Map<String, Object?> _settings = {};
+
+  /// A household setting (people for water days, ...), or [fallback].
+  T setting<T>(String key, T fallback) {
+    final v = _settings[key];
+    return v is T ? v : fallback;
+  }
+
+  Future<void> setSetting(String key, Object? value) async {
+    if (_settings[key] == value) return;
+    if (value == null) {
+      _settings.remove(key);
+    } else {
+      _settings[key] = value;
     }
+    await _commit();
+  }
+
+  /// Sets an item to what is really there (stocktake), logging the
+  /// difference. Returns the change.
+  Future<double> countItem(String itemId, double counted) async {
+    final i = item(itemId);
+    if (i == null) return 0;
+    final q = counted < 0 ? 0.0 : counted;
+    final delta = q - i.quantity;
+    final index = _items.indexWhere((x) => x.id == itemId);
+    _items[index] = i.copyWith(quantity: q, updatedAt: _clock(), updatedBy: _user);
+    _log(i.name, 'counted', delta: delta, unit: i.unit);
+    await _commit();
+    return delta;
   }
 
   bool _shoppingNeedsSave = false;
@@ -141,6 +190,7 @@ class HouseholdStore extends ChangeNotifier {
     'activity': _activity.map((a) => a.toJson()).toList(),
     'recipes': _recipes.map((r) => r.toJson()).toList(),
     'prices': _prices.map((p) => p.toJson()).toList(),
+    if (_settings.isNotEmpty) 'settings': _settings,
   };
 
   Map<String, double>? _rates;
