@@ -62,7 +62,14 @@ class SettingsPage extends StatelessWidget {
           const SectionHeader('About'),
           const ListTile(
             title: Text('Pantry'),
-            subtitle: Text('Stock is kept on this phone for now. Syncing between phones comes in the next release.'),
+            subtitle: Text('Stock is kept on this phone for now. Syncing between phones comes in a later release.'),
+          ),
+          const ListTile(
+            title: Text('Product data'),
+            subtitle: Text(
+              'Scanned barcodes are looked up on Open Food Facts (openfoodfacts.org), the free open food database. '
+              'Its data is available under the Open Database Licence. Only the barcode number is sent.',
+            ),
           ),
           const SizedBox(height: 24),
         ],

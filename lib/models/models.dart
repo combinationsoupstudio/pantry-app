@@ -62,11 +62,26 @@ class StockItem {
     required this.updatedBy,
     this.useBy,
     this.notes = '',
+    this.packSize = 0,
+    this.barcode,
+    this.photoPath,
   });
 
   final String id;
   final String name;
   final String locationId;
+
+  /// For a measured item (kept in g, kg, ml or L): how much one pack holds,
+  /// in [unit], e.g. 500 for a 500 ml bottle. 0 for an item that is counted.
+  /// A measured item's [quantity] and [target] are amounts in [unit], so a
+  /// 500 ml bottle with about 300 ml left has quantity 300.
+  final double packSize;
+
+  /// The product barcode (EAN/UPC), when it was scanned.
+  final String? barcode;
+
+  /// A photo of the item, kept in the app's own folder on the phone.
+  final String? photoPath;
 
   /// How many we have now.
   final double quantity;
@@ -89,6 +104,26 @@ class StockItem {
   /// How many to buy to get back to target.
   double get shortfall => isLow ? target - quantity : 0;
 
+  /// True when this item is measured out of packs (ml, g ...) rather than counted.
+  bool get isMeasured => packSize > 0 && const {'g', 'kg', 'ml', 'l'}.contains(unit.trim().toLowerCase());
+
+  /// "500 ml" for a measured item; '' otherwise.
+  String get packLabel => isMeasured ? '${formatQty(packSize)} ${_displayUnit(unit)}' : '';
+
+  /// What this item is bought in: "× 500 ml" (packs) for a measured item,
+  /// its own unit otherwise.
+  String get shoppingUnit => isMeasured ? '× $packLabel' : unit;
+
+  /// Whole packs needed to cover [amount] (in [unit]); [amount] itself for a
+  /// counted item.
+  double packsFor(double amount) {
+    if (amount <= 0) return 0;
+    if (!isMeasured) return amount;
+    return (amount / packSize - 1e-9).ceilToDouble();
+  }
+
+  /// How many to put on the list to get back to target, in [shoppingUnit].
+  double get restock => packsFor(shortfall);
   StockItem copyWith({
     String? name,
     String? locationId,
@@ -100,6 +135,11 @@ class StockItem {
     String? notes,
     DateTime? updatedAt,
     String? updatedBy,
+    double? packSize,
+    String? barcode,
+    bool clearBarcode = false,
+    String? photoPath,
+    bool clearPhoto = false,
   }) => StockItem(
     id: id,
     name: name ?? this.name,
@@ -111,6 +151,9 @@ class StockItem {
     notes: notes ?? this.notes,
     updatedAt: updatedAt ?? this.updatedAt,
     updatedBy: updatedBy ?? this.updatedBy,
+    packSize: packSize ?? this.packSize,
+    barcode: clearBarcode ? null : (barcode ?? this.barcode),
+    photoPath: clearPhoto ? null : (photoPath ?? this.photoPath),
   );
 
   Map<String, Object?> toJson() => {
@@ -124,6 +167,9 @@ class StockItem {
     'notes': notes,
     'updatedAt': updatedAt.toIso8601String(),
     'updatedBy': updatedBy,
+    if (packSize > 0) 'packSize': packSize,
+    if (barcode != null) 'barcode': barcode,
+    if (photoPath != null) 'photoPath': photoPath,
   };
 
   factory StockItem.fromJson(Map<String, Object?> json) => StockItem(
@@ -137,8 +183,13 @@ class StockItem {
     notes: json['notes'] as String? ?? '',
     updatedAt: DateTime.parse(json['updatedAt']! as String),
     updatedBy: json['updatedBy'] as String? ?? '',
+    packSize: (json['packSize'] as num? ?? 0).toDouble(),
+    barcode: json['barcode'] as String?,
+    photoPath: json['photoPath'] as String?,
   );
 }
+
+String _displayUnit(String unit) => unit.trim().toLowerCase() == 'l' ? 'L' : unit.trim();
 
 class ShoppingItem {
   const ShoppingItem({
@@ -377,6 +428,9 @@ class PricePoint {
 
   /// Dollars per one [unit] (or per item).
   double get unitPrice => quantity > 0 ? total / quantity : total;
+
+  /// "each", "kg", or "500 ml" for a pack of a measured item ("× 500 ml").
+  String get perLabel => unit.isEmpty ? 'each' : (unit.startsWith('× ') ? unit.substring(2) : unit);
 
   Map<String, Object?> toJson() => {
     'id': id,

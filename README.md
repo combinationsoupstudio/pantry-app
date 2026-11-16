@@ -13,6 +13,9 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
   <img src="docs/screens/2-pantry.jpg" width="200" alt="Pantry: each item a card with a status edge, amount against target and - / + buttons">
   <img src="docs/screens/6-recipe-ingredients.jpg" width="200" alt="A recipe: in-stock bar, Ingredients and Method tabs, add missing to list">
   <img src="docs/screens/4-shopping.jpg" width="200" alt="Shopping list grouped by shop">
+  <img src="docs/screens/9-pantry-measured.jpg" width="200" alt="Measured items: soy sauce 30 / 500 ml, olive oil 1150 ml with one full bottle spare">
+  <img src="docs/screens/10-use-some.jpg" width="200" alt="Use some: 3 tbsp of olive oil takes 60 ml and leaves 1090 ml">
+  <img src="docs/screens/11-edit-measured.jpg" width="200" alt="Editing a measured item: scan barcode, take photo, pack size, left in the open one">
 </p>
 
 <sub>Screenshots use made-up demo data. They are rendered by <code>tool/screens/screens_test.dart</code>.</sub>
@@ -26,6 +29,8 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
 | **Recipes** | Your saved recipes, matched against what is in stock. Paste a link (the app reads the name, time and ingredients; the method stays on the site, one tap away) or write your own. Add whatever is missing to the list in one tap. Starter ideas fill in the rest. |
 | **Prices** | *Put away* asks what each line cost (optional); each item shows its last price per shop, cheapest first; Insights adds up the week. |
 | **Insights** | Targets met, running low, out of stock, readiness by location, use-by in the next fortnight, most-used items over 30 days, and who changed what. |
+
+**Measured stock.** Bottles and bags you use bit by bit are kept as an amount: a 500 ml soy sauce with about 300 ml left reads "300 / 500 ml". *Use some…* takes any measure off it (ml, L, cups, tablespoons, teaspoons, g, kg; Australian sizes), + adds a whole pack, and recipes check the amount actually left ("Short 80 ml") so you can buy ahead. Add items by **scanning the barcode** (name and pack size from [Open Food Facts](https://world.openfoodfacts.org)) and a **photo**.
 
 Stock cards show how long each item lasts at the rate you use it ("~6 days left"), learned from your own history. *I cooked this* on a recipe takes what it used out of stock.
 
@@ -95,10 +100,13 @@ flutter run         # on a connected phone or emulator
 
 | Phase | Version | What |
 | --- | --- | --- |
-| **0** | 0.1 to 0.2 | Six pages, stock on each phone, CSV import/export, saved recipes, CI, signed releases. **Done.** |
-| 1 | 0.2 | Sync between the two phones through a Cloudflare Worker and D1, with one account each. Offline changes queue and merge. |
-| 2 | 0.3 | Prices and specials from Woolworths, Coles, Aldi and IGA in Batemans Bay, gathered by a small, cheap Claude model on a schedule; alerts on big drops. |
-| 3 | 0.4 | Recipes from your own stock, smarter insights (burn rate, "runs out in…"), photos of items. |
+| **0** | 0.1 to 0.3 | Six pages, stock on each phone, CSV, saved recipes, I cooked this, runs out in, price memory, weekly spend, CI, signed releases. **Done.** |
+| **1** | 0.4 | Measured stock, *Use some…* in any measure, recipes against the amount left, barcode scan (Open Food Facts), item photos. **Done.** |
+| 2 | 0.5 | Receipt scan (on-device text recognition) into spend, prices and stock; use-by batches, "eat me first". |
+| 3 | 0.6 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
+| 4 | 0.7 | Meal planner, family and pet pages, shop mode, days of food; home-screen widget and printable stock sheet. |
+| 5 | 0.8 | Sync between the two phones through a Cloudflare Worker and D1. |
+| 6 | 0.9 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |
 | Later | 1.0 | Other households, if it earns it. |
 
 Decisions are recorded as [ADRs](docs/adr/). Changes are listed in the [changelog](CHANGELOG.md).

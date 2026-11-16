@@ -4,6 +4,23 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-11-16
+
+### Added
+- **Measured stock**: an item can be measured instead of counted: a pack size (e.g. a 500 ml bottle) and how much is left in ml, L, g or kg. Cards read "300 / 500 ml", or "1150 ml · 1 full + 400" with spare packs. The editor takes the pack size, what is left in the open one (with Full / ¾ / ½ / ¼ / Empty), unopened packs, and a target in packs.
+- **Use some…**: take an amount off in any measure that converts: ml, L, cups, tablespoons, teaspoons (Australian: cup 250 ml, tbsp 20 ml, tsp 5 ml), or g / kg, with a live "takes 40 ml, leaves 260 ml" line. The - button opens it for measured items; + adds a whole pack.
+- **Recipes check the amount left**: a line like "100 ml soy sauce" against 20 ml left shows "Short 80 ml" under *To buy*, with what you have and the last price per shop; *Add to list* adds whole packs. Counts compare only when they count the same thing ("3 eggs" against eggs, not "2 garlic cloves" against bulbs).
+- **Scan barcode**: in the item editor, reads EAN/UPC barcodes with the camera (or typed). A barcode already in stock offers to add a pack to it; a new one is looked up on Open Food Facts for the name and pack size. ADR 0005.
+- **Take photo**: a photo of the item, kept on the phone and shown on its card.
+
+### Changed
+- Running low and recipe top-ups put measured items on the list in packs ("2 × 500 ml"); putting them away adds the amount (1000 ml). Prices for packs show per pack.
+- *I cooked this* starts a measured item with no amount on the line at one sensible step (e.g. 25 ml), and uses up what a recipe was short of.
+
+### Known limits
+- CSV import/export does not carry pack size, barcode or photo yet.
+- Photos stay on the phone that took them until sync (v0.8).
+
 ## [0.3.0] - 2026-11-16
 
 ### Added

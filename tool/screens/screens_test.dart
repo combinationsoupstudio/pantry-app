@@ -46,6 +46,20 @@ Future<HouseholdStore> demoStore() async {
   await add('Hydralyte sachets', 'medical', 40, 'sachets', 40);
   await add('LED torch', 'garage', 2, 'items', 4);
   await add('Batteries AAA', 'garage', 48, 'items', 10);
+  final soy = await s.addItem(
+    name: 'Soy sauce',
+    locationId: 'pantry',
+    quantity: 30,
+    unit: 'ml',
+    target: 500,
+    packSize: 500,
+    barcode: '9300000000001',
+  );
+  await s.addItem(name: 'Olive oil', locationId: 'pantry', quantity: 1150, unit: 'ml', target: 750, packSize: 750);
+  final soyLine = await s.addShopping(name: 'Soy sauce', store: Store.coles);
+  await s.setBought(soyLine.id, true);
+  await s.putAwayBought(paid: {soyLine.id: 4.5});
+  await s.adjust(soy.id, -500);
   final pasta = s.items.firstWhere((i) => i.name == 'Pasta');
   await s.adjust(pasta.id, -1);
   await s.adjust(pasta.id, 1);
@@ -97,6 +111,27 @@ void main() {
     ]) {
       await tester.tap(find.byKey(ValueKey(key)));
       await shot(tester, name);
+      if (name == '2-pantry') {
+        final soy = store.items.firstWhere((i) => i.name == 'Soy sauce');
+        final oil = store.items.firstWhere((i) => i.name == 'Olive oil');
+        await tester.scrollUntilVisible(
+          find.byKey(ValueKey('stock-${oil.id}')),
+          200,
+          scrollable: find.byType(Scrollable).last,
+        );
+        await shot(tester, '9-pantry-measured');
+        await tester.tap(find.byKey(ValueKey('minus-${oil.id}')));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const ValueKey('use-amount')), '3');
+        await tester.tap(find.byKey(const ValueKey('use-unit-tbsp')));
+        await shot(tester, '10-use-some');
+        Navigator.of(tester.element(find.byKey(const ValueKey('use-amount')))).pop();
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(ValueKey('stock-${soy.id}')));
+        await shot(tester, '11-edit-measured');
+        Navigator.of(tester.element(find.byKey(const ValueKey('save-item')))).pop();
+        await tester.pumpAndSettle();
+      }
       if (name == '5-recipes') {
         await tester.tap(find.text('Weeknight fried rice'));
         await shot(tester, '6-recipe-ingredients');
