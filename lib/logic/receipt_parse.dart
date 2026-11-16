@@ -236,3 +236,34 @@ int? packCount(String receiptName) {
   final n = int.parse(m.group(1)!);
   return n > 1 ? n : null;
 }
+
+/// How a tall receipt image (a saved e-receipt is often 1 wide by 6 or more
+/// high) is cut into overlapping sections the text reader can read at full
+/// size. Each span is (top, height) in pixels; [overlap] pixels are shared
+/// with the next span so no line is cut in half everywhere.
+List<(int, int)> receiptSpans(int width, int height, {double ratio = 1.6, int? overlap}) {
+  final h = (width * ratio).round();
+  if (height <= h * 1.25) return [(0, height)];
+  final o = overlap ?? (width * 0.15).round();
+  final spans = <(int, int)>[];
+  var top = 0;
+  while (true) {
+    if (top + h >= height) {
+      spans.add((top, height - top));
+      break;
+    }
+    spans.add((top, h));
+    top += h - o;
+  }
+  return spans;
+}
+
+/// Whether a line found in span [i] (its middle at [middle], in whole-image
+/// pixels) is kept: each overlap is split down the middle, so a line in both
+/// spans is counted once.
+bool keepInSpan(double middle, int i, List<(int, int)> spans) {
+  final (top, height) = spans[i];
+  final lo = i == 0 ? double.negativeInfinity : (top + (spans[i - 1].$1 + spans[i - 1].$2)) / 2;
+  final hi = i == spans.length - 1 ? double.infinity : (spans[i + 1].$1 + top + height) / 2;
+  return middle >= lo && middle < hi;
+}

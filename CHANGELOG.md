@@ -4,6 +4,12 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-11-16
+
+### Fixed
+- **Receipts from photos** (Chris: a saved Woolworths e-receipt JPEG could not be read). A tall image is now cut into overlapping sections read at full size, each line kept once; the photo is no longer shrunk to 2400 px wide before reading.
+- When a receipt cannot be read, the app says why and shows the text it did read, with a Copy button, so the reader can be tuned on it.
+
 ## [0.8.0] - 2026-11-16
 
 ### Added
