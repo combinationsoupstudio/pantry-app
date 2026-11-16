@@ -4,7 +4,7 @@ import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../../logic/usage.dart';
 import '../theme.dart';
-import 'capture.dart';
+import 'pictures.dart';
 import 'item_sheets.dart';
 import 'use_some_sheet.dart';
 
@@ -65,7 +65,14 @@ class StockTile extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
                     child: Row(
                       children: [
-                        if (item.photoPath != null) ...[ItemPhoto(path: item.photoPath), const SizedBox(width: 10)],
+                        SizedBox(
+                          width: PicturePile.slotWidth(44),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: ItemPile(key: ValueKey('pile-${item.id}'), item: item),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

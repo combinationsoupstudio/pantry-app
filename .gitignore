@@ -53,3 +53,7 @@ app.*.map.json
 key.properties
 *.base64.txt
 tool/screens/goldens/
+
+# Real product pictures for the demo screens (fetched by tool/screens/fetch_pictures.py)
+tool/screens/pictures/
+tool/screens/pictures.json

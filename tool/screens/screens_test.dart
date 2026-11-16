@@ -7,7 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:pantry_app/app.dart';
+
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:pantry_app/data/household_store.dart';
+import 'package:pantry_app/data/open_food_facts.dart';
+import 'package:pantry_app/data/picture_cache.dart';
 import 'package:pantry_app/data/storage_backend.dart';
 import 'package:pantry_app/models/models.dart';
 
@@ -23,6 +30,11 @@ Future<void> loadFonts() async {
   final icons = FontLoader('MaterialIcons')..addFont(f('MaterialIcons-Regular.otf'));
   await icons.load();
 }
+
+/// Real Open Food Facts pictures fetched by tool/screens/fetch_pictures.py.
+final Map<String, Object?> pictures = File('tool/screens/pictures.json').existsSync()
+    ? (jsonDecode(File('tool/screens/pictures.json').readAsStringSync()) as Map).cast<String, Object?>()
+    : {};
 
 Future<HouseholdStore> demoStore() async {
   final s = HouseholdStore(MemoryBackend(), clock: () => DateTime(2026, 11, 16, 12));
@@ -60,6 +72,11 @@ Future<HouseholdStore> demoStore() async {
   await s.setBought(soyLine.id, true);
   await s.putAwayBought(paid: {soyLine.id: 4.5});
   await s.adjust(soy.id, -500);
+  await s.addItem(name: 'Washed potatoes', locationId: 'pantry', quantity: 4, unit: 'items', target: 6);
+  for (final i in s.items) {
+    final url = pictures[i.name];
+    if (url is String) await s.setPicture(i.id, url);
+  }
   final pasta = s.items.firstWhere((i) => i.name == 'Pasta');
   await s.adjust(pasta.id, -1);
   await s.adjust(pasta.id, 1);
@@ -88,10 +105,26 @@ Future<HouseholdStore> demoStore() async {
 }
 
 void main() {
-  setUpAll(loadFonts);
+  setUpAll(() async {
+    await loadFonts();
+    PictureCache.instance = PictureCache(root: () async => Directory('tool/screens'));
+    final hits = (pictures['_search'] as List?) ?? const [];
+    OpenFoodFacts.instance = OpenFoodFacts(
+      client: MockClient((req) async => http.Response(jsonEncode({'hits': hits, 'status': 0}), 200)),
+    );
+  });
 
   Future<void> shot(WidgetTester tester, String name) async {
     await tester.pumpAndSettle();
+    // Pictures load from files: let the real file reads and decodes finish.
+    for (var round = 0; round < 3; round++) {
+      await tester.runAsync(() async {
+        for (final e in find.byType(Image).evaluate()) {
+          await precacheImage((e.widget as Image).image, e).timeout(const Duration(seconds: 5), onTimeout: () {});
+        }
+      });
+      await tester.pumpAndSettle();
+    }
     await expectLater(find.byType(MaterialApp).first, matchesGoldenFile('goldens/$name.png'));
   }
 
@@ -129,6 +162,21 @@ void main() {
         await tester.pumpAndSettle();
         await tester.tap(find.byKey(ValueKey('stock-${soy.id}')));
         await shot(tester, '11-edit-measured');
+        Navigator.of(tester.element(find.byKey(const ValueKey('save-item')))).pop();
+        await tester.pumpAndSettle();
+        final spuds = store.items.firstWhere((i) => i.name == 'Washed potatoes');
+        await tester.scrollUntilVisible(
+          find.byKey(ValueKey('stock-${spuds.id}')),
+          200,
+          scrollable: find.byType(Scrollable).last,
+        );
+        await tester.tap(find.byKey(ValueKey('stock-${spuds.id}')));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const ValueKey('find-picture')));
+        await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 200)));
+        await shot(tester, '12-find-picture');
+        Navigator.of(tester.element(find.byKey(const ValueKey('picture-query')))).pop();
+        await tester.pumpAndSettle();
         Navigator.of(tester.element(find.byKey(const ValueKey('save-item')))).pop();
         await tester.pumpAndSettle();
       }
