@@ -11,7 +11,7 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 - **Say it to add it** (microphone on Shopping, Pantry and Storage): say "two tins of tomatoes and a dozen eggs, milk", check the lines, add them to the list or to stock. Number words, "a couple of", "half a kilo", tins / packets / bottles and measures are understood; stock that exists goes up in its own unit (a pack for a measured item), new names become new items. Uses the phone's own speech recognition (Australian English); the phone asks for microphone permission on first use.
 
 ### Changed
-- Android: core library desugaring on (needed by the notification library); permissions for notifications, restart re-booking and the microphone; a query for the speech service. ADR 0008.
+- Android: compile level 37 (the notification library needs it; target and minimum unchanged); core library desugaring on (needed by the notification library); permissions for notifications, restart re-booking and the microphone; a query for the speech service. ADR 0008.
 
 ## [0.6.0] - 2026-11-16
 

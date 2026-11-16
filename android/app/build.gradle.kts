@@ -13,7 +13,9 @@ val releasePassword: String? = System.getenv("PANTRY_KEYSTORE_PASSWORD")
 
 android {
     namespace = "au.com.combinationsoupstudio.pantry_app"
-    compileSdk = flutter.compileSdkVersion
+    // 37: flutter_local_notifications 23 and androidx.core 1.19 compile against it.
+    // Only the compile level; targetSdk and minSdk (which phones it runs on) are unchanged.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
