@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../widgets/voice_add.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
@@ -26,6 +27,12 @@ class ShoppingPage extends StatelessWidget {
           SliverAppBar.medium(
             title: const Text('Shopping list'),
             actions: [
+              IconButton(
+                key: const ValueKey('voice-shopping'),
+                tooltip: 'Say it to add it',
+                icon: const Icon(Icons.mic_none),
+                onPressed: () => showVoiceAdd(context),
+              ),
               if (boughtCount > 0)
                 TextButton.icon(
                   key: const ValueKey('put-away'),

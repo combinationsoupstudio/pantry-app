@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
+import 'voice_add.dart';
 import 'scan_to_use.dart';
 import '../pages/stocktake_page.dart';
 import '../../data/store_scope.dart';
@@ -44,6 +45,16 @@ class _StockListViewState extends State<StockListView> {
             title: Text(widget.title),
             floating: true,
             actions: [
+              IconButton(
+                key: ValueKey('voice-${widget.kind.name}'),
+                tooltip: 'Say it to add it',
+                icon: const Icon(Icons.mic_none),
+                onPressed: () => showVoiceAdd(
+                  context,
+                  target: VoiceTarget.stock,
+                  locationId: _locationId ?? (widget.kind == LocationKind.pantry ? 'pantry' : 'prep'),
+                ),
+              ),
               IconButton(
                 key: ValueKey('scan-use-${widget.kind.name}'),
                 tooltip: 'Scan to use',

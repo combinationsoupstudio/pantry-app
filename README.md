@@ -109,7 +109,7 @@ flutter run         # on a connected phone or emulator
 | **1** | 0.4 | Measured stock, *Use some…* in any measure, recipes against the amount left, barcode scan (Open Food Facts), item photos. **Done.** |
 | **2** | 0.5 | Product pictures (barcode or name search, cached on the phone), picture piles that show the amount, − / + on the list. **Done.** |
 | **3** | 0.6 | Back up and restore, stocktake, scan to use, use-by dates (medical too), water days. **Done.** |
-| 4 | 0.7 | Reminders (running low on shop day, use-by alerts); say it to add it (voice). |
+| **4** | 0.7 | Reminders (shop day, use-by alerts, backup nudge); say it to add it (voice). **Done.** |
 | 5 | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock; use-by batches, "eat me first". |
 | 6 | 0.9 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
 | 7 | 0.10 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |

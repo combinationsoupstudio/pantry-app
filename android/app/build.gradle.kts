@@ -13,12 +13,16 @@ val releasePassword: String? = System.getenv("PANTRY_KEYSTORE_PASSWORD")
 
 android {
     namespace = "au.com.combinationsoupstudio.pantry_app"
-    compileSdk = flutter.compileSdkVersion
+    // 37: flutter_local_notifications 23 and androidx.core 1.19 compile against it.
+    // Only the compile level; targetSdk and minSdk (which phones it runs on) are unchanged.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // flutter_local_notifications schedules with java.time on older Androids.
+        isCoreLibraryDesugaringEnabled = true
     }
 
     defaultConfig {
@@ -67,4 +71,8 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

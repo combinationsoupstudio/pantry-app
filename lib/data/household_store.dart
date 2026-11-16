@@ -494,6 +494,9 @@ class HouseholdStore extends ChangeNotifier {
     return line;
   }
 
+  /// The stock item called [name] (ignoring case, plurals and punctuation).
+  StockItem? itemByName(String name) => _stockByName(name);
+
   StockItem? _stockByName(String name) {
     final key = nameKey(name);
     for (final i in _items) {
