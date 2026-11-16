@@ -213,6 +213,9 @@ class HouseholdStore extends ChangeNotifier {
     double target = 0,
     DateTime? useBy,
     String notes = '',
+    double packSize = 0,
+    String? barcode,
+    String? photoPath,
   }) async {
     final item = StockItem(
       id: newId(),
@@ -225,6 +228,9 @@ class HouseholdStore extends ChangeNotifier {
       notes: notes,
       updatedAt: _clock(),
       updatedBy: _user,
+      packSize: packSize < 0 ? 0 : packSize,
+      barcode: (barcode == null || barcode.trim().isEmpty) ? null : barcode.trim(),
+      photoPath: photoPath,
     );
     _items.add(item);
     _log(item.name, 'added', delta: item.quantity, unit: item.unit);
@@ -238,6 +244,23 @@ class HouseholdStore extends ChangeNotifier {
     _items[index] = updated.copyWith(updatedAt: _clock(), updatedBy: _user);
     _log(updated.name, 'edited');
     await _commit();
+  }
+
+  /// The stock item with this barcode, if one was scanned before.
+  StockItem? itemByBarcode(String code) {
+    final c = code.trim();
+    if (c.isEmpty) return null;
+    for (final i in _items) {
+      if (i.barcode == c) return i;
+    }
+    return null;
+  }
+
+  /// Adds one pack of a measured item, or one of a counted one.
+  Future<void> addPack(String itemId) async {
+    final i = item(itemId);
+    if (i == null) return;
+    await adjust(itemId, i.isMeasured ? i.packSize : 1);
   }
 
   /// Adds (positive) or uses (negative) stock. Never goes below zero.
@@ -286,6 +309,9 @@ class HouseholdStore extends ChangeNotifier {
           target: 0,
           updatedAt: now,
           updatedBy: _user,
+          packSize: source.packSize,
+          barcode: source.barcode,
+          photoPath: source.photoPath,
         ),
       );
     }
@@ -353,8 +379,10 @@ class HouseholdStore extends ChangeNotifier {
       final match = _stockByName(trimmedName);
       if (match != null) {
         linkedId = match.id;
-        if (lineUnit.isEmpty) lineUnit = match.unit;
+        if (lineUnit.isEmpty) lineUnit = match.shoppingUnit;
       }
+    } else if (lineUnit.isEmpty) {
+      lineUnit = item(linkedId)?.shoppingUnit ?? '';
     }
     final index = _findStackTarget(name: trimmedName, unit: lineUnit, stockItemId: linkedId);
     if (index >= 0) {
@@ -444,14 +472,14 @@ class HouseholdStore extends ChangeNotifier {
   Future<int> addRunningLowToShopping() async {
     var changed = 0;
     for (final low in runningLow) {
-      final index = _findStackTarget(name: low.name, unit: low.unit, stockItemId: low.id);
+      final index = _findStackTarget(name: low.name, unit: low.shoppingUnit, stockItemId: low.id);
       if (index < 0) {
         _shopping.add(
           ShoppingItem(
             id: newId(),
             name: low.name,
-            quantity: low.shortfall,
-            unit: low.unit,
+            quantity: low.restock,
+            unit: low.shoppingUnit,
             store: Store.any,
             addedBy: _user,
             stockItemId: low.id,
@@ -461,11 +489,11 @@ class HouseholdStore extends ChangeNotifier {
         continue;
       }
       final existing = _shopping[index];
-      if (existing.stockItemId == low.id && existing.quantity >= low.shortfall) continue;
+      if (existing.stockItemId == low.id && existing.quantity >= low.restock) continue;
       _shopping[index] = existing.copyWith(
         stockItemId: low.id,
-        unit: existing.unit.isEmpty ? low.unit : existing.unit,
-        quantity: existing.quantity >= low.shortfall ? existing.quantity : low.shortfall,
+        unit: existing.unit.isEmpty ? low.shoppingUnit : existing.unit,
+        quantity: existing.quantity >= low.restock ? existing.quantity : low.restock,
       );
       changed++;
     }
@@ -515,11 +543,15 @@ class HouseholdStore extends ChangeNotifier {
     final now = _clock();
     for (final s in bought) {
       final index = s.stockItemId == null ? -1 : _items.indexWhere((i) => i.id == s.stockItemId);
-      final unit = index >= 0 ? _items[index].unit : s.unit;
+      final unit = s.unit.isEmpty && index >= 0 ? _items[index].unit : s.unit;
       if (index >= 0) {
         final current = _items[index];
-        _items[index] = current.copyWith(quantity: current.quantity + s.quantity, updatedAt: now, updatedBy: _user);
-        _log(current.name, 'bought', delta: s.quantity, unit: current.unit);
+        // Packs of a measured item go in as their amount: 2 × 500 ml = 1000 ml.
+        final added = current.isMeasured && nameKey(s.unit) != nameKey(current.unit)
+            ? s.quantity * current.packSize
+            : s.quantity;
+        _items[index] = current.copyWith(quantity: current.quantity + added, updatedAt: now, updatedBy: _user);
+        _log(current.name, 'bought', delta: added, unit: current.unit);
       } else {
         _log(s.name, 'bought', delta: s.quantity, unit: s.unit);
       }

@@ -2,12 +2,60 @@
 /// the unit a stock item is kept in.
 library;
 
+import '../models/models.dart';
+
 class Amount {
   const Amount(this.quantity, this.unit);
   final double quantity;
 
-  /// Normalised: g, kg, ml, l, or '' for a count.
+  /// Normalised: g, kg, ml, l, cup, tbsp, tsp, or '' for a count.
   final String unit;
+}
+
+/// Australian kitchen measures in millilitres (a metric cup is 250 ml and
+/// an Australian tablespoon 20 ml), and grams for weights.
+const _toBase = {
+  'ml': ('v', 1.0),
+  'l': ('v', 1000.0),
+  'cup': ('v', 250.0),
+  'tbsp': ('v', 20.0),
+  'tsp': ('v', 5.0),
+  'g': ('w', 1.0),
+  'kg': ('w', 1000.0),
+};
+
+/// The units a measured item can be kept in.
+const keptMeasures = ['ml', 'L', 'g', 'kg'];
+
+/// "mL", "Litres", "tablespoons" -> "ml", "l", "tbsp". Anything else comes
+/// back lower-cased and trimmed.
+String normaliseUnit(String unit) {
+  final u = unit.trim().toLowerCase();
+  return _unitWords[u] ?? u;
+}
+
+/// True for g, kg, ml and L: units an amount can be measured out of.
+bool isMeasureUnit(String unit) => const {'g', 'kg', 'ml', 'l'}.contains(normaliseUnit(unit));
+
+/// The units a measured item's use can be entered in: every volume measure
+/// for ml/L items, every weight for g/kg items; just its own unit otherwise.
+List<String> useUnitsFor(String stockUnit) {
+  final kind = _toBase[normaliseUnit(stockUnit)]?.$1;
+  if (kind == 'v') return const ['ml', 'L', 'cup', 'tbsp', 'tsp'];
+  if (kind == 'w') return const ['g', 'kg'];
+  return [stockUnit];
+}
+
+/// [quantity] of [from] in [to], or null when they do not convert
+/// (weight into volume, or anything into a count).
+double? convertUnits(double quantity, String from, String to) {
+  final f = normaliseUnit(from);
+  final t = normaliseUnit(to);
+  if (f == t) return quantity;
+  final a = _toBase[f];
+  final b = _toBase[t];
+  if (a == null || b == null || a.$1 != b.$1) return null;
+  return quantity * a.$2 / b.$2;
 }
 
 const _fractions = {'¼': 0.25, '½': 0.5, '¾': 0.75, '⅓': 1 / 3, '⅔': 2 / 3, '⅛': 0.125};
@@ -32,6 +80,15 @@ const _unitWords = {
   'litres': 'l',
   'liter': 'l',
   'liters': 'l',
+  'cup': 'cup',
+  'cups': 'cup',
+  'tbsp': 'tbsp',
+  'tbs': 'tbsp',
+  'tablespoon': 'tbsp',
+  'tablespoons': 'tbsp',
+  'tsp': 'tsp',
+  'teaspoon': 'tsp',
+  'teaspoons': 'tsp',
 };
 
 /// "2 eggs" -> 2 (count); "500 g pasta" -> 500 g; "1 1/2 kg" -> 1.5 kg;
@@ -53,22 +110,23 @@ Amount? parseAmount(String line) {
   }
   if (qty == 0) return null;
   final word = (m.group(3) ?? '').toLowerCase();
-  final unit =
-      _unitWords[word] ?? (word.length <= 5 && const {'cup', 'cups', 'tbsp', 'tsp'}.contains(word) ? word : '');
-  return Amount(qty, unit);
+  return Amount(qty, _unitWords[word] ?? '');
 }
 
 /// [amount] in the stock item's [stockUnit], or null if they do not convert
-/// (e.g. cups into kg, or grams into "tins").
+/// (e.g. cups into kg, or grams into "tins"). Cups, tablespoons and
+/// teaspoons convert into ml and L.
 double? convertTo(Amount amount, String stockUnit) {
-  final to = _unitWords[stockUnit.trim().toLowerCase()] ?? stockUnit.trim().toLowerCase();
+  final to = normaliseUnit(stockUnit);
   final from = amount.unit;
-  const counts = {'', 'items', 'item', 'each', 'eggs', 'pcs', 'pieces'};
-  if (from.isEmpty) return counts.contains(to) || !_unitWords.containsValue(to) ? amount.quantity : null;
-  if (from == to) return amount.quantity;
-  const factor = {'g>kg': 0.001, 'kg>g': 1000.0, 'ml>l': 0.001, 'l>ml': 1000.0};
-  final f = factor['$from>$to'];
-  return f == null ? null : amount.quantity * f;
+  if (from.isEmpty) return _toBase.containsKey(to) ? null : amount.quantity;
+  return convertUnits(amount.quantity, from, to);
+}
+
+/// "300 ml", "1.5 kg", "2 tbsp".
+String formatMeasure(double quantity, String unit) {
+  final u = normaliseUnit(unit) == 'l' ? 'L' : unit.trim();
+  return u.isEmpty ? formatQty(quantity) : '${formatQty(quantity)} $u';
 }
 
 /// How much of a stock item one recipe line uses: the converted amount, or

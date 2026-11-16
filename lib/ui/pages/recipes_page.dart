@@ -143,7 +143,7 @@ class RecipeBanner extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                StatusBadge(missing: match.missing.length),
+                StatusBadge(missing: match.toBuy),
               ],
             ),
           ),
@@ -185,22 +185,30 @@ class StatusBadge extends StatelessWidget {
 }
 
 /// Puts a recipe's missing ingredients on the list, linked to stock where the
-/// household tracks them. Ingredients already on the list are skipped, so a
-/// second press adds nothing twice. Returns how many were added.
+/// household tracks them, and tops up what it is short of (whole packs of a
+/// measured item). Ingredients already on the list are skipped, so a second
+/// press adds nothing twice. Returns how many were added.
 Future<int> addMissingToShopping(HouseholdStore store, RecipeMatch match) async {
   var added = 0;
   for (final i in match.missing) {
     final stock = stockItemFor(i, store.items);
     final name = stock?.name ?? sentenceCase(i.label);
     if (store.isOnShoppingList(name, stockItemId: stock?.id)) continue;
-    await store.addShopping(name: name, unit: stock?.unit ?? '', stockItemId: stock?.id);
+    await store.addShopping(name: name, unit: stock?.shoppingUnit ?? '', stockItemId: stock?.id);
+    added++;
+  }
+  for (final s in match.short) {
+    if (store.isOnShoppingList(s.item.name, stockItemId: s.item.id)) continue;
+    await store.addShopping(name: s.item.name, quantity: s.toBuy, unit: s.item.shoppingUnit, stockItemId: s.item.id);
     added++;
   }
   return added;
 }
 
-/// How many of a recipe's missing ingredients are not yet on the list.
-int missingNotOnList(HouseholdStore store, RecipeMatch match) => match.missing.where((i) {
-  final stock = stockItemFor(i, store.items);
-  return !store.isOnShoppingList(stock?.name ?? sentenceCase(i.label), stockItemId: stock?.id);
-}).length;
+/// How many of a recipe's missing or short ingredients are not yet on the list.
+int missingNotOnList(HouseholdStore store, RecipeMatch match) =>
+    match.missing.where((i) {
+      final stock = stockItemFor(i, store.items);
+      return !store.isOnShoppingList(stock?.name ?? sentenceCase(i.label), stockItemId: stock?.id);
+    }).length +
+    match.short.where((s) => !store.isOnShoppingList(s.item.name, stockItemId: s.item.id)).length;

@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/store_scope.dart';
+import '../../logic/amounts.dart';
 import '../../logic/recipes.dart';
 import '../../models/models.dart';
 import '../theme.dart';
@@ -118,7 +119,7 @@ class RecipeDetailPage extends StatelessWidget {
                   child: OutlinedButton.icon(
                     key: const ValueKey('cooked'),
                     style: OutlinedButton.styleFrom(minimumSize: const Size(0, 48)),
-                    onPressed: match.have.isEmpty
+                    onPressed: match.have.isEmpty && match.short.isEmpty
                         ? null
                         : () async {
                             final done = await showCookSheet(context, match);
@@ -182,6 +183,31 @@ class _IngredientsTab extends StatelessWidget {
       );
     }
 
+    Widget shortRow(Shortfall s) {
+      final last = store.latestByStore(s.item);
+      final price = last.isEmpty
+          ? ''
+          : '  ·  last ${formatMoney(last.first.unitPrice)} ${last.first.perLabel == 'each' ? 'each' : 'per ${last.first.perLabel}'}'
+                ' at ${last.first.store.label}';
+      return ListTile(
+        key: ValueKey('short-${s.item.id}'),
+        visualDensity: VisualDensity.compact,
+        leading: Icon(Icons.add_shopping_cart, color: StatusColors.of(context).low),
+        title: Text(sentenceCase(s.ingredient.line), style: text.bodyLarge),
+        subtitle: Text.rich(
+          TextSpan(
+            children: [
+              TextSpan(
+                text: sentenceCase(s.label),
+                style: TextStyle(color: StatusColors.of(context).low, fontWeight: FontWeight.w700),
+              ),
+              TextSpan(text: '  ·  have ${formatMeasure(s.have, s.item.unit)} of ${s.item.name}$price'),
+            ],
+          ),
+        ),
+      );
+    }
+
     Widget heading(String label) => Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
       child: Text(label, style: text.labelLarge?.copyWith(color: scheme.primary)),
@@ -190,8 +216,9 @@ class _IngredientsTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
-        if (match.missing.isNotEmpty) ...[
-          heading('To buy (${match.missing.length})'),
+        if (!match.ready) ...[
+          heading('To buy (${match.toBuy})'),
+          for (final s in match.short) shortRow(s),
           for (final i in match.missing) row(i, have: false),
         ],
         if (match.have.isNotEmpty) ...[

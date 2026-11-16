@@ -1,4 +1,5 @@
 import '../models/models.dart';
+import 'amounts.dart';
 import 'recipe_link.dart';
 
 /// One ingredient, with the words a stock item might be called.
@@ -39,13 +40,67 @@ class Recipe {
   );
 }
 
+/// An ingredient the household has some of, but not as much as the recipe
+/// line asks for: "needs 100 ml, have 20 ml".
+class Shortfall {
+  const Shortfall(this.ingredient, this.item, this.need);
+  final Ingredient ingredient;
+  final StockItem item;
+
+  /// What the line needs, in the item's unit.
+  final double need;
+  double get have => item.quantity;
+
+  /// How much more is needed, in the item's unit.
+  double get short => need - have;
+
+  /// What goes on the list: whole packs for a measured item.
+  double get toBuy => item.packsFor(short);
+
+  /// "short 80 ml".
+  String get label {
+    final unit = const {'', 'items', 'item', 'each'}.contains(item.unit.trim().toLowerCase()) ? '' : item.unit;
+    return 'short ${formatMeasure(double.parse(short.toStringAsFixed(2)), unit)}';
+  }
+}
+
 class RecipeMatch {
-  const RecipeMatch(this.recipe, this.have, this.missing);
+  const RecipeMatch(this.recipe, this.have, this.missing, [this.short = const []]);
   final Recipe recipe;
+
+  /// In stock, and enough of it where the line says how much.
   final List<Ingredient> have;
+
+  /// Not in stock at all.
   final List<Ingredient> missing;
 
-  bool get ready => missing.isEmpty;
+  /// In stock, but less than the line asks for.
+  final List<Shortfall> short;
+
+  /// How many things to buy before cooking it.
+  int get toBuy => missing.length + short.length;
+
+  bool get ready => toBuy == 0;
+}
+
+/// How much of [item] the ingredient [line] asks for, in the item's unit,
+/// or null when the line gives no amount that converts ("1 cup rice"
+/// against rice kept in kg, or "salt").
+double? amountNeeded(String line, StockItem item) {
+  final a = parseAmount(line);
+  if (a == null) return null;
+  if (a.unit.isEmpty && !isMeasureUnit(item.unit)) {
+    // A plain count only compares when it counts the same thing: "3 eggs"
+    // against eggs kept as items, "2 tins tomatoes" against tins; never
+    // "2 garlic cloves" against garlic kept in bulbs.
+    final unit = item.unit.trim().toLowerCase();
+    if (!const {'', 'items', 'item', 'each', 'pcs', 'pieces'}.contains(unit)) {
+      final word = RegExp(r'^[\d\s./¼½¾⅓⅔⅛]*([a-zA-Z]+)').firstMatch(line)?.group(1)?.toLowerCase() ?? '';
+      String stem(String w) => w.endsWith('s') ? w.substring(0, w.length - 1) : w;
+      if (stem(word) != stem(unit)) return null;
+    }
+  }
+  return convertTo(a, item.unit);
 }
 
 String _matchName(String line) {
@@ -207,12 +262,23 @@ List<RecipeMatch> matchRecipes(List<StockItem> stock, {List<Recipe> recipes = st
       recipes.map((r) {
         final have = <Ingredient>[];
         final missing = <Ingredient>[];
+        final short = <Shortfall>[];
         for (final ing in r.ingredients) {
-          (hasIngredient(ing, stock) ? have : missing).add(ing);
+          final item = stockItemFor(ing, stock, inStockOnly: true);
+          if (item == null) {
+            missing.add(ing);
+            continue;
+          }
+          final need = amountNeeded(ing.line, item);
+          if (need != null && need > item.quantity + 1e-6) {
+            short.add(Shortfall(ing, item, need));
+          } else {
+            have.add(ing);
+          }
         }
-        return RecipeMatch(r, have, missing);
+        return RecipeMatch(r, have, missing, short);
       }).toList()..sort((a, b) {
-        final byMissing = a.missing.length.compareTo(b.missing.length);
+        final byMissing = a.toBuy.compareTo(b.toBuy);
         return byMissing != 0 ? byMissing : a.recipe.name.compareTo(b.recipe.name);
       });
   return matches;

@@ -1,6 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Reads a recipe page when you paste its link. -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Barcode scanning and item photos. Asked for the first time either is used. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="Pantry"
         android:name="${applicationName}"
@@ -42,6 +45,10 @@
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- Takes an item photo with the phone's camera app. -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE"/>
         </intent>
         <!-- Opens a saved recipe's page in the browser. -->
         <intent>

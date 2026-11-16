@@ -43,12 +43,30 @@ class _CookSheetState extends State<_CookSheet> {
     for (final i in widget.match.have) {
       final stock = stockItemFor(i, store.items, inStockOnly: true);
       if (stock == null || !seen.add(stock.id)) continue;
-      final want = amountToUse(i.line, stock.unit);
+      // A measured item with no amount on the line starts at one step
+      // (e.g. 25 ml of a 500 ml bottle), not "1 ml".
+      final need = amountNeeded(i.line, stock);
+      final want = need ?? (stock.isMeasured ? _measuredStep(stock) : amountToUse(i.line, stock.unit));
       _uses.add(_Use(stock, i.line, want > stock.quantity ? stock.quantity : want));
+    }
+    // What we were short of gets used up.
+    for (final s in widget.match.short) {
+      if (!seen.add(s.item.id)) continue;
+      _uses.add(_Use(s.item, s.ingredient.line, s.item.quantity));
     }
   }
 
-  double _step(_Use u) => u.amount < 1 || u.item.quantity < 1 ? 0.1 : 1;
+  static double _measuredStep(StockItem item) => item.packSize <= 100
+      ? 5
+      : item.packSize <= 1000
+      ? 25
+      : 100;
+
+  double _step(_Use u) => u.item.isMeasured
+      ? _measuredStep(u.item)
+      : u.amount < 1 || u.item.quantity < 1
+      ? 0.1
+      : 1;
 
   @override
   Widget build(BuildContext context) {

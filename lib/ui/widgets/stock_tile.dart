@@ -4,7 +4,9 @@ import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import '../../logic/usage.dart';
 import '../theme.dart';
+import 'capture.dart';
 import 'item_sheets.dart';
+import 'use_some_sheet.dart';
 
 /// One stock item as its own card: a coloured edge for its state (green fine,
 /// amber low, red out), the name, a bold amount against its target, a bar,
@@ -24,6 +26,21 @@ class StockTile extends StatelessWidget {
     final location = store.location(item.locationId)?.name ?? '';
     final left = store.daysLeftFor(item);
     final unit = item.unit.isEmpty ? '' : ' ${item.unit}';
+    // A measured item reads "300 / 500 ml" (what is left of one pack), or
+    // "1300 ml · 2 full + 300" when there is more than one pack.
+    final String amountTail;
+    if (item.isMeasured) {
+      if (item.quantity <= item.packSize + 1e-9) {
+        amountTail = ' / ${item.packLabel}';
+      } else {
+        final full = (item.quantity / item.packSize).floor();
+        final rest = item.quantity - full * item.packSize;
+        amountTail =
+            '$unit  ·  $full full${rest > 0.5 ? ' + ${formatQty(double.parse(rest.toStringAsFixed(1)))}' : ''}';
+      }
+    } else {
+      amountTail = item.hasTarget ? ' / ${formatQty(item.target)}$unit' : unit;
+    }
     final state = item.isOut
         ? 'Out'
         : item.isLow
@@ -48,6 +65,7 @@ class StockTile extends StatelessWidget {
                     padding: const EdgeInsets.fromLTRB(12, 10, 4, 10),
                     child: Row(
                       children: [
+                        if (item.photoPath != null) ...[ItemPhoto(path: item.photoPath), const SizedBox(width: 10)],
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +109,7 @@ class StockTile extends StatelessWidget {
                                       ),
                                     ),
                                     TextSpan(
-                                      text: item.hasTarget ? ' / ${formatQty(item.target)}$unit' : unit,
+                                      text: amountTail,
                                       style: text.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
                                     ),
                                     if (left != null)
@@ -128,14 +146,18 @@ class StockTile extends StatelessWidget {
                         const SizedBox(width: 8),
                         IconButton.filledTonal(
                           key: ValueKey('minus-${item.id}'),
-                          tooltip: 'Use one',
-                          onPressed: item.isOut ? null : () => store.adjust(item.id, -1),
+                          tooltip: item.isMeasured ? 'Use some' : 'Use one',
+                          onPressed: item.isOut
+                              ? null
+                              : item.isMeasured
+                              ? () => showUseSomeSheet(context, item)
+                              : () => store.adjust(item.id, -1),
                           icon: const Icon(Icons.remove),
                         ),
                         IconButton.filled(
                           key: ValueKey('plus-${item.id}'),
-                          tooltip: 'Add one',
-                          onPressed: () => store.adjust(item.id, 1),
+                          tooltip: item.isMeasured ? 'Add a ${item.packLabel} pack' : 'Add one',
+                          onPressed: () => store.addPack(item.id),
                           icon: const Icon(Icons.add),
                         ),
                         const SizedBox(width: 4),
