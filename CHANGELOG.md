@@ -4,6 +4,19 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-11-16
+
+### Changed
+- UI refresh so each element reads as itself: a tinted page with white, edged cards; one meaning per colour everywhere (green fine, amber low, red out).
+- Stock items are cards with a coloured edge, a *Low* or *Out* tag, a bold amount against the target, a thicker bar and solid - / + buttons.
+- Bottom bar always shows its labels. Section headings are small capitals in the brand colour.
+- Shopping list: each shop is a card with its count; the amount sits in a pill; the shop menu shows which shop is chosen.
+- Recipe badges and the to-buy icons use the low colour; summary tiles carry coloured icons, and turn amber or red when they need attention; Insights bars follow the same colours.
+- Summary tiles have room for larger phone text sizes.
+
+### Added
+- `tool/screens/screens_test.dart` renders every screen at phone size with demo data; README screenshots come from it.
+
 ## [0.2.1] - 2026-11-16
 
 ### Changed

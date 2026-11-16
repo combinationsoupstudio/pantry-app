@@ -77,8 +77,23 @@ class ShoppingPage extends StatelessWidget {
             )
           else
             for (final entry in byStore.entries) ...[
-              SliverToBoxAdapter(child: SectionHeader(entry.key.label)),
-              SliverList.list(children: [for (final s in entry.value) _ShoppingRow(item: s)]),
+              SliverToBoxAdapter(child: SectionHeader('${entry.key.label}  ·  ${entry.value.length}')),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    child: Column(
+                      children: [
+                        for (var n = 0; n < entry.value.length; n++) ...[
+                          if (n > 0) const Divider(height: 1, indent: 56),
+                          _ShoppingRow(item: entry.value[n]),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           const SliverToBoxAdapter(
             child: Padding(
@@ -177,6 +192,8 @@ class _ShoppingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final store = StoreScope.read(context);
+    final scheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
     final amount = '${formatQty(item.quantity)}${item.unit.isEmpty ? '' : ' ${item.unit}'}';
     return Dismissible(
       key: ValueKey('shop-${item.id}'),
@@ -184,21 +201,49 @@ class _ShoppingRow extends StatelessWidget {
       background: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
-        color: Theme.of(context).colorScheme.errorContainer,
-        child: const Icon(Icons.delete_outline),
+        color: scheme.errorContainer,
+        child: Icon(Icons.delete_outline, color: scheme.onErrorContainer),
       ),
       onDismissed: (_) => store.removeShopping(item.id),
-      child: CheckboxListTile(
-        value: item.bought,
-        onChanged: (v) => store.setBought(item.id, v ?? false),
-        controlAffinity: ListTileControlAffinity.leading,
-        title: Text(item.name, style: item.bought ? const TextStyle(decoration: TextDecoration.lineThrough) : null),
-        subtitle: Text('$amount  ·  added by ${item.addedBy}'),
-        secondary: PopupMenuButton<Store>(
-          tooltip: 'Choose shop',
-          icon: const Icon(Icons.storefront_outlined),
-          onSelected: (s) => store.setStore(item.id, s),
-          itemBuilder: (_) => [for (final s in Store.values) PopupMenuItem(value: s, child: Text(s.label))],
+      child: InkWell(
+        onTap: () => store.setBought(item.id, !item.bought),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(4, 6, 8, 6),
+          child: Row(
+            children: [
+              Checkbox(value: item.bought, onChanged: (v) => store.setBought(item.id, v ?? false)),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      item.name,
+                      style: text.titleSmall?.copyWith(
+                        decoration: item.bought ? TextDecoration.lineThrough : null,
+                        color: item.bought ? scheme.onSurfaceVariant : null,
+                      ),
+                    ),
+                    Text('added by ${item.addedBy}', style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: scheme.surfaceContainerHigh, borderRadius: BorderRadius.circular(8)),
+                child: Text(amount, style: text.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
+              ),
+              PopupMenuButton<Store>(
+                tooltip: 'Choose shop',
+                icon: Icon(Icons.storefront_outlined, color: scheme.primary),
+                onSelected: (s) => store.setStore(item.id, s),
+                itemBuilder: (_) => [
+                  for (final s in Store.values)
+                    CheckedPopupMenuItem(value: s, checked: s == item.store, child: Text(s.label)),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

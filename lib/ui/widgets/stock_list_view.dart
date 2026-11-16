@@ -81,10 +81,12 @@ class _StockListViewState extends State<StockListView> {
               ),
             )
           else
-            SliverList.separated(
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Divider(height: 1, indent: 16),
-              itemBuilder: (_, i) => StockTile(item: items[i], showLocation: _locationId == null),
+            SliverPadding(
+              padding: const EdgeInsets.only(top: 8),
+              sliver: SliverList.builder(
+                itemCount: items.length,
+                itemBuilder: (_, i) => StockTile(item: items[i], showLocation: _locationId == null),
+              ),
             ),
           const SliverToBoxAdapter(child: SizedBox(height: 88)),
         ],

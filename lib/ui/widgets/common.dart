@@ -1,5 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
+/// A heading that reads as a heading: small capitals in the brand colour,
+/// with an optional count and an action on the right.
 class SectionHeader extends StatelessWidget {
   const SectionHeader(this.title, {super.key, this.trailing});
   final String title;
@@ -7,11 +9,18 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 8, 8),
+      padding: const EdgeInsets.fromLTRB(20, 20, 8, 8),
       child: Row(
         children: [
-          Expanded(child: Text(title, style: Theme.of(context).textTheme.titleMedium)),
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              style: Theme.of(context).textTheme.labelLarge
+                  ?.copyWith(color: scheme.primary, fontWeight: FontWeight.w800, letterSpacing: 0.8),
+            ),
+          ),
           ?trailing,
         ],
       ),
@@ -19,20 +28,24 @@ class SectionHeader extends StatelessWidget {
   }
 }
 
+/// A figure on a card. [tone] colours it when it needs attention.
 class StatTile extends StatelessWidget {
-  const StatTile({super.key, required this.label, required this.value, this.icon, this.onTap, this.highlight = false});
+  const StatTile({super.key, required this.label, required this.value, this.icon, this.onTap, this.tone});
   final String label;
   final String value;
   final IconData? icon;
   final VoidCallback? onTap;
-  final bool highlight;
+
+  /// Null for neutral, or a status colour pair (colour, container).
+  final (Color, Color)? tone;
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final text = Theme.of(context).textTheme;
+    final fg = tone?.$1 ?? scheme.primary;
+    final bg = tone?.$2 ?? scheme.primaryContainer;
     return Card(
-      color: highlight ? scheme.tertiaryContainer : null,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -42,12 +55,21 @@ class StatTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon != null) Icon(icon, size: 20, color: highlight ? scheme.onTertiaryContainer : scheme.primary),
-              const SizedBox(height: 6),
+              if (icon != null)
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(9)),
+                  child: Icon(icon, size: 18, color: fg),
+                ),
+              const SizedBox(height: 8),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 alignment: Alignment.centerLeft,
-                child: Text(value, style: text.headlineSmall),
+                child: Text(
+                  value,
+                  style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800, color: tone == null ? null : fg),
+                ),
               ),
               Text(label, style: text.bodySmall, maxLines: 2, overflow: TextOverflow.ellipsis),
             ],

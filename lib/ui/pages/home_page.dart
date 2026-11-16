@@ -6,6 +6,7 @@ import '../../logic/insights.dart';
 import '../../logic/recipes.dart';
 import '../widgets/common.dart';
 import '../widgets/stock_tile.dart';
+import '../theme.dart';
 import 'settings_page.dart';
 
 /// The dashboard: how the house is going at a glance, and what needs doing.
@@ -91,7 +92,7 @@ class HomePage extends StatelessWidget {
                 crossAxisCount: 3,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                mainAxisExtent: 128 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.6),
+                mainAxisExtent: 140 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.6),
               ),
               delegate: SliverChildListDelegate([
                 StatTile(
@@ -110,7 +111,9 @@ class HomePage extends StatelessWidget {
                   label: 'use by soon',
                   value: '${ins.useBySoon.length}',
                   icon: Icons.event_outlined,
-                  highlight: ins.useBySoon.isNotEmpty,
+                  tone: ins.useBySoon.isEmpty
+                      ? null
+                      : (StatusColors.of(context).low, StatusColors.of(context).lowContainer),
                   onTap: () => onGo(AppTab.insights),
                 ),
               ]),

@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/store_scope.dart';
 import '../../logic/recipes.dart';
 import '../../models/models.dart';
+import '../theme.dart';
 import 'recipe_editor_page.dart';
 import 'recipes_page.dart';
 
@@ -83,6 +84,7 @@ class RecipeDetailPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: total == 0 ? 0 : have / total,
+                          color: match.ready ? StatusColors.of(context).ok : StatusColors.of(context).low,
                           minHeight: 6,
                           backgroundColor: scheme.surfaceContainerHighest,
                         ),
@@ -147,8 +149,8 @@ class _IngredientsTab extends StatelessWidget {
       return ListTile(
         visualDensity: VisualDensity.compact,
         leading: Icon(
-          have ? Icons.check_circle : Icons.radio_button_unchecked,
-          color: have ? scheme.primary : scheme.tertiary,
+          have ? Icons.check_circle : Icons.add_shopping_cart,
+          color: have ? StatusColors.of(context).ok : StatusColors.of(context).low,
         ),
         title: Text(sentenceCase(i.line), style: text.bodyLarge),
         subtitle: stock == null ? null : Text('You have: ${stock.name}'),
