@@ -182,6 +182,85 @@ class HouseholdStore extends ChangeNotifier {
 
   bool _shoppingNeedsSave = false;
 
+  // ------------------------------------------------------------------- sync
+
+  /// Settings that belong to one phone (reminders), never synced.
+  static bool isPhoneSetting(String key) => key.startsWith('remind');
+
+  /// A stable id for an activity entry (they have none of their own).
+  static String activityId(ActivityEntry e) =>
+      '${e.at.toUtc().microsecondsSinceEpoch}|${e.who}|${e.itemName}|${e.action}|${e.delta}';
+
+  /// Every shared record, by kind then id, as JSON: what sync compares and sends.
+  Map<String, Map<String, Map<String, Object?>>> syncRecords() => {
+    'locations': {for (final l in _locations) l.id: l.toJson()},
+    'items': {for (final i in _items) i.id: i.toJson()},
+    'shopping': {for (final s in _shopping) s.id: s.toJson()},
+    'recipes': {for (final r in _recipes) r.id: r.toJson()},
+    'prices': {for (final p in _prices) p.id: p.toJson()},
+    'activity': {for (final a in _activity) activityId(a): a.toJson()},
+    'settings': {
+      'household': {
+        for (final e in _settings.entries)
+          if (!isPhoneSetting(e.key)) e.key: e.value,
+      },
+    },
+  };
+
+  /// Applies records from the household (kind, id, data or null when deleted).
+  /// One save and one notice for the lot.
+  Future<void> applySync(Iterable<(String, String, Map<String, Object?>?)> records) async {
+    var changed = false;
+    void put<T>(
+      List<T> list,
+      String Function(T) idOf,
+      String id,
+      Map<String, Object?>? data,
+      T Function(Map<String, Object?>) from,
+    ) {
+      final i = list.indexWhere((x) => idOf(x) == id);
+      if (data == null) {
+        if (i >= 0) list.removeAt(i);
+      } else if (i >= 0) {
+        list[i] = from(data);
+      } else {
+        list.add(from(data));
+      }
+      changed = true;
+    }
+
+    for (final (kind, id, data) in records) {
+      switch (kind) {
+        case 'locations':
+          put<StockLocation>(_locations, (x) => x.id, id, data, StockLocation.fromJson);
+        case 'items':
+          put<StockItem>(_items, (x) => x.id, id, data, StockItem.fromJson);
+        case 'shopping':
+          put<ShoppingItem>(_shopping, (x) => x.id, id, data, ShoppingItem.fromJson);
+        case 'recipes':
+          put<SavedRecipe>(_recipes, (x) => x.id, id, data, SavedRecipe.fromJson);
+        case 'prices':
+          if (data != null) put<PricePoint>(_prices, (x) => x.id, id, data, PricePoint.fromJson);
+        case 'activity':
+          if (data != null) put<ActivityEntry>(_activity, activityId, id, data, ActivityEntry.fromJson);
+        case 'settings':
+          if (data != null) {
+            _settings = {
+              for (final e in _settings.entries)
+                if (isPhoneSetting(e.key)) e.key: e.value,
+              ...data,
+            };
+            changed = true;
+          }
+      }
+    }
+    if (!changed) return;
+    if (_locations.isEmpty) _locations = [...defaultLocations()];
+    _activity.sort((a, b) => b.at.compareTo(a.at));
+    if (_activity.length > maxActivity) _activity.removeRange(maxActivity, _activity.length);
+    await _commit();
+  }
+
   Map<String, Object?> toJson() => {
     'schema': 1,
     'user': _user,

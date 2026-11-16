@@ -5,11 +5,22 @@ import 'data/household_store.dart';
 import 'data/picture_finder.dart';
 import 'data/reminder_service.dart';
 import 'data/storage_backend.dart';
+import 'data/sync_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final store = HouseholdStore(FileBackend());
   await store.load();
+  // Household sync: in step on open, then every few seconds while open.
+  final sync = SyncService.instance = SyncService(store);
+  await sync.load();
+  if (sync.joined) sync.startLive();
+  AppLifecycleListener(
+    onResume: () {
+      if (sync.joined) sync.startLive();
+    },
+    onPause: sync.stopLive,
+  );
   runApp(PantryApp(store: store));
   // Pictures for items that have none fill in quietly in the background.
   PictureFinder.instance = PictureFinder(store)..nudge();

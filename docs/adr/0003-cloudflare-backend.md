@@ -1,6 +1,6 @@
 # ADR 0003: Cloudflare Worker + D1 for sync and price search
 
-- Status: Proposed (phase 1)
+- Status: Superseded in part by [ADR 0010](0010-household-sync.md) (storage: Durable Objects, not D1)
 - Date: 2026-11-15
 
 ## Context

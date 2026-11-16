@@ -14,6 +14,8 @@ import 'package:share_plus/share_plus.dart';
 import '../../data/household_store.dart';
 import '../../data/picture_finder.dart';
 import '../../data/store_scope.dart';
+import '../../data/sync_service.dart';
+import 'household_page.dart';
 import '../../models/models.dart';
 import '../widgets/common.dart';
 
@@ -39,6 +41,18 @@ class SettingsPage extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Text('Changes are signed with this name in the history.'),
+          ),
+          const SectionHeader('Household'),
+          ListTile(
+            key: const ValueKey('household'),
+            leading: const Icon(Icons.cloud_sync_outlined),
+            title: const Text('Share with the household'),
+            subtitle: Text(
+              SyncService.instance?.joined ?? false
+                  ? 'Household ${SyncService.instance!.household}: syncing'
+                  : 'One list on every phone',
+            ),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HouseholdPage())),
           ),
           const SectionHeader('Reminders'),
           const _Reminders(),
