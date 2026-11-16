@@ -73,7 +73,6 @@ class _AppShellState extends State<AppShell> {
       body: IndexedStack(index: _tab.index, children: [for (final t in AppTab.values) pages[t]!]),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tab.index,
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (i) => go(AppTab.values[i]),
         destinations: [
           for (final t in AppTab.values)

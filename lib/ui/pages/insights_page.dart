@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../data/store_scope.dart';
 import '../../logic/insights.dart';
 import '../../models/models.dart';
+import '../theme.dart';
 import '../widgets/common.dart';
 
 class InsightsPage extends StatelessWidget {
@@ -27,7 +28,7 @@ class InsightsPage extends StatelessWidget {
                 crossAxisCount: 2,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                mainAxisExtent: 124 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.6),
+                mainAxisExtent: 136 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.6),
               ),
               delegate: SliverChildListDelegate([
                 StatTile(
@@ -36,8 +37,18 @@ class InsightsPage extends StatelessWidget {
                   icon: Icons.verified_outlined,
                 ),
                 StatTile(label: 'items tracked', value: '${ins.totalItems}', icon: Icons.inventory_2_outlined),
-                StatTile(label: 'running low', value: '${ins.low}', icon: Icons.trending_down, highlight: ins.low > 0),
-                StatTile(label: 'out of stock', value: '${ins.out}', icon: Icons.remove_shopping_cart_outlined),
+                StatTile(
+                  label: 'running low',
+                  value: '${ins.low}',
+                  icon: Icons.trending_down,
+                  tone: ins.low > 0 ? (StatusColors.of(context).low, StatusColors.of(context).lowContainer) : null,
+                ),
+                StatTile(
+                  label: 'out of stock',
+                  value: '${ins.out}',
+                  icon: Icons.remove_shopping_cart_outlined,
+                  tone: ins.out > 0 ? (StatusColors.of(context).out, StatusColors.of(context).outContainer) : null,
+                ),
               ]),
             ),
           ),
@@ -59,6 +70,7 @@ class InsightsPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                             child: LinearProgressIndicator(
                               value: s.readiness,
+                              color: s.readiness! >= 0.8 ? StatusColors.of(context).ok : StatusColors.of(context).low,
                               minHeight: 6,
                               backgroundColor: scheme.surfaceContainerHighest,
                             ),

@@ -66,7 +66,7 @@ void main() {
     await tester.tap(find.byKey(ValueKey('plus-${rice.id}')).hitTestable());
     await tester.pumpAndSettle();
     expect(store.item(rice.id)!.quantity, 2);
-    expect(find.textContaining('2 kg of 5').hitTestable(), findsOneWidget);
+    expect(find.textContaining('2 / 5 kg').hitTestable(), findsOneWidget);
   });
 
   testWidgets('adding an item through the editor', (tester) async {

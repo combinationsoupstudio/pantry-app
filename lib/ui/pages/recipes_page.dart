@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../data/household_store.dart';
 import '../../data/store_scope.dart';
 import '../../logic/recipes.dart';
+import '../theme.dart';
 import '../widgets/common.dart';
 import 'recipe_detail_page.dart';
 import 'recipe_editor_page.dart';
@@ -119,13 +120,10 @@ class RecipeBanner extends StatelessWidget {
                 Container(
                   width: 52,
                   height: 52,
-                  decoration: BoxDecoration(
-                    color: match.ready ? scheme.primaryContainer : scheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  decoration: BoxDecoration(color: scheme.primaryContainer, borderRadius: BorderRadius.circular(12)),
                   child: Icon(
                     saved?.isLinked == true ? Icons.menu_book_outlined : Icons.restaurant_menu,
-                    color: match.ready ? scheme.onPrimaryContainer : scheme.onSecondaryContainer,
+                    color: scheme.onPrimaryContainer,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -161,18 +159,26 @@ class StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final c = StatusColors.of(context);
     final ready = missing == 0;
+    final colour = ready ? c.ok : c.low;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: ready ? scheme.primaryContainer : scheme.tertiaryContainer,
-        borderRadius: BorderRadius.circular(20),
+        color: ready ? c.okContainer : c.lowContainer,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: colour.withValues(alpha: 0.45)),
       ),
-      child: Text(
-        ready ? 'Ready' : '$missing to buy',
-        style: Theme.of(context).textTheme.labelMedium
-            ?.copyWith(color: ready ? scheme.onPrimaryContainer : scheme.onTertiaryContainer),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(ready ? Icons.check : Icons.shopping_basket_outlined, size: 14, color: colour),
+          const SizedBox(width: 4),
+          Text(
+            ready ? 'Ready' : '$missing to buy',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colour, fontWeight: FontWeight.w700),
+          ),
+        ],
       ),
     );
   }

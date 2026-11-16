@@ -8,6 +8,15 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
 
 ## What it does
 
+<p>
+  <img src="docs/screens/1-home.jpg" width="200" alt="Home: house stock score, list, meals and use-by tiles, running-low items">
+  <img src="docs/screens/2-pantry.jpg" width="200" alt="Pantry: each item a card with a status edge, amount against target and - / + buttons">
+  <img src="docs/screens/6-recipe-ingredients.jpg" width="200" alt="A recipe: in-stock bar, Ingredients and Method tabs, add missing to list">
+  <img src="docs/screens/4-shopping.jpg" width="200" alt="Shopping list grouped by shop">
+</p>
+
+<sub>Screenshots use made-up demo data. They are rendered by <code>tool/screens/screens_test.dart</code>.</sub>
+
 | Page | What it is for |
 | --- | --- |
 | **Home** | The assessment: a readiness score (share of items at their "keep at least" target), what is on the list, meals ready, use-by soon, and the running-low items with one-tap + / −. |
