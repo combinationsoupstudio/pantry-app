@@ -4,6 +4,20 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.13.0] - 2026-11-17
+
+### Added
+- **Photos travel between phones.** A photo you take is shrunk (about 60 KB) and shared with the household, so Emily sees Chris's and the other way round. Photos taken before this update are shared the first time it opens.
+- **Our own product library, by barcode.** Add something with a barcode and its name, size, how you count it, where it lives (kitchen or stored away) and your photo go to the library. The next scan of that barcode, on any phone, opens set up that way in under a second. Settings > Household: *Share barcode set-ups and photos* (never your amounts, dates, places or who you are).
+- **Count it or measure it, up front.** The add page asks first: *Count them (jars)* or *Measure what is left (500 g)*, with the best guess picked: jam, passata and tins are counted; oil, flour, rice and sauces are measured.
+
+### Changed
+- **Scanning is quick.** The library answers first; Open Food Facts only for a barcode nobody has added yet, and only once ever per barcode. The page never waits: after 3 seconds it says it is still looking and fills in later, never over what you typed.
+- A product with a known pack size is no longer always set up in grams or millilitres (Chris: "the add item suggested layout ... wasn't always right").
+
+### Dropped
+- Generating drawings for every product (16 Nov plan): your own photos and the library do it better. The 30 drawings stay as an option in Settings.
+
 ## [0.12.1] - 2026-11-17
 
 ### Fixed

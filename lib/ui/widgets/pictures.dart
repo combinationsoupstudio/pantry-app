@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:material_ui/material_ui.dart';
 
+import '../../data/photo_store.dart';
 import '../../data/picture_cache.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
@@ -18,6 +19,7 @@ class ProductPicture extends StatefulWidget {
     super.key,
     required this.name,
     this.photoPath,
+    this.photoId,
     this.imageUrl,
     this.size = 44,
     this.dim = false,
@@ -30,6 +32,7 @@ class ProductPicture extends StatefulWidget {
     key: key,
     name: item.name,
     photoPath: item.photoPath,
+    photoId: item.photoId,
     imageUrl: item.imageUrl,
     size: size,
     dim: item.isOut,
@@ -38,6 +41,9 @@ class ProductPicture extends StatefulWidget {
 
   final String name;
   final String? photoPath;
+
+  /// The household's own photo (photo_store.dart), shown first on every phone.
+  final String? photoId;
   final String? imageUrl;
   final double size;
 
@@ -51,6 +57,7 @@ class ProductPicture extends StatefulWidget {
 
 class _ProductPictureState extends State<ProductPicture> {
   Future<Uint8List?>? _bytes;
+  Future<Uint8List?>? _own;
   String? _url;
 
   @override
@@ -62,10 +69,12 @@ class _ProductPictureState extends State<ProductPicture> {
   @override
   void didUpdateWidget(ProductPicture old) {
     super.didUpdateWidget(old);
-    if (old.imageUrl != widget.imageUrl) _load();
+    if (old.imageUrl != widget.imageUrl || old.photoId != widget.photoId) _load();
   }
 
   void _load() {
+    final id = widget.photoId;
+    _own = id == null ? null : PhotoStore.instance?.bytesFor(id);
     _url = widget.imageUrl;
     _bytes = _url == null ? null : PictureCache.instance.bytesFor(_url!);
   }
@@ -111,7 +120,18 @@ class _ProductPictureState extends State<ProductPicture> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final own = _own;
+    if (own == null) return _framed(context, _picture(context));
+    // The household's own photo once it is here; until then (or without it)
+    // the picture it would otherwise have.
+    return FutureBuilder<Uint8List?>(
+      future: own,
+      builder: (context, snap) =>
+          _framed(context, snap.data != null ? _image(MemoryImage(snap.data!)) : _picture(context)),
+    );
+  }
+
+  Widget _picture(BuildContext context) {
     Widget child;
     final own = widget.photoPath;
     final art = artFor(widget.name);
@@ -129,6 +149,12 @@ class _ProductPictureState extends State<ProductPicture> {
     } else {
       child = _blank(context);
     }
+    return child;
+  }
+
+  /// Faded when it has run out, on a white tile with a soft edge.
+  Widget _framed(BuildContext context, Widget child) {
+    final scheme = Theme.of(context).colorScheme;
     if (widget.dim) {
       child = Opacity(
         opacity: 0.45,

@@ -54,6 +54,17 @@ class SettingsPage extends StatelessWidget {
             ),
             onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const HouseholdPage())),
           ),
+          SwitchListTile(
+            key: const ValueKey('share-library'),
+            value: store.setting<bool>('shareLibrary', true),
+            onChanged: (v) => store.setSetting('shareLibrary', v),
+            title: const Text('Share barcode set-ups and photos'),
+            subtitle: const Text(
+              'When you add something with a barcode, its name, size, how you count it and its photo go to '
+              "the app's product library, so the next scan of it, on any phone, is set up straight away. "
+              'Never your amounts, dates, places or who you are.',
+            ),
+          ),
           const SectionHeader('Reminders'),
           const _Reminders(),
           const SectionHeader('Backup'),

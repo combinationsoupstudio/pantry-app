@@ -285,7 +285,7 @@ void main() {
     expect(find.byKey(const ValueKey('take-photo')), findsOneWidget);
 
     await tester.enterText(find.byKey(const ValueKey('field-name')), 'Olive oil');
-    await tester.tap(find.byKey(const ValueKey('field-measured')));
+    await tester.tap(find.byKey(const ValueKey('measure-it')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const ValueKey('field-pack-size')), '750');
     await tester.pumpAndSettle();

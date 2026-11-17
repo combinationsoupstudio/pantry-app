@@ -9,6 +9,14 @@ workers_dev = true
 name = "HOUSEHOLD"
 class_name = "Household"
 
+[[durable_objects.bindings]]
+name = "CATALOGUE"
+class_name = "Catalogue"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["Household"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["Catalogue"]

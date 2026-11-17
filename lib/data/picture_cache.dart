@@ -13,6 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 import 'open_food_facts.dart';
+import 'sync_service.dart';
 
 class PictureCache {
   PictureCache({required this.root, http.Client? client}) : _client = client ?? http.Client();
@@ -41,14 +42,19 @@ class PictureCache {
     final segments = (uri?.pathSegments ?? const <String>[]).where((s) => s.isNotEmpty).toList();
     final start = segments.indexOf('products');
     final parts = start >= 0 ? segments.sublist(start + 1) : segments;
-    final name = parts.join('_').replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
+    // A library photo's version is in its query (?v=...): a new photo, a new file.
+    final version = uri?.queryParameters['v'];
+    final name = [...parts, if (version != null) 'v$version.jpg'].join('_').replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_');
     return name.isEmpty ? 'picture.jpg' : name;
   }
 
-  /// Only Open Food Facts' image server is fetched from.
+  /// Only Open Food Facts' image server and the household server's product
+  /// library photos are fetched from.
   static bool isAllowed(String url) {
     final uri = Uri.tryParse(url);
-    return uri != null && uri.scheme == 'https' && uri.host == 'images.openfoodfacts.org';
+    if (uri == null || uri.scheme != 'https') return false;
+    if (uri.host == 'images.openfoodfacts.org') return true;
+    return uri.host == Uri.parse(syncServer).host && uri.path.startsWith('/catalogue/');
   }
 
   /// Recently shown pictures, kept in memory (a few hundred small JPEGs).

@@ -1,9 +1,14 @@
 // Two "phones" against the real household server. Not run in CI:
 //   flutter test tool/live/live_sync_test.dart
 import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:image/image.dart' as img;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pantry_app/data/catalogue.dart';
 import 'package:pantry_app/data/household_store.dart';
+import 'package:pantry_app/data/photo_store.dart';
 import 'package:pantry_app/data/storage_backend.dart';
 import 'package:pantry_app/data/sync_service.dart';
 
@@ -69,5 +74,30 @@ void main() {
     print('change seen on the other phone after ${t.elapsedMilliseconds} ms');
     expect(emily.item(rice.id)?.quantity, 3);
     expect(t.elapsed, lessThan(const Duration(seconds: 4)));
+  }, timeout: const Timeout(Duration(minutes: 1)));
+
+  test('photos and the product library on the live server', () async {
+    final store = HouseholdStore(MemoryBackend());
+    await store.load();
+    final sync = SyncService(store, backend: MemoryBackend(), server: server);
+    await sync.start();
+    final jpeg = PhotoStore.shrink(Uint8List.fromList(img.encodeJpg(img.Image(width: 1200, height: 900))));
+    expect(await sync.uploadPhoto(jpeg), isTrue);
+    expect(await sync.downloadPhoto(PhotoStore.hashOf(jpeg)), jpeg);
+
+    final lib = Catalogue(server: server, auth: () => sync.authHeaders);
+    const code = '99999999000017'; // a test barcode, not a real product
+    final t = Stopwatch()..start();
+    expect(
+      await lib.share(
+        const CatalogueProduct(barcode: code, name: 'Test passata', countUnit: 'jars', locationKind: 'storage'),
+      ),
+      isTrue,
+    );
+    expect(await lib.sharePhoto(code, jpeg), isTrue);
+    final back = (await lib.lookup(code))!;
+    // ignore: avoid_print
+    print('share + photo + lookup: ${t.elapsedMilliseconds} ms');
+    expect((back.name, back.countUnit, back.locationKind, back.hasPhoto), ('Test passata', 'jars', 'storage', true));
   }, timeout: const Timeout(Duration(minutes: 1)));
 }
