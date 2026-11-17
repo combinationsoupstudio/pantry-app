@@ -649,9 +649,7 @@ class _ItemEditorState extends State<_ItemEditor> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.event_outlined),
-                title: Text(
-                  _useBy == null ? 'No use-by date' : 'Use by ${_useBy!.day}/${_useBy!.month}/${_useBy!.year}',
-                ),
+                title: Text(_useBy == null ? 'No use-by date' : 'Use by ${formatDayMonthYear(_useBy!)}'),
                 trailing: _useBy == null
                     ? null
                     : IconButton(
@@ -661,14 +659,36 @@ class _ItemEditorState extends State<_ItemEditor> {
                       ),
                 onTap: () async {
                   final now = DateTime.now();
+                  // A calendar, never typing: no slashes to lose (v0.12.1).
                   final picked = await showDatePicker(
                     context: context,
                     firstDate: DateTime(now.year - 1),
                     lastDate: DateTime(now.year + 10),
                     initialDate: _useBy ?? now,
+                    initialEntryMode: DatePickerEntryMode.calendarOnly,
                   );
                   if (picked != null) setState(() => _useBy = picked);
                 },
+              ),
+              // One tap for the usual shelf lives, counted from today.
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  for (final (label, days, months) in const [
+                    ('+1 week', 7, 0),
+                    ('+1 month', 0, 1),
+                    ('+6 months', 0, 6),
+                    ('+1 year', 0, 12),
+                    ('+2 years', 0, 24),
+                  ])
+                    ActionChip(
+                      key: ValueKey('useby-$label'),
+                      label: Text(label),
+                      onPressed: () =>
+                          setState(() => _useBy = useByFromToday(DateTime.now(), days: days, months: months)),
+                    ),
+                ],
               ),
               if (widget.existing != null) _ItemFacts(item: widget.existing!),
               const SizedBox(height: 8),
@@ -851,3 +871,16 @@ class _ItemFacts extends StatelessWidget {
     );
   }
 }
+
+/// Today plus [days] and [months], as a date ("+1 month" on 31 Jan is the
+/// last day of February, not 3 March).
+DateTime useByFromToday(DateTime today, {int days = 0, int months = 0}) {
+  final d = DateTime(today.year, today.month, today.day);
+  if (months == 0) return d.add(Duration(days: days));
+  final firstOfTarget = DateTime(d.year, d.month + months, 1);
+  final lastDay = DateTime(firstOfTarget.year, firstOfTarget.month + 1, 0).day;
+  return DateTime(firstOfTarget.year, firstOfTarget.month, d.day > lastDay ? lastDay : d.day).add(Duration(days: days));
+}
+
+/// 17/11/2026: the Australian way round.
+String formatDayMonthYear(DateTime d) => '${d.day}/${d.month}/${d.year}';

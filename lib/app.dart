@@ -22,6 +22,10 @@ class PantryApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: buildTheme(Brightness.light),
         darkTheme: buildTheme(Brightness.dark),
+        // Australian dates (17/11/2026) in pickers and anything localised.
+        locale: const Locale('en', 'AU'),
+        supportedLocales: const [Locale('en', 'AU')],
+        localizationsDelegates: GlobalMaterialLocalizations.delegates,
         home: const AppShell(),
       ),
     );
