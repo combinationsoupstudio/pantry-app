@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 import '../logic/recipe_link.dart';
@@ -208,6 +210,20 @@ class HouseholdStore extends ChangeNotifier {
     },
   };
 
+  /// Whether a photo file is on this phone (swappable in tests).
+  bool Function(String path) photoOnThisPhone = (path) => File(path).existsSync();
+
+  /// A photo taken on another phone is a file only that phone has. It never
+  /// replaces a photo that is on this one (v0.12.1: Emily's photo of the same
+  /// thing wiped Chris's); photos themselves travel in v0.13.
+  StockItem _keepOwnPhoto(StockItem incoming) {
+    final mine = item(incoming.id)?.photoPath;
+    final theirs = incoming.photoPath;
+    if (mine == null || mine == theirs || !photoOnThisPhone(mine)) return incoming;
+    if (theirs != null && photoOnThisPhone(theirs)) return incoming;
+    return incoming.copyWith(photoPath: mine);
+  }
+
   /// Applies records from the household (kind, id, data or null when deleted).
   /// One save and one notice for the lot.
   Future<void> applySync(Iterable<(String, String, Map<String, Object?>?)> records) async {
@@ -235,7 +251,7 @@ class HouseholdStore extends ChangeNotifier {
         case 'locations':
           put<StockLocation>(_locations, (x) => x.id, id, data, StockLocation.fromJson);
         case 'items':
-          put<StockItem>(_items, (x) => x.id, id, data, StockItem.fromJson);
+          put<StockItem>(_items, (x) => x.id, id, data, (d) => _keepOwnPhoto(StockItem.fromJson(d)));
         case 'shopping':
           put<ShoppingItem>(_shopping, (x) => x.id, id, data, ShoppingItem.fromJson);
         case 'recipes':

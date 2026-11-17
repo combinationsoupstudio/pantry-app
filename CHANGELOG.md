@@ -4,6 +4,12 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.12.1] - 2026-11-17
+
+### Fixed
+- **Dates** (Emily: "Can't do forward slash to manually change date"). Use-by dates are picked on a calendar, never typed, and the app is Australian: 17/11/2026. One-tap buttons under the date: +1 week, +1 month, +6 months, +1 year, +2 years. The receipt date picker is a calendar too.
+- **A photo taken on one phone no longer wipes the other's** (Chris: "if Emily takes a photo of the same one I've uploaded, and saves it, it then removes from mine"). Each phone keeps its own photo until photos travel between phones (v0.13).
+
 ## [0.12.0] - 2026-11-16
 
 ### Added

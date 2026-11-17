@@ -328,6 +328,7 @@ class _ReceiptPageState extends State<ReceiptPage> {
                       initialDate: _date,
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
+                      initialEntryMode: DatePickerEntryMode.calendarOnly,
                     );
                     if (d != null) setState(() => _date = d);
                   },
