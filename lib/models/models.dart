@@ -72,11 +72,16 @@ class StockItem {
     this.pictureTried = false,
     this.aliases = const [],
     this.notAliases = const [],
+    this.photoId,
   });
 
   final String id;
   final String name;
   final String locationId;
+
+  /// The household's own photo of it (v0.13): the SHA-256 of a small JPEG
+  /// kept on the household server, so it shows on every phone (photo_store.dart).
+  final String? photoId;
 
   /// Other names the household calls this ("spring onions" for Shallots),
   /// added by hand or by answering "Is this your …?" (v0.11).
@@ -194,6 +199,7 @@ class StockItem {
     bool? pictureTried,
     List<String>? aliases,
     List<String>? notAliases,
+    String? photoId,
   }) => StockItem(
     id: id,
     name: name ?? this.name,
@@ -213,6 +219,7 @@ class StockItem {
     pictureTried: pictureTried ?? this.pictureTried,
     aliases: aliases ?? this.aliases,
     notAliases: notAliases ?? this.notAliases,
+    photoId: clearPhoto ? null : (photoId ?? this.photoId),
   );
 
   Map<String, Object?> toJson() => {
@@ -234,6 +241,7 @@ class StockItem {
     if (pictureTried) 'pictureTried': true,
     if (aliases.isNotEmpty) 'aliases': aliases,
     if (notAliases.isNotEmpty) 'notAliases': notAliases,
+    if (photoId != null) 'photoId': photoId,
   };
 
   factory StockItem.fromJson(Map<String, Object?> json) => StockItem(
@@ -255,6 +263,7 @@ class StockItem {
     pictureTried: json['pictureTried'] == true,
     aliases: [for (final a in (json['aliases'] as List? ?? const [])) a as String],
     notAliases: [for (final a in (json['notAliases'] as List? ?? const [])) a as String],
+    photoId: json['photoId'] as String?,
   );
 }
 

@@ -9,6 +9,13 @@
 //   POST /h/:household/sync          (token) { since, changes[], phone } -> { cursor, records[] }
 //   GET  /h/:household/live          (token) websocket: { cursor, from } is sent the moment the
 //                                    household changes; the phone then syncs. "ping" -> "pong".
+//   PUT  /h/:household/photo         (token) a JPEG -> { hash }          the household's own photos
+//   GET  /h/:household/photo/:hash   (token) the JPEG
+// The product library (v0.13), one for everyone, by barcode:
+//   GET  /catalogue/:barcode         -> { product } or 404               open: a barcode is no secret
+//   GET  /catalogue/:barcode/photo   -> the JPEG                          open
+//   POST /catalogue/:barcode         (token + x-household) { name, ... } what a household set it up as
+//   PUT  /catalogue/:barcode/photo   (token + x-household) a JPEG
 // The token is a long random secret kept on each phone; only its SHA-256 is
 // stored. Join codes last 48 hours.
 
@@ -31,6 +38,28 @@ async function sha256(text) {
 
 const MAX_BODY = 2 * 1024 * 1024;
 const MAX_CHANGES = 2000;
+const MAX_PHOTO = 600 * 1024;
+const BARCODE = /^\d{6,14}$/;
+
+async function sha256Bytes(buf) {
+  const d = await crypto.subtle.digest('SHA-256', buf);
+  return [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+const isJpeg = (buf) => buf.byteLength > 3 && new Uint8Array(buf, 0, 3).every((b, i) => b === [0xff, 0xd8, 0xff][i]);
+
+const jpeg = (data) =>
+  new Response(data, { headers: { 'content-type': 'image/jpeg', 'cache-control': 'public, max-age=31536000, immutable' } });
+
+/** Does this bearer token belong to that household? */
+async function householdAllows(env, household, request) {
+  if (!/^[A-Z0-9]{8}$/.test(household || '')) return false;
+  const stub = env.HOUSEHOLD.get(env.HOUSEHOLD.idFromName(household));
+  const res = await stub.fetch(
+    new Request('https://do/check', { method: 'POST', headers: { authorization: request.headers.get('authorization') || '' } }),
+  );
+  return res.status === 200;
+}
 
 export default {
   async fetch(request, env) {
@@ -42,8 +71,47 @@ export default {
       const stub = env.HOUSEHOLD.get(env.HOUSEHOLD.idFromName(live[1]));
       return stub.fetch(new Request('https://do/live', request));
     }
-    if (request.method !== 'POST') return reply({ error: 'POST only' }, 405);
     const length = Number(request.headers.get('content-length') || 0);
+
+    // Household photos.
+    const photo = url.pathname.match(/^\/h\/([A-Z0-9]{8})\/photo(?:\/([0-9a-f]{64}))?$/);
+    if (photo) {
+      const stub = env.HOUSEHOLD.get(env.HOUSEHOLD.idFromName(photo[1]));
+      const auth = { authorization: request.headers.get('authorization') || '' };
+      if (request.method === 'GET' && photo[2]) {
+        return stub.fetch(new Request('https://do/photo-get', { method: 'POST', headers: auth, body: JSON.stringify({ hash: photo[2] }) }));
+      }
+      if (request.method === 'PUT' && !photo[2]) {
+        if (length > MAX_PHOTO) return reply({ error: 'photo too big' }, 413);
+        const data = await request.arrayBuffer();
+        if (data.byteLength > MAX_PHOTO || !isJpeg(data)) return reply({ error: 'a JPEG under 600 KB, please' }, 400);
+        return stub.fetch(new Request('https://do/photo-put', { method: 'POST', headers: auth, body: data }));
+      }
+      return reply({ error: 'not found' }, 404);
+    }
+
+    // The product library.
+    const cat = url.pathname.match(/^\/catalogue\/(\d{6,14})(\/photo)?$/);
+    if (cat) {
+      const stub = env.CATALOGUE.get(env.CATALOGUE.idFromName('everyone'));
+      const [, barcode, isPhoto] = cat;
+      if (request.method === 'GET') {
+        return stub.fetch(new Request(`https://do/${isPhoto ? 'photo-get' : 'get'}?barcode=${barcode}`));
+      }
+      const writes = isPhoto ? request.method === 'PUT' : request.method === 'POST';
+      if (!writes) return reply({ error: 'not found' }, 404);
+      if (!(await householdAllows(env, request.headers.get('x-household'), request))) return reply({ error: 'not allowed' }, 401);
+      if (isPhoto) {
+        if (length > MAX_PHOTO) return reply({ error: 'photo too big' }, 413);
+        const data = await request.arrayBuffer();
+        if (data.byteLength > MAX_PHOTO || !isJpeg(data)) return reply({ error: 'a JPEG under 600 KB, please' }, 400);
+        return stub.fetch(new Request(`https://do/photo-put?barcode=${barcode}`, { method: 'POST', body: data }));
+      }
+      if (length > 16 * 1024) return reply({ error: 'too big' }, 413);
+      return stub.fetch(new Request(`https://do/put?barcode=${barcode}`, { method: 'POST', body: await request.text() }));
+    }
+
+    if (request.method !== 'POST') return reply({ error: 'POST only' }, 405);
     if (length > MAX_BODY) return reply({ error: 'too big' }, 413);
 
     if (url.pathname === '/households') {
@@ -75,6 +143,31 @@ export class Household extends DurableObject {
     this.sql.exec(`CREATE INDEX IF NOT EXISTS records_seq ON records (seq)`);
     // Keep-alive pings are answered without waking the household.
     ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair('ping', 'pong'));
+  }
+
+  async allowed(request) {
+    if (!this.meta('token_hash')) return false;
+    const bearer = (request.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+    if (!bearer) return false;
+    const hash = await sha256(bearer);
+    const extra = JSON.parse(this.meta('extra_hashes') || '[]');
+    return hash === this.meta('token_hash') || extra.includes(hash);
+  }
+
+  // The household's own photos, by the SHA-256 of the JPEG (so a photo is
+  // stored once, and a phone can name it before it is uploaded).
+  async photo(route, request) {
+    if (!(await this.allowed(request))) return reply({ error: 'not allowed' }, 401);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS photos (hash TEXT PRIMARY KEY, data BLOB NOT NULL, at INTEGER NOT NULL)`);
+    if (route === 'photo-put') {
+      const data = await request.arrayBuffer();
+      const hash = await sha256Bytes(data);
+      this.sql.exec(`INSERT OR IGNORE INTO photos (hash, data, at) VALUES (?, ?, ?)`, hash, data, Date.now());
+      return reply({ hash });
+    }
+    const { hash } = await request.json();
+    const row = this.sql.exec(`SELECT data FROM photos WHERE hash = ?`, String(hash)).toArray()[0];
+    return row ? jpeg(row.data) : reply({ error: 'no such photo' }, 404);
   }
 
   // Tells every open phone the household moved on (each then syncs).
@@ -116,6 +209,7 @@ export class Household extends DurableObject {
 
   async fetch(request) {
     const route = new URL(request.url).pathname.slice(1);
+    if (route.startsWith('photo')) return this.photo(route, request);
     let body = {};
     try {
       const text = await request.text();
@@ -158,6 +252,7 @@ export class Household extends DurableObject {
     const extra = JSON.parse(this.meta('extra_hashes') || '[]');
     if (!bearer || (hash !== this.meta('token_hash') && !extra.includes(hash))) return reply({ error: 'not allowed' }, 401);
 
+    if (route === 'check') return reply({ ok: true });
     if (route === 'invite') return reply({ code: await this.newInvite() });
 
     if (route === 'live') {
@@ -202,6 +297,84 @@ export class Household extends DurableObject {
       return reply({ cursor: seq, records, refused });
     }
 
+    return reply({ error: 'not found' }, 404);
+  }
+}
+
+// What a household set a barcode up as, cleaned to known fields.
+function cleanProduct(p) {
+  if (!p || typeof p !== 'object') return null;
+  const text = (v, n) => (typeof v === 'string' ? v.trim().slice(0, n) : '');
+  const num = (v) => (Number.isFinite(Number(v)) && Number(v) >= 0 && Number(v) < 1e6 ? Number(v) : 0);
+  const name = text(p.name, 120);
+  if (!name) return null;
+  return {
+    name,
+    brand: text(p.brand, 80),
+    packSize: num(p.packSize),
+    unit: text(p.unit, 12),
+    countAs: p.countAs === 'measure' ? 'measure' : 'count',
+    countUnit: text(p.countUnit, 24),
+    locationKind: p.locationKind === 'storage' ? 'storage' : 'pantry',
+    source: p.source === 'off' ? 'off' : 'household',
+  };
+}
+
+// The product library: one for everyone, by barcode. A household's set-up
+// wins over what Open Food Facts said; the latest household's wins over an
+// earlier one. Photos are kept one per barcode, the latest.
+export class Catalogue extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS products (
+      barcode TEXT PRIMARY KEY, data TEXT NOT NULL, source TEXT NOT NULL, updated_at INTEGER NOT NULL, uses INTEGER NOT NULL DEFAULT 0)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS photos (barcode TEXT PRIMARY KEY, data BLOB NOT NULL, at INTEGER NOT NULL)`);
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    const route = url.pathname.slice(1);
+    const barcode = url.searchParams.get('barcode') || '';
+    if (!BARCODE.test(barcode)) return reply({ error: 'bad barcode' }, 400);
+    if (route === 'get') {
+      const row = this.sql.exec(`SELECT data, updated_at FROM products WHERE barcode = ?`, barcode).toArray()[0];
+      if (!row) return reply({ error: 'unknown' }, 404);
+      const hasPhoto = this.sql.exec(`SELECT 1 FROM photos WHERE barcode = ?`, barcode).toArray().length > 0;
+      return reply({ product: { barcode, ...JSON.parse(row.data), hasPhoto, updatedAt: row.updated_at } });
+    }
+    if (route === 'photo-get') {
+      const row = this.sql.exec(`SELECT data FROM photos WHERE barcode = ?`, barcode).toArray()[0];
+      return row ? jpeg(row.data) : reply({ error: 'no photo' }, 404);
+    }
+    if (route === 'photo-put') {
+      const data = await request.arrayBuffer();
+      this.sql.exec(
+        `INSERT INTO photos (barcode, data, at) VALUES (?, ?, ?) ON CONFLICT(barcode) DO UPDATE SET data = excluded.data, at = excluded.at`,
+        barcode, data, Date.now(),
+      );
+      return reply({ ok: true });
+    }
+    if (route === 'put') {
+      let p;
+      try {
+        p = cleanProduct(JSON.parse(await request.text()));
+      } catch {
+        p = null;
+      }
+      if (!p) return reply({ error: 'needs a name' }, 400);
+      const old = this.sql.exec(`SELECT source FROM products WHERE barcode = ?`, barcode).toArray()[0];
+      // What Open Food Facts said never replaces what a household set up.
+      if (old && old.source === 'household' && p.source === 'off') return reply({ ok: true, kept: true });
+      const { source, ...data } = p;
+      this.sql.exec(
+        `INSERT INTO products (barcode, data, source, updated_at, uses) VALUES (?, ?, ?, ?, 1)
+         ON CONFLICT(barcode) DO UPDATE SET data = excluded.data, source = excluded.source,
+         updated_at = excluded.updated_at, uses = products.uses + 1`,
+        barcode, JSON.stringify(data), source, Date.now(),
+      );
+      return reply({ ok: true });
+    }
     return reply({ error: 'not found' }, 404);
   }
 }

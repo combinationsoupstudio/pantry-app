@@ -8,6 +8,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'household_store.dart';
+import 'photo_store.dart';
 import 'storage_backend.dart';
 
 /// The household's sync server (Cloudflare Worker, studio account). ADR 0010.
@@ -288,6 +289,7 @@ class SyncService extends ChangeNotifier {
     _cursor = (r['cursor'] as num).toInt();
     _lastSync = _clock();
     await _save();
+    unawaited(PhotoStore.instance?.sendWaiting());
   }
 
   /// What changed on this phone since the last sync, ready to send.
@@ -424,6 +426,42 @@ class SyncService extends ChangeNotifier {
   void dispose() {
     stopLive();
     super.dispose();
+  }
+
+  // ----------------------------------------------------------------- photos
+
+  /// The household's token headers for the product library, or null.
+  Map<String, String>? get authHeaders =>
+      joined ? {'authorization': 'Bearer $_token', 'x-household': _household!} : null;
+
+  /// Sends a photo (small JPEG) to the household; true when it is there.
+  Future<bool> uploadPhoto(Uint8List jpeg) async {
+    if (!joined) return false;
+    try {
+      final res = await _client
+          .put(
+            Uri.parse('$server/h/$_household/photo'),
+            headers: {'authorization': 'Bearer $_token', 'content-type': 'image/jpeg'},
+            body: jpeg,
+          )
+          .timeout(const Duration(seconds: 20));
+      return res.statusCode == 200;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// A household photo by its hash, or null.
+  Future<Uint8List?> downloadPhoto(String hash) async {
+    if (!joined) return null;
+    try {
+      final res = await _client
+          .get(Uri.parse('$server/h/$_household/photo/$hash'), headers: {'authorization': 'Bearer $_token'})
+          .timeout(const Duration(seconds: 20));
+      return res.statusCode == 200 ? res.bodyBytes : null;
+    } catch (_) {
+      return null;
+    }
   }
 
   // ------------------------------------------------------------------- http

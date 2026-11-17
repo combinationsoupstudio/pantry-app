@@ -120,7 +120,8 @@ flutter run         # on a connected phone or emulator
 | **6b** | 0.10 | Warm pantry look; four tabs (Pantry holds the stored-away stock); icons for things without a photo; lighter rows; tidier shopping list. **Done.** |
 | **6c** | 0.11 | Names match however they are typed: same-thing names folded, close spellings asked once and remembered, "also called". **Done.** |
 | **6d** | 0.12 | Drawn food pictures (30, ink and wash), Settings > Pictures. **Done.** |
-| 6e | 0.12.x | Shared own photos (R2); more drawings (hygiene, medical, garage). |
+| **6e** | 0.13 | Photos shared between phones; a product library by barcode (fast scans, set up as a household keeps it); count or measure chosen up front. **Done.** |
+| 6f | 0.13.x | Report a library photo; library review before other households join. |
 | 7 | 0.13 | Smart Shopper: cost per meal, weekly challenges, savings, health grade over time. |
 | 8 | 0.14 | Meal planner, family and pet pages, shop mode; home-screen widget and printable stock sheet. |
 | 9 | 0.15 | AI extras: ask the pantry, local specials, messy receipts (a small, cheap model behind the Worker). |

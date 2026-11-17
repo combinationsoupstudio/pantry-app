@@ -1,11 +1,17 @@
+import 'dart:async';
+import 'dart:typed_data';
+
 import 'package:material_ui/material_ui.dart';
 
 import 'common.dart';
 
+import '../../data/catalogue.dart';
 import '../../data/open_food_facts.dart';
+import '../../data/photo_store.dart';
 import '../../data/picture_finder.dart';
 import '../../data/store_scope.dart';
 import '../../logic/amounts.dart';
+import '../../logic/count_or_measure.dart';
 import '../../logic/names.dart';
 import '../../logic/usage.dart';
 import '../../models/models.dart';
@@ -73,6 +79,13 @@ class _ItemEditorState extends State<_ItemEditor> {
 
   String? _barcode;
   String? _photoPath;
+
+  /// The household's own photo (photo_store.dart): shared to every phone.
+  String? _photoId;
+
+  /// Kept here and also shared to the product library on save.
+  Uint8List? _photoBytes;
+  String? _countUnitGuess;
   String? _imageUrl;
   bool _byName = false;
   bool _looking = false;
@@ -93,6 +106,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     _locationId = e?.locationId ?? widget.locationId ?? '';
     _barcode = e?.barcode;
     _photoPath = e?.photoPath;
+    _photoId = e?.photoId;
     final scanned = widget.barcode;
     if (e == null && scanned != null) WidgetsBinding.instance.addPostFrameCallback((_) => _lookup(scanned));
     _imageUrl = e?.imageUrl;
@@ -130,6 +144,18 @@ class _ItemEditorState extends State<_ItemEditor> {
       c.dispose();
     }
     super.dispose();
+  }
+
+  /// " (jars)" when there is a word for it.
+  String _countUnitLabel() {
+    final u = _measured ? (_countUnitGuess ?? '') : _unit;
+    return u.isEmpty || u == 'items' || isMeasureUnit(u) ? '' : ' ($u)';
+  }
+
+  /// " (500 g)" when the pack size is known.
+  String _measureLabel() {
+    final size = _parse(_packSize.text) ?? 0;
+    return size > 0 ? ' (${formatMeasure(size, _mUnit)})' : '';
   }
 
   void _setMeasured(bool on) {
@@ -181,7 +207,9 @@ class _ItemEditorState extends State<_ItemEditor> {
     await _lookup(code);
   }
 
-  /// Looks a barcode up and fills in what Open Food Facts knows.
+  /// Looks a barcode up: the product library first (how a household set it
+  /// up, and its photo, in a fraction of a second), then Open Food Facts.
+  /// The page never waits: after 3 seconds it says so and fills in later.
   Future<void> _lookup(String code) async {
     if (!mounted) return;
     setState(() {
@@ -190,38 +218,110 @@ class _ItemEditorState extends State<_ItemEditor> {
       _found = null;
     });
     try {
-      final info = await OpenFoodFacts.instance.lookup(code);
+      final known = await Catalogue.instance.lookup(code);
       if (!mounted) return;
-      setState(() {
-        if (info == null) {
-          _found = 'Not on Open Food Facts yet. Type the name; the barcode is kept for next time.';
-          return;
-        }
-        final name = info.displayName;
-        if (name.isNotEmpty && (widget.existing == null || _name.text.trim().isEmpty)) _name.text = name;
-        if (info.imageUrl != null) {
-          _imageUrl = info.imageUrl;
-          _byName = false;
-        }
-        if (info.hasPackSize) {
-          _measured = true;
-          _mUnit = _keptUnit(info.unit);
-          _packSize.text = formatQty(info.packSize);
-          if (widget.existing == null) {
-            _packs.text = '0';
-            _left.text = formatQty(info.packSize);
-          }
-        }
-        _found = [
-          'Found: ${name.isEmpty ? 'a product with no name' : name}',
-          if (info.hasPackSize) formatMeasure(info.packSize, info.unit),
-        ].join('  ·  ');
-      });
+      if (known != null) {
+        setState(() => _fromLibrary(known));
+        return;
+      }
+      final off = OpenFoodFacts.instance.lookup(code);
+      ProductInfo? info;
+      try {
+        info = await off.timeout(const Duration(seconds: 3));
+      } on TimeoutException {
+        if (!mounted) return;
+        setState(() {
+          _looking = false;
+          _found = 'Still looking it up. Type the name or take a photo; it fills in if it answers.';
+        });
+        info = await off;
+      }
+      if (!mounted) return;
+      setState(() => _fromOpenFoodFacts(code, info));
+      // So nobody waits on Open Food Facts for this barcode again.
+      if (info != null) unawaited(Catalogue.instance.share(_libraryEntry(code, fromOff: info), source: 'off'));
     } on LookupFailed catch (e) {
       if (mounted) setState(() => _found = '$e. The barcode is kept; type the name.');
     } finally {
       if (mounted) setState(() => _looking = false);
     }
+  }
+
+  /// Fills only what is still empty or untouched, so a late answer never
+  /// writes over what was typed.
+  void _fromLibrary(CatalogueProduct p) {
+    if (_name.text.trim().isEmpty) _name.text = p.name;
+    if (p.hasPhoto && _photoPath == null && _photoId == null) {
+      _imageUrl = Catalogue.instance.photoUrl(p.barcode, p.updatedAt);
+      _byName = false;
+    }
+    _setKeepAs(p.measured ? const KeepAs.measure() : KeepAs.count(p.countUnit), packSize: p.packSize, unit: p.unit);
+    if (widget.existing == null && widget.locationId == null) {
+      final kind = p.locationKind == 'storage' ? LocationKind.storage : LocationKind.pantry;
+      final places = StoreScope.read(context).locationsOf(kind);
+      if (places.isNotEmpty && StoreScope.read(context).location(_locationId)?.kind != kind) {
+        _locationId = places.first.id;
+      }
+    }
+    _found = 'Found: ${p.name}  ·  set up as a household keeps it';
+  }
+
+  void _fromOpenFoodFacts(String code, ProductInfo? info) {
+    if (info == null) {
+      _found = 'Not known yet. Type the name and take a photo: the next scan of it will know.';
+      return;
+    }
+    final name = info.displayName;
+    if (name.isNotEmpty && _name.text.trim().isEmpty) _name.text = name;
+    if (info.imageUrl != null && _photoPath == null && _photoId == null && _imageUrl == null) {
+      _imageUrl = info.imageUrl;
+      _byName = false;
+    }
+    _setKeepAs(
+      guessKeepAs(name, packSize: info.packSize, unit: info.unit),
+      packSize: info.hasPackSize ? info.packSize : 0,
+      unit: info.unit,
+    );
+    _found = [
+      'Found: ${name.isEmpty ? 'a product with no name' : name}',
+      if (info.hasPackSize) formatMeasure(info.packSize, info.unit),
+    ].join('  ·  ');
+  }
+
+  /// Sets the page up as counted or measured (a new item only; one already
+  /// kept stays as it is).
+  void _setKeepAs(KeepAs how, {double packSize = 0, String unit = ''}) {
+    if (widget.existing != null) return;
+    if (how.measured && packSize > 0) {
+      _measured = true;
+      _mUnit = _keptUnit(unit);
+      _packSize.text = formatQty(packSize);
+      _packs.text = '0';
+      _left.text = formatQty(packSize);
+    } else {
+      _measured = false;
+      _countUnitGuess = how.countUnit;
+      if (how.countUnit.isNotEmpty) _unit = how.countUnit;
+      if (packSize > 0) {
+        _packSize.text = formatQty(packSize);
+        _mUnit = _keptUnit(unit);
+      }
+    }
+  }
+
+  /// How this household keeps the product, for the library.
+  CatalogueProduct _libraryEntry(String code, {ProductInfo? fromOff}) {
+    final size = _parse(_packSize.text) ?? 0;
+    return CatalogueProduct(
+      barcode: code,
+      name: fromOff?.displayName.isNotEmpty == true ? fromOff!.displayName : _name.text.trim(),
+      brand: fromOff?.brand ?? '',
+      packSize: fromOff?.packSize ?? size,
+      unit: fromOff?.unit ?? (_measured ? _mUnit : (size > 0 ? _mUnit : '')),
+      countAs: _measured ? 'measure' : 'count',
+      countUnit: _measured ? '' : (_unit.isEmpty ? (_countUnitGuess ?? '') : _unit),
+      locationKind: StoreScope.read(context).location(_locationId)?.kind == LocationKind.storage ? 'storage' : 'pantry',
+    );
   }
 
   Future<void> _findPicture() async {
@@ -241,8 +341,10 @@ class _ItemEditorState extends State<_ItemEditor> {
   }
 
   void _removePicture() => setState(() {
-    if (_photoPath != null) {
+    if (_photoPath != null || _photoId != null) {
       _photoPath = null;
+      _photoId = null;
+      _photoBytes = null;
     } else {
       _imageUrl = null;
       _byName = false;
@@ -252,7 +354,20 @@ class _ItemEditorState extends State<_ItemEditor> {
   Future<void> _photo() async {
     try {
       final path = await takeItemPhoto();
-      if (path != null && mounted) setState(() => _photoPath = path);
+      if (path == null || !mounted) return;
+      setState(() => _photoPath = path);
+      // Shrunk and kept, to go to every phone in the household (v0.13).
+      final photos = PhotoStore.instance;
+      if (photos != null) {
+        final id = await photos.add(path);
+        final bytes = await photos.bytesFor(id);
+        if (mounted) {
+          setState(() {
+            _photoId = id;
+            _photoBytes = bytes;
+          });
+        }
+      }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -308,6 +423,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         photoPath: _photoPath,
         imageUrl: _imageUrl,
       );
+      if (_photoId != null) await store.updateItem(store.item(added.id)!.copyWith(photoId: _photoId));
       if (aliases.isNotEmpty) await store.setAliases(added.id, aliases);
       PictureFinder.instance?.nudge();
     } else {
@@ -324,7 +440,8 @@ class _ItemEditorState extends State<_ItemEditor> {
           barcode: _barcode,
           clearBarcode: _barcode == null,
           photoPath: _photoPath,
-          clearPhoto: _photoPath == null,
+          photoId: _photoId,
+          clearPhoto: _photoPath == null && _photoId == null,
           imageUrl: _imageUrl,
           clearImage: _imageUrl == null,
           pictureByName: _imageUrl != null && _byName,
@@ -335,7 +452,24 @@ class _ItemEditorState extends State<_ItemEditor> {
       );
       PictureFinder.instance?.nudge();
     }
+    _shareToLibrary();
     if (mounted) Navigator.of(context).pop();
+  }
+
+  /// A barcoded product goes to the product library as this household keeps
+  /// it, with its photo, so the next scan of it anywhere is set up right.
+  /// Quietly, after the page has closed; nothing when not in a household or
+  /// when Settings says not to.
+  void _shareToLibrary() {
+    final code = _barcode;
+    final store = StoreScope.read(context);
+    if (code == null || !Catalogue.isBarcode(code) || !store.setting<bool>('shareLibrary', true)) return;
+    final entry = _libraryEntry(code);
+    final photo = _photoBytes;
+    unawaited(() async {
+      await Catalogue.instance.share(entry);
+      if (photo != null) await Catalogue.instance.sharePhoto(code, photo);
+    }());
   }
 
   /// "You already keep Spring onions (called Shallots here). Add to it?"
@@ -398,6 +532,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         const SizedBox(width: 12),
         Expanded(
           child: DropdownButtonFormField<String>(
+            key: ValueKey('unit-$_unit'),
             initialValue: _unit,
             decoration: const InputDecoration(labelText: 'Unit'),
             items: [
@@ -439,12 +574,16 @@ class _ItemEditorState extends State<_ItemEditor> {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: DropdownButtonFormField<String>(
-              key: const ValueKey('field-measure-unit'),
-              initialValue: _mUnit,
-              decoration: const InputDecoration(labelText: 'Measured in'),
-              items: [for (final u in keptMeasures) DropdownMenuItem(value: u, child: Text(u))],
-              onChanged: (v) => setState(() => _mUnit = v ?? _mUnit),
+            child: KeyedSubtree(
+              // Rebuilt when a scan sets the measure.
+              key: ValueKey('measure-unit-$_mUnit'),
+              child: DropdownButtonFormField<String>(
+                key: const ValueKey('field-measure-unit'),
+                initialValue: _mUnit,
+                decoration: const InputDecoration(labelText: 'Measured in'),
+                items: [for (final u in keptMeasures) DropdownMenuItem(value: u, child: Text(u))],
+                onChanged: (v) => setState(() => _mUnit = v ?? _mUnit),
+              ),
             ),
           ),
         ],
@@ -628,18 +767,45 @@ class _ItemEditorState extends State<_ItemEditor> {
                 ),
               ),
               const SizedBox(height: 4),
-              SwitchListTile(
-                key: const ValueKey('field-measured'),
-                contentPadding: EdgeInsets.zero,
-                value: _measured,
-                onChanged: _setMeasured,
-                title: const Text('Measure how much is left'),
-                subtitle: const Text('For bottles and bags you use bit by bit, e.g. 300 ml of a 500 ml soy sauce'),
+              // Counted or measured: chosen up front, one tap to change (v0.13).
+              Text('How do you keep track of it?', style: text.titleSmall),
+              const SizedBox(height: 6),
+              SizedBox(
+                width: double.infinity,
+                child: SegmentedButton<bool>(
+                  key: const ValueKey('field-measured'),
+                  showSelectedIcon: false,
+                  segments: [
+                    ButtonSegment(
+                      value: false,
+                      icon: const Icon(Icons.filter_9_plus_outlined),
+                      label: Text(key: const ValueKey('count-it'), 'Count them${_countUnitLabel()}'),
+                    ),
+                    ButtonSegment(
+                      value: true,
+                      icon: const Icon(Icons.water_drop_outlined),
+                      label: Text(key: const ValueKey('measure-it'), 'Measure what is left${_measureLabel()}'),
+                    ),
+                  ],
+                  selected: {_measured},
+                  onSelectionChanged: (v) => _setMeasured(v.first),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  _measured
+                      ? 'For things used bit by bit, e.g. 300 ml left of a 500 ml soy sauce.'
+                      : 'For things used whole, e.g. 3 jars of jam, 6 cans of tomatoes.',
+                  style: text.bodySmall,
+                ),
               ),
               const SizedBox(height: 4),
               ...(_measured ? _measuredFields(context) : _countedFields()),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
+                // Keyed by the value: a scan that sets the place shows it.
+                key: ValueKey('kept-in-$_locationId'),
                 initialValue: _locationId,
                 decoration: const InputDecoration(labelText: 'Kept in'),
                 items: [for (final l in locations) DropdownMenuItem(value: l.id, child: Text(l.name))],
