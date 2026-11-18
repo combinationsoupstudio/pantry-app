@@ -373,6 +373,7 @@ class HouseholdStore extends ChangeNotifier {
       unit: unit.trim(),
       target: target < 0 ? 0 : target,
       useBy: useBy,
+      keepDays: useBy == null ? 0 : keepDaysFrom(_clock(), useBy),
       notes: notes,
       updatedAt: _clock(),
       updatedBy: _user,
@@ -438,6 +439,53 @@ class HouseholdStore extends ChangeNotifier {
     return n;
   }
 
+  /// [current] with [added] more of it. When this item has kept before
+  /// ([StockItem.keepDays]) the new stock gets a guessed date from that, so a
+  /// top-up needs no date typed; otherwise it goes in undated (v0.15).
+  StockItem _withMore(StockItem current, double added, DateTime now) {
+    final guess = added > 0 ? current.guessUseBy(now) : null;
+    return current.copyWith(
+      quantity: current.quantity + added,
+      updatedAt: now,
+      updatedBy: _user,
+      batches: guess == null ? null : [...current.batches, StockBatch(amount: added, useBy: guess, guessed: true)],
+    );
+  }
+
+  /// Dates [amount] of an item's undated stock (all of it when more is asked
+  /// for), and remembers how long it keeps for next time. A checked date.
+  Future<void> dateStock(String itemId, double amount, DateTime useBy) async {
+    final index = _items.indexWhere((i) => i.id == itemId);
+    if (index < 0) return;
+    final current = _items[index];
+    final take = amount > current.undatedAmount ? current.undatedAmount : amount;
+    if (take <= 0) return;
+    final now = _clock();
+    final keep = keepDaysFrom(now, useBy);
+    _items[index] = current.copyWith(
+      batches: [
+        ...current.batches,
+        StockBatch(amount: take, useBy: useBy),
+      ],
+      keepDays: keep > 0 ? keep : null,
+      updatedAt: now,
+      updatedBy: _user,
+    );
+    _log(current.name, 'dated', delta: take, unit: current.unit);
+    await _commit();
+  }
+
+  /// Replaces an item's batches (the editor's list). A batch checked by hand
+  /// that was a guess becomes a real date.
+  Future<void> setBatches(String itemId, List<StockBatch> batches) async {
+    final index = _items.indexWhere((i) => i.id == itemId);
+    if (index < 0) return;
+    final current = _items[index];
+    _items[index] = current.copyWith(batches: batches, updatedAt: _clock(), updatedBy: _user);
+    _log(current.name, 'dates changed');
+    await _commit();
+  }
+
   /// Adds one pack of a measured item, or one of a counted one.
   Future<void> addPack(String itemId) async {
     final i = item(itemId);
@@ -453,7 +501,9 @@ class HouseholdStore extends ChangeNotifier {
     final next = (current.quantity + delta).clamp(0, double.infinity).toDouble();
     final applied = next - current.quantity;
     if (applied == 0) return;
-    _items[index] = current.copyWith(quantity: next, updatedAt: _clock(), updatedBy: _user);
+    _items[index] = applied > 0
+        ? _withMore(current, applied, _clock())
+        : current.copyWith(quantity: next, updatedAt: _clock(), updatedBy: _user);
     _log(current.name, applied > 0 ? 'topped up' : 'used', delta: applied, unit: current.unit);
     await _commit();
   }
@@ -469,7 +519,14 @@ class HouseholdStore extends ChangeNotifier {
     final now = _clock();
 
     final srcIndex = _items.indexWhere((i) => i.id == itemId);
-    _items[srcIndex] = source.copyWith(quantity: source.quantity - moved, updatedAt: now, updatedBy: _user);
+    // The dates go with the stock: the soonest moves first, as it would be used.
+    final (left, carried) = takeSoonest(source.batches, moved);
+    _items[srcIndex] = source.copyWith(
+      quantity: source.quantity - moved,
+      batches: left,
+      updatedAt: now,
+      updatedBy: _user,
+    );
 
     final destIndex = _items.indexWhere(
       (i) =>
@@ -479,7 +536,13 @@ class HouseholdStore extends ChangeNotifier {
     );
     if (destIndex >= 0) {
       final dest = _items[destIndex];
-      _items[destIndex] = dest.copyWith(quantity: dest.quantity + moved, updatedAt: now, updatedBy: _user);
+      _items[destIndex] = dest.copyWith(
+        quantity: dest.quantity + moved,
+        batches: [...dest.batches, ...carried],
+        keepDays: dest.keepDays > 0 ? null : source.keepDays,
+        updatedAt: now,
+        updatedBy: _user,
+      );
     } else {
       _items.add(
         StockItem(
@@ -495,6 +558,8 @@ class HouseholdStore extends ChangeNotifier {
           barcode: source.barcode,
           photoPath: source.photoPath,
           imageUrl: source.imageUrl,
+          batches: carried,
+          keepDays: source.keepDays,
         ),
       );
     }
@@ -800,7 +865,7 @@ class HouseholdStore extends ChangeNotifier {
         final added = current.isMeasured && nameKey(s.unit) != nameKey(current.unit)
             ? s.quantity * current.packSize
             : s.quantity;
-        _items[index] = current.copyWith(quantity: current.quantity + added, updatedAt: now, updatedBy: _user);
+        _items[index] = _withMore(current, added, now);
         _log(current.name, 'bought', delta: added, unit: current.unit);
       } else {
         _log(s.name, 'bought', delta: s.quantity, unit: s.unit);
@@ -881,7 +946,7 @@ class HouseholdStore extends ChangeNotifier {
                 : (l.unit.isNotEmpty
                       ? (convertUnits(l.quantity, l.unit, item.unit) ?? l.quantity)
                       : l.quantity * l.perPack));
-        _items[index] = item.copyWith(quantity: item.quantity + added, updatedAt: _clock(), updatedBy: _user);
+        _items[index] = _withMore(item, added, _clock());
         _log(item.name, 'bought', delta: added, unit: item.unit);
         stocked++;
       }

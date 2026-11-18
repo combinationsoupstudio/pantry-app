@@ -4,6 +4,20 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.15.0] - 2026-11-18
+
+### Added
+- **Use-by batches.** Some of an item can carry one date and some another: 2 yoghurts good till Friday, 2 till next week, 1 with no date. The item's page lists each batch, soonest first and marked *Use these first*; tap one to change its date, × takes the date off.
+- **Eat me first.** Using stock always takes the soonest-dated first, however it is used: − on the list, *Use some…*, *I cooked this*, a stocktake. Moving stock to another place takes its dates with it.
+- **Date it in two taps.** *Date it* on the undated stock asks how much (all of it to start), then one tap on +3 days, +1 week, +2 weeks, +1 month, +6 months, +1 year, *Same as last time*, or the calendar.
+- **Guessed dates for top-ups.** Once something has been dated, the app remembers how long it keeps. The next lot from +, *Put away* or a scanned receipt gets a guessed date ("about 2/12/2026") with nothing to type. Tap it to check it. Things never dated stay undated, so nothing nags.
+- The stock row says what to eat first when a batch is due within a week ("eat 2 by Fri", "1 past date").
+- The use-by dates page lists each batch on its own row ("2 of 4"), with guesses marked.
+
+### Changed
+- Reminders, Home's use-soon count and Insights use the soonest batch.
+- A phone still on 0.14 sees the soonest date only. Update both phones, or an edit made on the old one sets the whole item to that date.
+
 ## [0.14.0] - 2026-11-18
 
 ### Added

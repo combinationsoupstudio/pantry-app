@@ -5,6 +5,8 @@ import '../../models/models.dart';
 import '../../logic/usage.dart';
 import '../theme.dart';
 import 'pictures.dart';
+import '../../logic/amounts.dart';
+import '../../logic/supplies.dart';
 import 'item_sheets.dart';
 import 'use_some_sheet.dart';
 
@@ -59,6 +61,7 @@ class StockTile extends StatelessWidget {
     // Second line: where it is (when the list mixes places) and how long it lasts.
     final under = [
       if (showLocation && location.isNotEmpty) location,
+      ?eatFirstHint(item, DateTime.now(), (a) => item.isMeasured ? formatMeasure(a, item.unit) : formatQty(a)),
       if (left != null && left <= 14) 'about ${describeDays(left)} left',
     ];
     final state = item.isOut

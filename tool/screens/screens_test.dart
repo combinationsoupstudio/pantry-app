@@ -67,7 +67,7 @@ Future<HouseholdStore> demoStore() async {
   await add('Tins: tomatoes', 'pantry', 9, 'tins', 20);
   await add('Tins: fish', 'prep', 4, 'tins', 20);
   await add('UHT milk', 'prep', 3, 'L', 20);
-  await add('Eggs', 'fridge', 8, 'items', 12, useBy: now.add(const Duration(days: 9)));
+  await add('Eggs', 'fridge', 12, 'items', 12);
   await add('Cheese', 'fridge', 1, 'blocks', 1, useBy: now.add(const Duration(days: 4)));
   await add('Bread', 'pantry', 1, 'loaves', 1);
   await add('Garlic', 'pantry', 1, 'bulbs', 2);
@@ -124,6 +124,12 @@ Future<HouseholdStore> demoStore() async {
     url: 'https://example.com/tomato-pasta-bake/',
     ingredients: ['500 g pasta', '2 tins tomatoes', '1 onion', '200 g cheese'],
   );
+  // v0.15: two cartons with their own dates, two eggs undated.
+  final cartons = s.items.firstWhere((i) => i.name == 'Eggs');
+  await s.setBatches(cartons.id, [
+    StockBatch(amount: 2, useBy: now.add(const Duration(days: 2))),
+    StockBatch(amount: 2, useBy: now.add(const Duration(days: 16)), guessed: true),
+  ]);
   return s;
 }
 
@@ -336,6 +342,35 @@ void main() {
       ),
     );
     await shot(tester, '17-recipe-names');
+  });
+
+  testWidgets('v0.15 use-by batches', (tester) async {
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 2.625;
+    addTearDown(tester.view.reset);
+    final store = await demoStore();
+    final eggs = store.items.firstWhere((i) => i.name == 'Eggs');
+    await tester.pumpWidget(PantryApp(store: store));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('nav-pantry')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(ValueKey('stock-${eggs.id}')),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await shot(tester, '20-eat-first-row');
+    await tester.tap(find.byKey(ValueKey('stock-${eggs.id}')));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.byKey(const ValueKey('batch-undated')),
+      200,
+      scrollable: find.byType(Scrollable).last,
+    );
+    await tester.drag(find.byType(Scrollable).last, const Offset(0, -120));
+    await shot(tester, '21-use-by-batches');
+    await tester.tap(find.byKey(const ValueKey('batch-date-some')));
+    await shot(tester, '22-date-it');
   });
 
   testWidgets('v0.12 drawings', (tester) async {

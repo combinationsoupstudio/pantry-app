@@ -102,3 +102,38 @@ Map<DateGroup, List<StockItem>> byUseBy(Iterable<StockItem> items, DateTime now)
   }
   return out;
 }
+
+/// Every dated batch (v0.15), grouped like [byUseBy] but one entry per
+/// batch: four yoghurts with two dates are two rows. Soonest first.
+Map<DateGroup, List<(StockItem, StockBatch)>> lotsByUseBy(Iterable<StockItem> items, DateTime now) {
+  final lots = [
+    for (final i in items)
+      if (i.quantity > 0)
+        for (final b in i.batches) (i, b),
+  ]..sort((a, b) => a.$2.useBy.compareTo(b.$2.useBy));
+  final out = <DateGroup, List<(StockItem, StockBatch)>>{};
+  for (final l in lots) {
+    out.putIfAbsent(dateGroupOf(l.$2.useBy, now), () => []).add(l);
+  }
+  return out;
+}
+
+/// The "eat me first" line on a stock row (v0.15): the soonest batch when it
+/// is due within a week or past, e.g. "eat 2 by Fri", "1 past date". Short:
+/// it shares a line with the place and how long stock lasts.
+/// Null when nothing is that close. [amount] formats a batch's amount.
+String? eatFirstHint(StockItem item, DateTime now, String Function(double) amount) {
+  if (item.isOut || item.batches.isEmpty) return null;
+  final b = item.batches.first;
+  final days = b.useBy.difference(DateTime(now.year, now.month, now.day)).inDays;
+  if (days > 6) return null;
+  final what = amount(b.amount);
+  if (days < 0) return '$what past date';
+  const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  final when = days == 0
+      ? 'today'
+      : days == 1
+      ? 'tomorrow'
+      : 'by ${names[b.useBy.weekday - 1]}';
+  return 'eat $what $when${b.guessed ? '?' : ''}';
+}
