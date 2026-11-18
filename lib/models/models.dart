@@ -52,8 +52,91 @@ class StockLocation {
   );
 }
 
+/// Some of an item that shares one use-by date (v0.15): "2 of the 4 yoghurts
+/// are good till Friday". [amount] is in the item's own unit, like its
+/// quantity. [guessed] marks a date the app filled in from how long this item
+/// kept last time, shown as "about" until someone checks it.
+class StockBatch {
+  StockBatch({required this.amount, required DateTime useBy, this.guessed = false})
+    : useBy = DateTime(useBy.year, useBy.month, useBy.day);
+
+  final double amount;
+  final DateTime useBy;
+  final bool guessed;
+
+  StockBatch copyWith({double? amount, DateTime? useBy, bool? guessed}) =>
+      StockBatch(amount: amount ?? this.amount, useBy: useBy ?? this.useBy, guessed: guessed ?? this.guessed);
+
+  Map<String, Object?> toJson() => {'amount': amount, 'useBy': useBy.toIso8601String(), if (guessed) 'guessed': true};
+
+  factory StockBatch.fromJson(Map<String, Object?> json) => StockBatch(
+    amount: (json['amount']! as num).toDouble(),
+    useBy: DateTime.parse(json['useBy']! as String),
+    guessed: json['guessed'] == true,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      other is StockBatch && other.amount == amount && other.useBy == useBy && other.guessed == guessed;
+
+  @override
+  int get hashCode => Object.hash(amount, useBy, guessed);
+}
+
+/// Batches tidied: nothing empty, one batch per date (a guess merged with a
+/// checked date counts as checked), soonest first, and never more dated than
+/// there is: when there is less now, the soonest went first (eat me first).
+List<StockBatch> normaliseBatches(Iterable<StockBatch> batches, double quantity) {
+  final byDay = <DateTime, StockBatch>{};
+  for (final b in batches) {
+    if (b.amount <= 0) continue;
+    final had = byDay[b.useBy];
+    byDay[b.useBy] = had == null
+        ? b
+        : StockBatch(amount: had.amount + b.amount, useBy: b.useBy, guessed: had.guessed && b.guessed);
+  }
+  final sorted = byDay.values.toList()..sort((a, b) => a.useBy.compareTo(b.useBy));
+  final dated = sorted.fold<double>(0, (t, b) => t + b.amount);
+  final over = dated - (quantity < 0 ? 0 : quantity);
+  if (over <= 1e-9) return List.unmodifiable(sorted);
+  return List.unmodifiable(takeSoonest(sorted, over).$1);
+}
+
+/// Takes [amount] out of [batches], soonest date first. Returns what is left
+/// and what was taken (both soonest first). Asking for more than the batches
+/// hold takes them all.
+(List<StockBatch>, List<StockBatch>) takeSoonest(List<StockBatch> batches, double amount) {
+  final left = <StockBatch>[];
+  final taken = <StockBatch>[];
+  var want = amount;
+  for (final b in batches) {
+    if (want <= 1e-9) {
+      left.add(b);
+    } else if (b.amount <= want + 1e-9) {
+      taken.add(b);
+      want -= b.amount;
+    } else {
+      taken.add(b.copyWith(amount: want));
+      left.add(b.copyWith(amount: b.amount - want));
+      want = 0;
+    }
+  }
+  return (left, taken);
+}
+
+/// Whole days from [today] to [useBy] (0 when it is today or past): how long
+/// a fresh lot keeps, learned when someone dates one.
+int keepDaysFrom(DateTime today, DateTime useBy) {
+  final d = DateTime(
+    useBy.year,
+    useBy.month,
+    useBy.day,
+  ).difference(DateTime(today.year, today.month, today.day)).inDays;
+  return d > 0 ? d : 0;
+}
+
 class StockItem {
-  const StockItem({
+  StockItem({
     required this.id,
     required this.name,
     required this.locationId,
@@ -62,7 +145,9 @@ class StockItem {
     required this.target,
     required this.updatedAt,
     required this.updatedBy,
-    this.useBy,
+    DateTime? useBy,
+    List<StockBatch>? batches,
+    this.keepDays = 0,
     this.notes = '',
     this.packSize = 0,
     this.barcode,
@@ -73,7 +158,10 @@ class StockItem {
     this.aliases = const [],
     this.notAliases = const [],
     this.photoId,
-  });
+  }) : batches = normaliseBatches(
+         batches ?? (useBy == null ? const [] : [StockBatch(amount: quantity, useBy: useBy)]),
+         quantity,
+       );
 
   final String id;
   final String name;
@@ -142,7 +230,29 @@ class StockItem {
 
   /// How many we want to have at least. 0 means "no target".
   final double target;
-  final DateTime? useBy;
+
+  /// The dated stock, soonest first (v0.15). Anything over their total has
+  /// no date. Using stock takes the soonest first, wherever it is used.
+  final List<StockBatch> batches;
+
+  /// How many days this kept the last time someone dated a fresh lot (0 when
+  /// never): new stock gets a guessed date from it, so most top-ups need no
+  /// date typed at all.
+  final int keepDays;
+
+  /// The soonest use-by date ("eat me first"), or null when none is dated.
+  DateTime? get useBy => batches.isEmpty ? null : batches.first.useBy;
+
+  /// How much carries a date, and how much does not.
+  double get datedAmount => batches.fold(0, (t, b) => t + b.amount);
+  double get undatedAmount {
+    final u = quantity - datedAmount;
+    return u < 1e-9 ? 0 : u;
+  }
+
+  /// The date new stock would get if added today, from [keepDays].
+  DateTime? guessUseBy(DateTime today) =>
+      keepDays <= 0 ? null : DateTime(today.year, today.month, today.day + keepDays);
   final String notes;
   final DateTime updatedAt;
   final String updatedBy;
@@ -189,6 +299,8 @@ class StockItem {
     double? target,
     DateTime? useBy,
     bool clearUseBy = false,
+    List<StockBatch>? batches,
+    int? keepDays,
     String? notes,
     DateTime? updatedAt,
     String? updatedBy,
@@ -211,7 +323,8 @@ class StockItem {
     quantity: quantity ?? this.quantity,
     unit: unit ?? this.unit,
     target: target ?? this.target,
-    useBy: clearUseBy ? null : (useBy ?? this.useBy),
+    batches: _nextBatches(quantity ?? this.quantity, useBy, clearUseBy, batches),
+    keepDays: keepDays ?? this.keepDays,
     notes: notes ?? this.notes,
     updatedAt: updatedAt ?? this.updatedAt,
     updatedBy: updatedBy ?? this.updatedBy,
@@ -226,6 +339,21 @@ class StockItem {
     photoId: clearPhoto ? null : (photoId ?? this.photoId),
   );
 
+  /// The batches after a change. Given batches win; [clearUseBy] undates
+  /// everything; a single [useBy] (the old one-date way) dates all of it
+  /// unless it is the date already showing. Otherwise a smaller quantity
+  /// takes the soonest first, and a bigger one adds undated stock.
+  List<StockBatch> _nextBatches(double nextQuantity, DateTime? oneDate, bool clear, List<StockBatch>? given) {
+    if (given != null) return given;
+    if (clear) return const [];
+    if (oneDate != null) {
+      final day = DateTime(oneDate.year, oneDate.month, oneDate.day);
+      if (day != useBy) return [StockBatch(amount: nextQuantity, useBy: day)];
+    }
+    if (nextQuantity < quantity) return takeSoonest(batches, quantity - nextQuantity).$1;
+    return batches;
+  }
+
   Map<String, Object?> toJson() => {
     'id': id,
     'name': name,
@@ -233,7 +361,10 @@ class StockItem {
     'quantity': quantity,
     'unit': unit,
     'target': target,
+    // The soonest date stays for a phone still on an older version.
     'useBy': useBy?.toIso8601String(),
+    if (batches.isNotEmpty) 'batches': [for (final b in batches) b.toJson()],
+    if (keepDays > 0) 'keepDays': keepDays,
     'notes': notes,
     'updatedAt': updatedAt.toIso8601String(),
     'updatedBy': updatedBy,
@@ -256,6 +387,10 @@ class StockItem {
     unit: json['unit'] as String? ?? '',
     target: (json['target'] as num? ?? 0).toDouble(),
     useBy: json['useBy'] == null ? null : DateTime.parse(json['useBy']! as String),
+    batches: json['batches'] == null
+        ? null
+        : [for (final b in json['batches']! as List) StockBatch.fromJson((b as Map).cast<String, Object?>())],
+    keepDays: (json['keepDays'] as num? ?? 0).toInt(),
     notes: json['notes'] as String? ?? '',
     updatedAt: DateTime.parse(json['updatedAt']! as String),
     updatedBy: json['updatedBy'] as String? ?? '',

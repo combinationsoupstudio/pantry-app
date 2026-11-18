@@ -30,7 +30,7 @@ class _DatesPageState extends State<DatesPage> {
     final status = StatusColors.of(context);
     final now = DateTime.now();
     final inPlace = store.items.where((i) => _locationId == null || i.locationId == _locationId).toList();
-    final groups = byUseBy(inPlace, now);
+    final groups = lotsByUseBy(inPlace, now);
     final undated = inPlace.where((i) => i.useBy == null && i.quantity > 0).length;
     final withDates = store.locations.where((l) => store.items.any((i) => i.locationId == l.id)).toList();
 
@@ -94,16 +94,18 @@ class _DatesPageState extends State<DatesPage> {
                 child: Card(
                   child: Column(
                     children: [
-                      for (final i in groups[g]!)
+                      for (final (i, b) in groups[g]!)
                         ListTile(
-                          key: ValueKey('date-${i.id}'),
+                          key: ValueKey(b == i.batches.first ? 'date-${i.id}' : 'date-${i.id}-${i.batches.indexOf(b)}'),
                           leading: ProductPicture.of(i, size: 40),
                           title: Text(i.name, style: text.titleSmall),
                           subtitle: Text(
-                            '${store.location(i.locationId)?.name ?? ''} · ${formatMeasure(i.quantity, i.unit)}',
+                            '${store.location(i.locationId)?.name ?? ''} · '
+                            '${i.batches.length == 1 && i.undatedAmount == 0 ? formatMeasure(i.quantity, i.unit) : '${formatMeasure(b.amount, i.unit)} of ${formatMeasure(i.quantity, i.unit)}'}'
+                            '${b.guessed ? ' · guessed' : ''}',
                           ),
                           trailing: Text(
-                            when(i.useBy!),
+                            '${b.guessed ? '~' : ''}${when(b.useBy)}',
                             style: text.labelLarge?.copyWith(color: colourOf(g), fontWeight: FontWeight.w800),
                           ),
                           onTap: () => showItemEditor(context, existing: i),

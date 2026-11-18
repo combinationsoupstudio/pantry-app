@@ -19,6 +19,7 @@ import 'capture.dart';
 import 'name_match.dart';
 import 'picture_search.dart';
 import 'pictures.dart';
+import 'stock_tile.dart';
 import 'use_some_sheet.dart';
 
 const commonUnits = ['', 'items', 'cans', 'packs', 'bottles', 'jars', 'boxes', 'rolls', 'kg', 'g', 'L', 'mL'];
@@ -69,6 +70,10 @@ class _ItemEditorState extends State<_ItemEditor> {
   late String _locationId;
   DateTime? _useBy;
 
+  /// An existing item's dated stock, edited here and saved with it (v0.15).
+  late List<StockBatch> _batches;
+  int? _keepDays;
+
   // Measured items: pack size, unopened packs, what is left in the open one.
   late bool _measured;
   late final TextEditingController _packSize;
@@ -103,6 +108,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     _target = TextEditingController(text: e == null || !e.hasTarget ? '' : formatQty(e.target));
     _unit = e?.unit ?? '';
     _useBy = e?.useBy;
+    _batches = [...?e?.batches];
     _locationId = e?.locationId ?? widget.locationId ?? '';
     _barcode = e?.barcode;
     _photoPath = e?.photoPath;
@@ -376,6 +382,112 @@ class _ItemEditorState extends State<_ItemEditor> {
     }
   }
 
+  /// How much the form says there is now (falls back to the saved amount
+  /// while a box is half typed).
+  double _liveQuantity() {
+    final e = widget.existing;
+    try {
+      if (_measured) {
+        final pack = _parse(_packSize.text);
+        final left = _parse(_left.text);
+        if (pack == null || left == null) return e?.quantity ?? 0;
+        return (_parse(_packs.text) ?? 0) * pack + left;
+      }
+      return _parse(_qty.text) ?? e?.quantity ?? 0;
+    } catch (_) {
+      return e?.quantity ?? 0;
+    }
+  }
+
+  String _amount(double a) => amountText(a, _measured ? _mUnit : _unit);
+
+  /// An existing item's dates, one row per batch, soonest first ("eat me
+  /// first"), then what has no date with one button to date it (v0.15).
+  List<Widget> _batchFields(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final scheme = Theme.of(context).colorScheme;
+    final qty = _liveQuantity();
+    final shown = normaliseBatches(_batches, qty);
+    final dated = shown.fold<double>(0, (t, b) => t + b.amount);
+    final undated = qty - dated < 1e-9 ? 0.0 : qty - dated;
+    final e = widget.existing!;
+    return [
+      Padding(
+        padding: const EdgeInsets.only(top: 4, bottom: 2),
+        child: Text('Use-by dates', style: text.titleSmall),
+      ),
+      if (shown.isEmpty && undated == 0)
+        Text('Nothing in stock to date.', style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
+      for (final (k, b) in shown.indexed)
+        ListTile(
+          key: ValueKey('batch-$k'),
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+          leading: Icon(k == 0 ? Icons.priority_high : Icons.event_outlined, color: k == 0 ? scheme.primary : null),
+          title: Text(
+            '${_amount(b.amount)} · ${b.guessed ? 'about ' : 'use by '}${formatDayMonthYear(b.useBy)}',
+            style: text.bodyLarge?.copyWith(fontWeight: k == 0 ? FontWeight.w700 : null),
+          ),
+          subtitle: Text(
+            [
+              if (k == 0 && shown.length + (undated > 0 ? 1 : 0) > 1) 'Use these first',
+              if (b.guessed) 'Guessed from last time. Tap to check',
+            ].join(' · '),
+          ),
+          trailing: IconButton(
+            key: ValueKey('batch-undate-$k'),
+            tooltip: 'Take the date off',
+            icon: const Icon(Icons.close),
+            onPressed: () => setState(
+              () => _batches = [
+                for (final x in shown)
+                  if (x != b) x,
+              ],
+            ),
+          ),
+          onTap: () async {
+            final picked = await _pickDate(context, b.useBy);
+            if (picked == null) return;
+            setState(() => _batches = [for (final x in shown) x == b ? x.copyWith(useBy: picked, guessed: false) : x]);
+          },
+        ),
+      if (undated > 0)
+        ListTile(
+          key: const ValueKey('batch-undated'),
+          contentPadding: EdgeInsets.zero,
+          dense: true,
+          leading: const Icon(Icons.event_busy_outlined),
+          title: Text('${_amount(undated)} with no date', style: text.bodyLarge),
+          trailing: FilledButton.tonal(
+            key: const ValueKey('batch-date-some'),
+            onPressed: () async {
+              final got = await showDateSomeSheet(context, item: e, undated: undated, unitLabel: _amount);
+              if (got == null) return;
+              final (amount, day) = got;
+              setState(() {
+                _batches = [...shown, StockBatch(amount: amount > undated ? undated : amount, useBy: day)];
+                final keep = keepDaysFrom(DateTime.now(), day);
+                if (keep > 0) _keepDays = keep;
+              });
+            },
+            child: const Text('Date it'),
+          ),
+        ),
+    ];
+  }
+
+  Future<DateTime?> _pickDate(BuildContext context, DateTime initial) {
+    final now = DateTime.now();
+    // A calendar, never typing: no slashes to lose (v0.12.1).
+    return showDatePicker(
+      context: context,
+      firstDate: DateTime(now.year - 1),
+      lastDate: DateTime(now.year + 10),
+      initialDate: initial,
+      initialEntryMode: DatePickerEntryMode.calendarOnly,
+    );
+  }
+
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
     final store = StoreScope.read(context);
@@ -434,8 +546,8 @@ class _ItemEditorState extends State<_ItemEditor> {
           quantity: qty,
           unit: unit,
           target: target,
-          useBy: _useBy,
-          clearUseBy: _useBy == null,
+          batches: _batches,
+          keepDays: _keepDays,
           packSize: packSize,
           barcode: _barcode,
           clearBarcode: _barcode == null,
@@ -812,50 +924,53 @@ class _ItemEditorState extends State<_ItemEditor> {
                 onChanged: (v) => setState(() => _locationId = v ?? _locationId),
               ),
               const SizedBox(height: 8),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.event_outlined),
-                title: Text(_useBy == null ? 'No use-by date' : 'Use by ${formatDayMonthYear(_useBy!)}'),
-                trailing: _useBy == null
-                    ? null
-                    : IconButton(
-                        tooltip: 'Clear date',
-                        icon: const Icon(Icons.close),
-                        onPressed: () => setState(() => _useBy = null),
+              if (widget.existing == null) ...[
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.event_outlined),
+                  title: Text(_useBy == null ? 'No use-by date' : 'Use by ${formatDayMonthYear(_useBy!)}'),
+                  trailing: _useBy == null
+                      ? null
+                      : IconButton(
+                          tooltip: 'Clear date',
+                          icon: const Icon(Icons.close),
+                          onPressed: () => setState(() => _useBy = null),
+                        ),
+                  onTap: () async {
+                    final now = DateTime.now();
+                    // A calendar, never typing: no slashes to lose (v0.12.1).
+                    final picked = await showDatePicker(
+                      context: context,
+                      firstDate: DateTime(now.year - 1),
+                      lastDate: DateTime(now.year + 10),
+                      initialDate: _useBy ?? now,
+                      initialEntryMode: DatePickerEntryMode.calendarOnly,
+                    );
+                    if (picked != null) setState(() => _useBy = picked);
+                  },
+                ),
+                // One tap for the usual shelf lives, counted from today.
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    for (final (label, days, months) in const [
+                      ('+1 week', 7, 0),
+                      ('+1 month', 0, 1),
+                      ('+6 months', 0, 6),
+                      ('+1 year', 0, 12),
+                      ('+2 years', 0, 24),
+                    ])
+                      ActionChip(
+                        key: ValueKey('useby-$label'),
+                        label: Text(label),
+                        onPressed: () =>
+                            setState(() => _useBy = useByFromToday(DateTime.now(), days: days, months: months)),
                       ),
-                onTap: () async {
-                  final now = DateTime.now();
-                  // A calendar, never typing: no slashes to lose (v0.12.1).
-                  final picked = await showDatePicker(
-                    context: context,
-                    firstDate: DateTime(now.year - 1),
-                    lastDate: DateTime(now.year + 10),
-                    initialDate: _useBy ?? now,
-                    initialEntryMode: DatePickerEntryMode.calendarOnly,
-                  );
-                  if (picked != null) setState(() => _useBy = picked);
-                },
-              ),
-              // One tap for the usual shelf lives, counted from today.
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: [
-                  for (final (label, days, months) in const [
-                    ('+1 week', 7, 0),
-                    ('+1 month', 0, 1),
-                    ('+6 months', 0, 6),
-                    ('+1 year', 0, 12),
-                    ('+2 years', 0, 24),
-                  ])
-                    ActionChip(
-                      key: ValueKey('useby-$label'),
-                      label: Text(label),
-                      onPressed: () =>
-                          setState(() => _useBy = useByFromToday(DateTime.now(), days: days, months: months)),
-                    ),
-                ],
-              ),
+                  ],
+                ),
+              ] else
+                ..._batchFields(context),
               if (widget.existing != null) _ItemFacts(item: widget.existing!),
               const SizedBox(height: 8),
               Row(
@@ -1050,3 +1165,115 @@ DateTime useByFromToday(DateTime today, {int days = 0, int months = 0}) {
 
 /// 17/11/2026: the Australian way round.
 String formatDayMonthYear(DateTime d) => '${d.day}/${d.month}/${d.year}';
+
+/// Dates some undated stock: how much (all of it to start), then one tap on
+/// a shelf life, "same as last time" first when the item has kept before, or
+/// the calendar. Returns the amount and the day, or null (v0.15).
+Future<(double, DateTime)?> showDateSomeSheet(
+  BuildContext context, {
+  required StockItem item,
+  required double undated,
+  required String Function(double) unitLabel,
+}) {
+  return showModalBottomSheet<(double, DateTime)>(
+    context: context,
+    isScrollControlled: true,
+    showDragHandle: true,
+    builder: (_) => _DateSome(item: item, undated: undated, unitLabel: unitLabel),
+  );
+}
+
+class _DateSome extends StatefulWidget {
+  const _DateSome({required this.item, required this.undated, required this.unitLabel});
+  final StockItem item;
+  final double undated;
+  final String Function(double) unitLabel;
+
+  @override
+  State<_DateSome> createState() => _DateSomeState();
+}
+
+class _DateSomeState extends State<_DateSome> {
+  late final TextEditingController _amount = TextEditingController(text: formatQty(widget.undated));
+
+  double get _how {
+    final v = double.tryParse(_amount.text.trim());
+    if (v == null || v <= 0) return widget.undated;
+    return v > widget.undated ? widget.undated : v;
+  }
+
+  void _done(DateTime day) => Navigator.of(context).pop((_how, DateTime(day.year, day.month, day.day)));
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final now = DateTime.now();
+    final guess = widget.item.guessUseBy(now);
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.viewInsetsOf(context).bottom),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Date ${widget.item.name}', style: text.titleLarge),
+          const SizedBox(height: 4),
+          Text(
+            '${widget.unitLabel(widget.undated)} ${!widget.item.isMeasured && widget.undated != 1 ? 'have' : 'has'} no date.',
+            style: text.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            key: const ValueKey('date-some-amount'),
+            controller: _amount,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: const InputDecoration(labelText: 'How much of it'),
+          ),
+          const SizedBox(height: 12),
+          if (guess != null) ...[
+            FilledButton(
+              key: const ValueKey('date-some-same'),
+              onPressed: () => _done(guess),
+              child: Text('Same as last time: ${formatDayMonthYear(guess)}'),
+            ),
+            const SizedBox(height: 8),
+          ],
+          Wrap(
+            spacing: 6,
+            runSpacing: 4,
+            children: [
+              for (final (label, days, months) in const [
+                ('+3 days', 3, 0),
+                ('+1 week', 7, 0),
+                ('+2 weeks', 14, 0),
+                ('+1 month', 0, 1),
+                ('+6 months', 0, 6),
+                ('+1 year', 0, 12),
+              ])
+                ActionChip(
+                  key: ValueKey('date-some-$label'),
+                  label: Text(label),
+                  onPressed: () => _done(useByFromToday(DateTime.now(), days: days, months: months)),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: const ValueKey('date-some-calendar'),
+            icon: const Icon(Icons.calendar_month_outlined),
+            label: const Text('Pick the date'),
+            onPressed: () async {
+              final picked = await showDatePicker(
+                context: context,
+                firstDate: DateTime(now.year - 1),
+                lastDate: DateTime(now.year + 10),
+                initialDate: guess ?? now,
+                initialEntryMode: DatePickerEntryMode.calendarOnly,
+              );
+              if (picked != null && mounted) _done(picked);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -18,7 +18,8 @@ Built by [Combination Soup Studio](https://combinationsoupstudio.com.au) in Bate
   <img src="docs/screens/10-use-some.jpg" width="200" alt="Use some: 3 tbsp of olive oil takes 60 ml and leaves 1090 ml">
   <img src="docs/screens/11-edit-measured.jpg" width="200" alt="Editing a measured item: scan barcode, take photo, pack size, left in the open one">
   <img src="docs/screens/12-find-picture.jpg" width="200" alt="Find picture: Australian washed potato products with their pictures">
-  <img src="docs/screens/13-use-by-dates.jpg" width="200" alt="Use-by dates grouped: past its date, within a week, within a month, later">
+  <img src="docs/screens/13-use-by-dates.jpg" width="200" alt="Use-by dates grouped: past its date, within a week, within a month, later, one row per batch">
+  <img src="docs/screens/21-use-by-batches.jpg" width="200" alt="An item's use-by batches: 2 use by 18/11 (use these first), 2 about 2/12 (guessed), 2 with no date and a Date it button">
   <img src="docs/screens/14-stocktake.jpg" width="200" alt="Stocktake: one item at a time, That's right or count it">
   <img src="docs/screens/15-receipt.jpg" width="200" alt="Checking a scanned Woolworths receipt: lines matched to stock, total matches">
   <img src="docs/screens/18-pantry-drawings.jpg" width="200" alt="The Pantry with drawn ink-and-wash food pictures">
@@ -115,7 +116,7 @@ flutter run         # on a connected phone or emulator
 | **3** | 0.6 | Back up and restore, stocktake, scan to use, use-by dates (medical too), water days. **Done.** |
 | **4** | 0.7 | Reminders (shop day, use-by alerts, backup nudge); say it to add it (voice). **Done.** |
 | **5** | 0.8 | Receipt scan (on-device text recognition) into spend, prices and stock. **Done.** |
-| 5b | 0.8.x | Use-by batches, "eat me first". |
+| **5b** | 0.15 | Use-by batches, "eat me first", guessed dates for top-ups. **Done.** |
 | **6** | 0.9 | Household sync between phones (Cloudflare Worker, one database per household); instant updates over a live line while the app is open. **Done.** |
 | **6b** | 0.10 | Warm pantry look; four tabs (Pantry holds the stored-away stock); icons for things without a photo; lighter rows; tidier shopping list. **Done.** |
 | **6c** | 0.11 | Names match however they are typed: same-thing names folded, close spellings asked once and remembered, "also called". **Done.** |
