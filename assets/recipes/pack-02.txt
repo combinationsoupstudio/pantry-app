@@ -1,0 +1,1469 @@
+# Pantry starter recipes, pack 02: 50 recipes.
+# Format: docs/recipe-pack-format.md. Australian metric: 1 cup = 250 ml, 1 tbsp = 20 ml, 1 tsp = 5 ml.
+# Every recipe here is untested until it is rated.
+
+@credit original: Written for Pantry by Combination Soup Studio.
+@credit qld-hnc: Adapted from the Healthy New Communities Cookbook, State of Queensland (Metro South Hospital and Health Service), CC BY 4.0. Method reworded, amounts in Australian metric. | https://www.metrosouth.health.qld.gov.au/about-us/get-involved/resources-to-build-healthier-communities/recipe-resources
+
+=== Smoko burritos
+id: smoko-burritos
+serves: 6
+minutes: 55
+tags: dinner, beef, Mexican, signature
+credit: original
+-- Smoko sauce
+- 4 tomatoes, halved | tomatoes; tomato
+- 1 onion, quartered | onion; brown onion
+- 4 garlic cloves, skin on | garlic
+- 1 jalapeno | jalapeno; green chilli; chilli
+- 2 chipotles in adobo, plus 1 tbsp of the sauce | chipotle in adobo; chipotles
+- 1 lime | lime; lemon
+- 1 tsp honey | honey
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+-- Seasoning
+- 2 tsp smoked paprika | smoked paprika; paprika
+- 2 tsp ground cumin | cumin
+- 1 tsp dried oregano | oregano
+- 1 tsp garlic powder | garlic powder
+- 1 tsp onion powder | onion powder
+- 1 tsp cocoa powder | cocoa
+- 2 tsp brown sugar | brown sugar; sugar
+- 1/4 tsp ground cinnamon | cinnamon
+-- Meat
+- 600 g beef mince, not lean | beef mince; mince
+- 1 chorizo sausage, skin off | chorizo
+- 1 tbsp tomato paste | tomato paste
+- 1 lime | lime; lemon
+-- To fill
+- 6 large tortillas | tortillas; wraps
+- 1 cup rice | rice
+- 400 g tinned black beans, drained | black beans; beans
+- 150 g tasty cheese, grated | tasty cheese; cheese
+- 1/2 cup sour cream | sour cream
+- 1 avocado | avocado
+- 2 cups shredded cos lettuce | cos lettuce; lettuce
+- coriander, to serve | coriander
+~ salt
+~ black pepper
+> Cook the rice. Stir in the zest of one lime and a pinch of salt.
+> Sauce: heat a heavy dry pan or grill on high. Char the tomatoes cut side down, the onion, garlic and jalapeno for 10 to 12 minutes, turning, until blackened in patches.
+> Peel the garlic. Blend everything charred with the chipotles, adobo, juice of 1 lime, honey and 1/2 tsp salt until smooth.
+> Heat the oil in a saucepan until shimmering. Pour in the sauce (it spits) and simmer 8 minutes until darker and thick. This frying is what makes it.
+> Mix the seasoning with 1 1/2 tsp salt and 1/2 tsp pepper.
+> Meat: heat a large frying pan on high until smoking. Press the mince into one flat layer and leave it alone for 4 minutes, until a dark crust forms. Flip in pieces and break it up.
+> Add the chorizo and cook 3 minutes. Push it all to one side, add the tomato paste and seasoning to the fat, and fry 1 minute until it darkens.
+> Stir it through, add 1/2 cup Smoko sauce and 1/4 cup water, and cook 4 minutes until sticky. Squeeze over the second lime.
+> Warm the beans. Fill each tortilla: rice, beans, meat, cheese, a spoon of sauce, lettuce, avocado, sour cream. Fold in the sides and roll tight.
+> Toast seam side down in a dry pan for 2 minutes a side. Serve the rest of the sauce for dipping.
+note: Double the Smoko sauce: it keeps a week in the fridge and freezes.
+note: Too hot for kids? One chipotle and no jalapeno.
+
+=== Lamb biryani
+id: lamb-biryani
+serves: 8
+minutes: 120
+tags: dinner, lamb, rice, Indian, weekend
+credit: qld-hnc
+-- Fried onion paste
+- 6 onions, finely sliced | onions; onion; brown onion
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 tbsp natural yoghurt | natural yoghurt; yoghurt
+- 1 tsp ground turmeric | turmeric
+-- Marinade
+- 1 cup natural yoghurt | natural yoghurt; yoghurt
+- 1 tbsp grated ginger | ginger
+- 5 garlic cloves, crushed | garlic
+- 2 tbsp biryani masala | biryani masala; garam masala
+- 1 tsp Kashmiri chilli powder | kashmiri chilli; chilli powder; paprika
+- 2 long red chillies, finely chopped | long red chillies; red chilli; chilli
+- 1 lemon | lemon
+- 1/2 bunch coriander, chopped | coriander
+- 1/2 bunch mint, chopped | mint
+-- Meat
+- 800 g lamb leg or shoulder, cut in 2 cm pieces | diced lamb; lamb
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+-- Rice
+- 2 1/2 cups basmati rice | basmati rice; rice
+- 2 bay leaves | bay leaves
+- 1 cinnamon stick | cinnamon stick; cinnamon
+- 1 star anise | star anise
+- 6 green cardamom pods | cardamom pods; cardamom
+- 6 whole cloves | cloves
+- 1 tsp cumin seeds | cumin seeds; cumin
+-- Layers
+- 1/4 cup milk | milk
+- 1 big pinch saffron | saffron
+- 1 tbsp ghee | ghee; butter
+- 1/2 bunch coriander, chopped | coriander
+- 1/2 bunch mint, chopped | mint
+- 1/2 cup roasted cashews | cashews
+~ salt
+~ black pepper
+> Fry the onion in the oil over medium heat, turning often, for about 15 minutes until deep golden. Keep back 1/2 cup for the layers and blend the rest with the yoghurt and turmeric into a paste.
+> Mix the marinade in a glass or ceramic bowl with the juice of the lemon, 1/2 tsp salt and 1/2 tsp pepper. Stir in the onion paste and the lamb. Cover and refrigerate at least 3 hours, or overnight.
+> Rinse the rice until the water runs clear, soak it in cold water for 30 minutes, then drain.
+> Heat the oil in a large pan over medium-high heat and cook the lamb with all its marinade for 15 to 20 minutes, stirring often, until thick.
+> Warm the milk until nearly boiling and drop in the saffron.
+> Bring a big pot of salted water to the boil with the bay leaves and whole spices. Add the rice, boil 5 minutes only, then drain.
+> Melt the ghee in a heavy pot. Layer a third of the rice, half the lamb, some herbs, some fried onion and 1 tbsp saffron milk. Repeat, then finish with the last of the rice and saffron milk.
+> Heat until you see steam, then turn to low. Seal the pot with foil and the lid and cook 20 to 25 minutes.
+> Rest 10 minutes off the heat. Uncover and scatter with cashews, the rest of the fried onion and herbs.
+note: Serve with raita and a cucumber tomato salad.
+note: No biryani masala? Use garam masala with an extra pinch of cardamom.
+
+=== Ghormeh sabzi
+id: ghormeh-sabzi
+serves: 8
+minutes: 140
+tags: dinner, beef, Persian, slow cook
+credit: qld-hnc
+- 3 tbsp olive oil | olive oil; oil
+- 1 kg beef chuck steak, trimmed and diced | chuck steak; beef chuck; stewing beef; beef
+- 1 onion, sliced | onion; brown onion
+- 2 garlic cloves, finely chopped | garlic
+- 1 tbsp tomato paste | tomato paste
+- 2 tsp ground turmeric | turmeric
+- 1 tsp ground cumin | cumin
+- 1 tsp ground cinnamon | cinnamon
+- 2 tbsp dried fenugreek leaves, if you have them | dried fenugreek; fenugreek
+- 3 dried limes, if you have them | dried limes
+- 1 tsp stock powder | stock powder; beef stock powder
+- 400 g tinned red kidney beans, drained | red kidney beans; kidney beans
+- 1 lemon | lemon
+- 3 cups baby spinach | baby spinach; spinach
+- 1 big handful parsley, dill or coriander | parsley; dill; coriander
+- 4 spring onions, green parts | spring onions
+~ salt
+~ black pepper
+> Heat the oven to 160°C. Heat 1 tbsp oil in a flameproof, ovenproof pot over medium-high heat.
+> Brown the beef in two batches until dark on all sides, setting it aside as you go.
+> Add the rest of the oil and the onion and cook 3 minutes. Stir in the garlic, tomato paste and spices (and the fenugreek and dried limes, pierced, if using) for 1 minute.
+> Return the beef, add 1 1/2 cups water, the stock powder, 1/2 tsp salt and 1/2 tsp pepper. Bring to the boil.
+> Cover and bake 1 1/2 hours.
+> Chop the spinach, herbs and spring onions. Stir them in with the beans and the juice of the lemon, and bake 30 minutes more.
+note: Serve with rice and a crisp salad.
+note: Frying the herbs in a little oil for 5 minutes before they go in deepens the flavour.
+
+=== Ashak (herb dumplings with tomato lentil sauce)
+id: ashak
+serves: 6
+minutes: 90
+tags: dinner, vegetarian, Afghan, weekend
+credit: qld-hnc
+-- Dough
+- 500 g plain flour | plain flour; flour
+- 3 tbsp vegetable oil | vegetable oil; canola oil; oil
+-- Tomato lentil sauce
+- 1/2 cup split yellow lentils | yellow lentils; split lentils; lentils
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 onion, chopped | onion; brown onion
+- 4 garlic cloves, finely chopped | garlic
+- 2 tbsp tomato paste | tomato paste
+- 3 tomatoes, grated | tomatoes; tomato
+- 1 tsp ground turmeric | turmeric
+- 2 tsp char masala or garam masala | garam masala; char masala
+-- Filling
+- 3 bunches garlic chives, chopped | garlic chives; chives
+- 1/2 bunch coriander, chopped | coriander
+- 1 handful mint, chopped | mint
+- 1/2 tsp chilli powder | chilli powder
+-- Yoghurt sauce
+- 2 cups natural yoghurt | natural yoghurt; yoghurt
+- 2 garlic cloves, finely chopped | garlic
+-- To serve
+- 2 tsp dried mint | dried mint; mint
+~ salt
+~ black pepper
+> Mix the flour, oil and 2 tsp salt with 1/2 cup water, adding a little more water until it comes together. Knead 8 to 10 minutes until soft and stretchy. Cut into 10 balls and rest them, covered, 30 minutes.
+> Simmer the lentils in plenty of water for 20 minutes until tender, then drain.
+> Fry the onion and garlic in the oil for 3 to 4 minutes. Add the tomato paste, turmeric, masala, salt and pepper and cook 2 minutes. Add the tomatoes and lentils and cook gently 10 to 15 minutes.
+> Mix the chives, herbs, chilli powder, 1 tsp salt and 1 tsp oil for the filling.
+> Roll one dough ball very thin and cut circles about the length of your hand. Put 1 to 2 tsp filling in each, fold over and press to seal, then bring the ends together into a flower. Repeat.
+> Steam the dumplings 8 to 10 minutes.
+> Mix the yoghurt, garlic and 1 tsp salt. Spread half on a big platter, add the dumplings, spoon over the lentil sauce and the rest of the yoghurt. Finish with fresh herbs and dried mint.
+note: Dumplings freeze well uncooked: steam from frozen for 12 minutes.
+
+=== Cauliflower and chickpea qurma
+id: qurma-gulpea
+serves: 6
+minutes: 30
+tags: dinner, vegetarian, vegan, Afghan, budget, quick
+credit: qld-hnc
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 onion, chopped | onion; brown onion
+- 2 garlic cloves, chopped | garlic
+- 1 tsp ground turmeric | turmeric
+- 2 tsp char masala or curry powder | curry powder; garam masala
+- 1 tbsp tomato paste | tomato paste
+- 400 g tinned diced tomatoes | diced tomatoes; tinned tomatoes
+- 1 long red chilli, chopped (optional) | long red chilli; red chilli; chilli
+- 1 cauliflower, in bite-size florets | cauliflower
+- 400 g tinned chickpeas, drained | chickpeas
+- 1/2 lemon | lemon
+- basmati rice, to serve | basmati rice; rice
+~ salt
+~ black pepper
+> Brown the onion in the oil over medium-high heat for 2 to 3 minutes.
+> Add the garlic, turmeric and masala and stir 1 minute.
+> Add the tomato paste, tomatoes and chilli and cook 10 minutes until thick.
+> Stir in the cauliflower and chickpeas until coated, add 1 cup boiling water, cover and cook 10 to 15 minutes until the cauliflower is tender.
+> Season with the lemon juice, salt and pepper. Serve with rice and garlic yoghurt.
+
+=== Tepsi baytinijan (eggplant and kofta bake)
+id: tepsi-baytinijan
+serves: 8
+minutes: 120
+tags: dinner, beef, lamb, Iraqi, bake, weekend
+credit: qld-hnc
+-- Kofta
+- 1 onion | onion; brown onion
+- 2 garlic cloves | garlic
+- 2 large handfuls parsley | parsley
+- 350 g beef mince | beef mince; mince
+- 350 g lamb mince | lamb mince; mince
+- 1 tbsp baharat | baharat; seven spice; allspice
+- 2 tbsp plain flour | plain flour; flour
+-- Tomato sauce
+- 1 tbsp olive oil | olive oil; oil
+- 1 onion, finely chopped | onion; brown onion
+- 4 garlic cloves, crushed | garlic
+- 1 tbsp baharat | baharat; seven spice; allspice
+- 2 tsp ground turmeric | turmeric
+- 1 tsp paprika | paprika
+- 1 tbsp tomato paste | tomato paste
+- 800 g tomato puree | tomato puree; passata
+- 1 tsp dried mint (optional) | dried mint
+-- Vegetables
+- 2 large eggplants, in 1.5 cm slices | eggplants; eggplant
+- 3 potatoes | potatoes; potato
+- 1 red capsicum, in strips | red capsicum; capsicum
+- 2 onions, in 1 cm rings | onions; onion
+- oil spray | oil spray; oil
+~ salt
+~ black pepper
+~ sugar
+> Blitz the onion, garlic and parsley in a food processor. Add both minces, baharat, flour, 1 tsp salt and pepper and pulse to a paste. Chill 30 minutes.
+> Sauce: soften the onion in the oil 2 to 3 minutes. Add the garlic, spices and tomato paste for 1 minute, then the puree and a pinch of sugar. Cook on low 15 minutes until dark, add 1 cup water and simmer 10 to 15 minutes more until glossy.
+> Boil the potatoes whole for 6 to 8 minutes, cool, peel and slice 1 cm thick.
+> Shape the kofta into flat fingers. Brown them 1 minute a side in a hot oiled pan.
+> In the same pan on high, spray the eggplant with oil and brown it 2 to 3 minutes a side, in batches. Heat the oven to 180°C.
+> Oil a big baking dish. Lay the potato, onion rings, capsicum and eggplant in alternating rows, sit the kofta on top and pour over the sauce.
+> Cover with foil and bake 1 hour. Serve with basmati rice.
+
+=== Bakso (meatball noodle soup)
+id: bakso
+serves: 6
+minutes: 40
+tags: dinner, soup, beef, Indonesian, noodles
+credit: qld-hnc
+-- Meatballs
+- 500 g beef mince | beef mince; mince
+- 1/2 tsp baking powder | baking powder
+- 1 egg | eggs; egg
+- 2 garlic cloves, crushed | garlic
+- 1 tsp beef stock powder | beef stock powder; stock powder
+- 1 tbsp fried shallots, crushed | fried shallots
+- 1 handful coriander, very finely chopped (optional) | coriander
+- 1/2 cup tapioca flour or cornflour | tapioca flour; cornflour
+-- Soup
+- 1 bunch spring onions | spring onions
+- 2 tsp white peppercorns | white pepper; peppercorns
+- 5 garlic cloves | garlic
+- 1 tbsp grated ginger | ginger
+- 1 tsp ground nutmeg | nutmeg
+- 3 celery sticks, sliced | celery
+- 1 cinnamon stick | cinnamon stick; cinnamon
+- 1 star anise (optional) | star anise
+-- To serve
+- 400 g rice or egg noodles | noodles; egg noodles; rice noodles
+- 3 bunches bok choy, sliced | bok choy
+- 200 g bean sprouts | bean sprouts
+- kecap manis | kecap manis; sweet soy sauce
+- chilli sauce | chilli sauce
+- fried shallots, to top | fried shallots
+~ salt
+~ black pepper
+> Bring a large pot of water to the boil.
+> Mix the mince, baking powder, egg, garlic, stock powder, 1/2 tsp pepper, fried shallots and coriander. Work in the flour and about 1/3 cup iced water a little at a time until it holds together.
+> Squeeze the mixture up between thumb and finger and scoop off balls with a spoon. Boil 5 to 7 minutes, lift out, and keep the water.
+> Pound the white parts of the spring onions, peppercorns, garlic, ginger and nutmeg to a paste. Stir into the meatball water with the celery, cinnamon, star anise and 1 to 2 tsp salt. Simmer 5 minutes.
+> Return the meatballs and simmer 5 minutes more.
+> Cook the noodles to the packet, and blanch the bok choy 1 to 2 minutes.
+> Fill bowls with noodles, bok choy and sprouts, add kecap manis and chilli to taste, then ladle over the soup and meatballs. Top with fried shallots and the spring onion greens.
+
+=== Fattoush
+id: fattoush
+serves: 6
+minutes: 15
+tags: lunch, side, salad, vegetarian, vegan, Middle Eastern, quick
+credit: qld-hnc
+- 1 wholemeal Lebanese bread | lebanese bread; pita bread; flatbread
+- oil spray | oil spray; oil
+- 4 tomatoes | tomatoes; tomato
+- 3 Lebanese cucumbers | lebanese cucumbers; cucumber
+- 1 bunch radishes | radishes
+- 3 spring onions | spring onions
+- 1/2 bunch parsley | parsley
+- 1 handful mint | mint
+- 1 garlic clove | garlic
+- 1 tbsp olive oil | olive oil; oil
+- 1 tsp sumac | sumac
+- 1/2 lemon | lemon
+~ salt
+> Heat the oven to 180°C. Spray the bread with oil and bake 5 minutes until crisp. Cool.
+> Chop the tomatoes, cucumbers and radishes. Finely chop the spring onions, parsley and mint. Toss in a bowl.
+> Shake the finely chopped garlic, olive oil, sumac, lemon juice and a pinch of salt in a jar.
+> Dress the salad and break the bread over the top just before serving.
+note: Dress it at the table: the bread should still crunch.
+
+=== Shorbat addas (lentil soup)
+id: shorbat-addas
+serves: 6
+minutes: 35
+tags: lunch, dinner, soup, vegetarian, vegan, Middle Eastern, budget
+credit: qld-hnc
+- 1 onion | onion; brown onion
+- 2 carrots | carrots; carrot
+- 2 garlic cloves | garlic
+- 1 tbsp olive oil | olive oil; oil
+- 1 tbsp tomato paste | tomato paste
+- 1 tsp ground cumin | cumin
+- 1 tsp ground coriander | ground coriander
+- 1 tsp ground turmeric | turmeric
+- 1 tbsp stock powder | stock powder; vegetable stock powder
+- 1 1/2 cups red lentils | red lentils; lentils
+- 1 lemon | lemon
+- 1 handful parsley or coriander | parsley; coriander
+~ salt
+~ black pepper
+> Finely chop the onion, carrots and garlic. Rinse the lentils until the water runs clear.
+> Cook the onion and carrot in the oil over medium-high heat for 3 minutes. Add the garlic, tomato paste and spices for 1 minute.
+> Add the lentils, stock powder and 1.5 litres water. Boil, then simmer on low 25 to 30 minutes until the lentils collapse.
+> Mash some lentils against the side of the pot, or blend half, to thicken.
+> Season, stir in the lemon juice and chopped herbs.
+note: A swirl of olive oil and a pinch of chilli flakes on top is how it is served in Damascus.
+
+=== Borani banjan (eggplant with tomato and yoghurt)
+id: borani-banjan
+serves: 6
+minutes: 30
+tags: dinner, side, vegetarian, Afghan
+credit: qld-hnc
+- 2 eggplants | eggplants; eggplant
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 3 garlic cloves, crushed | garlic
+- 1 tbsp tomato paste | tomato paste
+- 400 g tinned diced tomatoes | diced tomatoes; tinned tomatoes
+- 1 tsp ground turmeric | turmeric
+- 1/2 tsp chilli flakes | chilli flakes; chilli
+- 1 cup natural yoghurt | natural yoghurt; yoghurt
+- 1 garlic clove, crushed | garlic
+- 2 tsp dried or fresh mint | mint; dried mint
+- wholemeal flatbread, to serve | flatbread
+~ salt
+~ black pepper
+> Cut the eggplants into 1 cm rounds, brush with a little oil and sprinkle with 1 tsp salt.
+> Brown the eggplant in a hot pan in batches, 2 to 3 minutes a side, adding a little oil as needed.
+> In the same pan over medium heat, fry the garlic and tomato paste in 1 tbsp oil for 30 seconds. Add the tomatoes, turmeric, chilli, 1/2 tsp pepper and 1/2 cup water and cook 10 minutes.
+> Take out two thirds of the sauce, lay the eggplant in the pan, spoon the sauce back over, cover and cook 10 minutes.
+> Mix the yoghurt with the crushed garlic and a pinch of salt and spread it over a platter. Top with the eggplant and sauce, scatter with mint, serve with flatbread.
+
+=== Maraq digaag (chicken and lentil soup)
+id: maraq-digaag
+serves: 6
+minutes: 45
+tags: dinner, soup, chicken, Somali
+credit: qld-hnc
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 2 onions, chopped | onions; onion
+- 6 garlic cloves, finely chopped | garlic
+- 1 kg chicken legs or drumsticks | chicken drumsticks; chicken legs; chicken
+- 3 tsp xawaash spice or baharat | xawaash; baharat; allspice
+- 3 tsp stock powder | stock powder; chicken stock powder
+- 1 cup red lentils | red lentils; lentils
+- 1 tomato, finely chopped | tomatoes; tomato
+- 1 red capsicum, finely chopped | red capsicum; capsicum
+- 1 green capsicum, finely chopped | green capsicum; capsicum
+- 1 spring onion, chopped | spring onions
+- 1/2 bunch coriander, chopped | coriander
+> Cook the onion and garlic in the oil in a big pot for 3 minutes.
+> Add the chicken and spice and cook 5 minutes, turning every minute.
+> Add 1 litre water, the stock powder and lentils and bring to the boil.
+> Add the tomato and capsicums, turn to low and simmer 20 to 30 minutes until the lentils are very soft.
+> Stir hard to break up the lentils and thicken. Add the coriander and spring onion just before serving.
+note: Xawaash is a Somali blend of cumin, coriander, black pepper, cardamom, cinnamon, cloves and turmeric; baharat is a close stand-in.
+
+=== Hidden veg beef burgers
+id: hidden-veg-beef-burgers
+serves: 6
+minutes: 25
+tags: dinner, beef, burgers, kids, quick
+credit: qld-hnc
+- 1 onion | onion; brown onion
+- 1 carrot | carrots; carrot
+- 4 mushrooms | mushrooms
+- 1 zucchini | zucchini
+- 1 garlic clove | garlic
+- 500 g beef mince | beef mince; mince
+- 1 egg | eggs; egg
+- 1 tbsp tomato sauce | tomato sauce
+- 1 tsp stock powder | stock powder; beef stock powder
+- 1 tsp dried mixed herbs | mixed herbs
+- 1/2 cup dried breadcrumbs | breadcrumbs
+- oil spray | oil spray; oil
+- 6 wholemeal bread rolls | bread rolls; burger buns
+- lettuce, tomato and cucumber, to serve | lettuce
+> Grate the onion, carrot, mushrooms and zucchini, and finely chop the garlic. Squeeze the zucchini hard over the sink.
+> Mix everything except the rolls and salad with your hands until it holds together.
+> Shape into 6 large or 12 small flat patties.
+> Cook in an oiled pan over medium-high heat 8 to 10 minutes, turning halfway, until cooked through.
+> Fill the rolls with a patty, salad and tomato sauce.
+note: The patties freeze well raw, between squares of baking paper.
+
+=== Chicken and lentil pilaf
+id: chicken-lentil-pilaf
+serves: 4
+minutes: 45
+tags: dinner, chicken, rice, one pot, budget
+credit: qld-hnc
+- 1 1/2 cups basmati rice | basmati rice; rice
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 500 g chicken thighs | chicken thighs; chicken
+- 1 onion, sliced | onion; brown onion
+- 1 garlic clove, finely chopped | garlic
+- 400 g tinned lentils, drained | tinned lentils; lentils
+- 1 tsp ground turmeric | turmeric
+- 1 tsp ground cumin | cumin
+- 2 tsp stock powder | stock powder; chicken stock powder
+~ salt
+> Rinse the rice well and leave it covered in water.
+> Brown the chicken in 1 tbsp oil in a large pot, 1 to 2 minutes a side, and set aside.
+> Add the rest of the oil and the onion and cook 15 minutes until deep brown.
+> Add the garlic, cumin and turmeric for 1 minute. Drain the rice, add it and stir 2 minutes.
+> Add the lentils, stock powder and 2 1/2 cups water. When it boils, sit the chicken on top.
+> Cover the pot with a clean tea towel, then the lid, and cook on low 15 minutes. Rest 5 minutes before fluffing.
+
+=== Pumpkin, spinach and lentil lasagne
+id: pumpkin-spinach-lasagne
+serves: 6
+minutes: 75
+tags: dinner, vegetarian, pasta, bake
+credit: qld-hnc
+- 400 g tinned lentils, drained | tinned lentils; lentils
+- 2 garlic cloves, finely chopped | garlic
+- 700 g passata | passata; tomato puree
+- 1 tsp dried mixed herbs | mixed herbs
+- 1 tsp stock powder | stock powder; vegetable stock powder
+- 250 g frozen spinach, thawed | frozen spinach; spinach
+- 400 g pumpkin | pumpkin
+- 500 g cottage cheese | cottage cheese
+- 1 egg | eggs; egg
+- 1/3 cup milk | milk
+- 1/2 cup grated parmesan | parmesan; cheese
+- 1 1/2 cups grated mozzarella | mozzarella; cheese
+- 250 g instant lasagne sheets | lasagne sheets
+> Heat the oven to 180°C. Mix the lentils, garlic, passata, herbs and stock powder.
+> In another bowl mix the cottage cheese, egg, milk and parmesan.
+> Peel and seed the pumpkin and slice it long and thin.
+> Spread 1/3 cup lentil sauce in a baking dish and cover with lasagne sheets. Add more sauce, a handful of mozzarella, some spinach, 2 tbsp cheese sauce and a layer of pumpkin, then more sheets. Repeat, finishing with sheets.
+> Spread the rest of the cheese sauce over the top and scatter with the last of the mozzarella.
+> Cover loosely with foil and bake 45 minutes, then uncovered 15 minutes until golden. Rest 10 minutes before cutting.
+
+=== Salmon mornay rice bake
+id: salmon-mornay-rice-bake
+serves: 5
+minutes: 40
+tags: dinner, fish, rice, bake, kids, budget
+credit: qld-hnc
+- 415 g tinned salmon, drained | tinned salmon; salmon
+- 1 spring onion, chopped | spring onions
+- 3 cups cooked rice | rice
+- 1 lemon | lemon
+- 1 tsp stock powder | stock powder
+- 1 tsp dried mixed herbs | mixed herbs
+- 2 cups frozen mixed vegetables | frozen mixed vegetables; frozen vegetables
+- 2 tbsp butter | butter
+- 2 tbsp plain flour | plain flour; flour
+- 2 cups milk | milk
+- 1/2 cup grated cheese | tasty cheese; cheese
+~ salt
+~ black pepper
+> Heat the oven to 180°C.
+> White sauce: melt the butter, stir in the flour for 1 minute, then whisk in the milk a little at a time. Stir until it boils and thickens. Season.
+> Mix the salmon, spring onion, rice, zest and juice of the lemon, frozen vegetables, stock powder and herbs, and spread in a baking dish.
+> Pour the white sauce over and scatter with cheese.
+> Bake 30 minutes until golden on top.
+
+=== Beef tacos
+id: beef-tacos
+serves: 4
+minutes: 30
+tags: dinner, beef, Mexican, kids, quick
+credit: qld-hnc
+- 1 onion | onion; brown onion
+- 2 garlic cloves | garlic
+- 1 carrot | carrots; carrot
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 500 g lean beef mince | beef mince; mince
+- 2 tsp ground cumin | cumin
+- 2 tsp paprika | paprika
+- 1 tsp dried oregano | oregano
+- 1/2 tsp chilli powder | chilli powder
+- 2 tbsp tomato paste | tomato paste
+- 1 tsp stock powder | stock powder; beef stock powder
+- 12 taco shells | taco shells
+- 3 tomatoes | tomatoes; tomato
+- 1/2 iceberg lettuce | iceberg lettuce; lettuce
+- 1 cup grated cheese | tasty cheese; cheese
+- 1 cup natural yoghurt or sour cream | natural yoghurt; sour cream
+~ salt
+> Finely chop the onion and garlic and grate the carrot. Soften them in the oil over medium-high heat for 2 minutes.
+> Stir in the spices and tomato paste for 30 seconds, then add the mince and brown it 5 minutes.
+> Add the stock powder and 1/2 cup water and simmer about 10 minutes until thick. Season.
+> Warm the taco shells in a 180°C oven as the packet says.
+> Chop the tomatoes and shred the lettuce. Serve everything at the table to build your own.
+note: Grated carrot disappears into the mince: kids never find it.
+
+=== Bacon and egg rolls with tomato relish
+id: bacon-egg-rolls
+serves: 4
+minutes: 40
+tags: breakfast, eggs, pork, weekend
+credit: original
+-- Quick tomato relish
+- 4 tomatoes, chopped | tomatoes; tomato
+- 1 small red onion, finely chopped | red onion; onion
+- 1/4 cup brown sugar | brown sugar; sugar
+- 1/4 cup apple cider vinegar | apple cider vinegar; vinegar
+- 1/2 tsp smoked paprika | smoked paprika; paprika
+- 1/2 tsp mustard powder or 1 tsp Dijon mustard | dijon mustard; mustard
+-- Rolls
+- 8 rashers middle bacon | bacon
+- 4 eggs | eggs
+- 4 soft white rolls | bread rolls; rolls
+- 20 g butter | butter
+- 4 slices tasty cheese | tasty cheese; cheese
+- baby spinach or rocket (optional) | baby spinach; rocket
+~ salt
+~ black pepper
+> Relish: put everything in a small saucepan with a pinch of salt and simmer, stirring now and then, 25 minutes until jammy. It thickens more as it cools.
+> Cook the bacon in a large frying pan over medium-high heat until the fat is golden and crisp at the edges. Keep it warm.
+> Fry the eggs in the bacon fat, spooning hot fat over the whites until set but the yolks still runny. Season.
+> Split and butter the rolls and toast them cut side down in the pan for 1 minute.
+> Build: cheese on the hot base so it melts, bacon, egg, a big spoon of relish, greens.
+note: The relish keeps two weeks in a jar in the fridge. Make a double batch.
+
+=== Smashed avo with feta and dukkah
+id: smashed-avo-feta
+serves: 2
+minutes: 10
+tags: breakfast, vegetarian, quick, cafe
+credit: original
+- 2 ripe avocados | avocado
+- 1/2 lemon | lemon
+- 60 g feta | feta
+- 2 thick slices sourdough | sourdough; bread
+- 1 tbsp dukkah | dukkah
+- 1 tbsp olive oil | olive oil; oil
+- 6 cherry tomatoes, halved | cherry tomatoes; tomatoes
+- chilli flakes, to finish | chilli flakes
+- 2 eggs (optional) | eggs
+~ salt
+~ black pepper
+> Toast the sourdough until deeply golden, then drizzle with a little oil.
+> Mash the avocado roughly with a fork, keeping chunks. Add the lemon juice, salt and pepper.
+> Crumble in two thirds of the feta and fold once.
+> Pile onto the toast. Top with the rest of the feta, tomatoes, dukkah, a pinch of chilli and a drizzle of oil.
+> If you like, poach the eggs: drop them into barely simmering water with a splash of vinegar for 3 minutes, then sit one on each.
+
+=== Overnight Bircher muesli
+id: bircher-muesli
+serves: 4
+minutes: 10
+tags: breakfast, vegetarian, make ahead, quick
+credit: original
+- 2 cups rolled oats | rolled oats; oats
+- 1 cup apple juice | apple juice
+- 1 cup milk | milk
+- 1/2 cup Greek yoghurt | greek yoghurt; yoghurt
+- 2 green apples | green apples; apples
+- 1/3 cup sultanas | sultanas
+- 1/3 cup slivered almonds, toasted | slivered almonds; almonds
+- 1/2 tsp ground cinnamon | cinnamon
+- 2 tbsp honey | honey
+- berries, to serve | berries; strawberries; blueberries
+> Mix the oats, juice, milk, yoghurt, cinnamon, honey and sultanas in a bowl.
+> Grate in the apples, skin and all, and stir. Cover and refrigerate overnight.
+> In the morning stir, loosen with a splash of milk if thick, and top with almonds and berries.
+note: Keeps 3 days in jars, so make it Sunday for the week.
+
+=== Potato and chorizo hash with fried eggs
+id: chorizo-potato-hash
+serves: 4
+minutes: 40
+tags: breakfast, brunch, pork, eggs, weekend
+credit: original
+- 800 g potatoes, in 2 cm cubes | potatoes; potato
+- 2 chorizo sausages, diced | chorizo
+- 1 red onion, sliced | red onion; onion
+- 1 red capsicum, diced | red capsicum; capsicum
+- 2 garlic cloves, sliced | garlic
+- 1 tsp smoked paprika | smoked paprika; paprika
+- 2 tbsp olive oil | olive oil; oil
+- 4 eggs | eggs
+- 2 spring onions, sliced | spring onions
+- hot sauce, to serve | hot sauce; chilli sauce
+~ salt
+~ black pepper
+> Boil the potato cubes in salted water 6 minutes, drain and let them steam dry 5 minutes. Dry potatoes crisp; wet ones stew.
+> Fry the chorizo in a large frying pan until it releases its red oil. Lift it out.
+> Add the oil and potatoes to the pan in one layer and leave them 5 minutes before turning. Cook 15 minutes in all, until golden on most sides.
+> Add the onion, capsicum, garlic and paprika and cook 5 minutes. Stir the chorizo back through and season.
+> Make 4 hollows, crack in the eggs, cover and cook 4 minutes until the whites set.
+> Scatter with spring onion and serve from the pan with hot sauce.
+
+=== Chicken parmigiana
+id: chicken-parmigiana
+serves: 4
+minutes: 50
+tags: dinner, chicken, pub classic, kids
+credit: original
+-- Chicken
+- 2 large chicken breasts | chicken breasts; chicken breast; chicken
+- 1/2 cup plain flour | plain flour; flour
+- 2 eggs | eggs
+- 2 cups panko breadcrumbs | panko breadcrumbs; breadcrumbs
+- 1/2 cup grated parmesan | parmesan; cheese
+- 1 tsp dried oregano | oregano
+- 1/2 cup vegetable oil, for frying | vegetable oil; canola oil; oil
+-- Napoli
+- 1 tbsp olive oil | olive oil; oil
+- 2 garlic cloves, sliced | garlic
+- 400 g tinned crushed tomatoes | crushed tomatoes; tinned tomatoes
+- 1 tsp sugar | sugar
+- 4 basil leaves | basil
+-- Topping
+- 4 slices leg ham (optional) | ham
+- 1 1/2 cups grated mozzarella | mozzarella; cheese
+- chips and salad, to serve | chips; salad
+~ salt
+~ black pepper
+> Napoli: warm the garlic in the olive oil until it just colours, add the tomatoes, sugar, basil and a pinch of salt, and simmer 15 minutes until thick.
+> Cut each breast in half through its thickness to make 4 thin steaks, then flatten between baking paper to an even 1 cm.
+> Set up three plates: seasoned flour, beaten eggs, and panko mixed with the parmesan and oregano. Coat each steak flour, egg, crumb, pressing the crumb on.
+> Heat the oven grill to high. Shallow fry the chicken in hot oil 3 minutes a side until deep golden. Drain on paper.
+> Sit the schnitzels on a tray, spread each with napoli, add ham if using, then plenty of mozzarella.
+> Grill 4 to 5 minutes until the cheese bubbles and browns in spots. Serve with chips and salad.
+note: Leave a rim of crumb uncovered by sauce: that edge is the best bite.
+
+=== Steak sandwich with caramelised onions
+id: steak-sandwich
+serves: 4
+minutes: 45
+tags: dinner, lunch, beef, BBQ, pub classic
+credit: original
+- 4 thin minute steaks or 500 g rump, sliced 1 cm thick | minute steak; rump steak; steak
+- 3 onions, thinly sliced | onions; onion; brown onion
+- 30 g butter | butter
+- 1 tbsp brown sugar | brown sugar; sugar
+- 1 tbsp balsamic vinegar | balsamic vinegar; vinegar
+- 1 tbsp olive oil | olive oil; oil
+- 1 garlic clove, crushed | garlic
+- 4 Turkish bread rolls or 8 thick slices sourdough | turkish bread; sourdough; bread
+- 1/3 cup aioli or whole-egg mayonnaise | aioli; mayonnaise
+- 4 slices tasty cheese | tasty cheese; cheese
+- 2 tomatoes, sliced | tomatoes; tomato
+- 2 handfuls rocket | rocket; lettuce
+- 225 g tinned sliced beetroot, drained (optional) | tinned beetroot; beetroot
+~ salt
+~ black pepper
+> Cook the onions in the butter with a pinch of salt over medium-low heat for 25 minutes, stirring now and then, until soft and brown. Add the sugar and balsamic for the last 5 minutes.
+> Rub the steaks with oil, garlic, salt and pepper.
+> Get a pan or BBQ plate smoking hot. Cook the steaks 1 to 2 minutes a side and rest them 3 minutes.
+> Toast the bread. Melt the cheese on the hot steak if you like.
+> Build: aioli, rocket, tomato, beetroot, steak, a big pile of onions, more aioli on the lid.
+note: Beetroot makes it Australian. Drain it well or the bread goes pink and soggy.
+
+=== Spaghetti bolognese
+id: spaghetti-bolognese
+serves: 6
+minutes: 90
+tags: dinner, beef, pasta, kids, freezer
+credit: original
+- 2 tbsp olive oil | olive oil; oil
+- 1 onion, finely chopped | onion; brown onion
+- 1 carrot, finely chopped | carrots; carrot
+- 1 celery stick, finely chopped | celery
+- 3 garlic cloves, crushed | garlic
+- 500 g beef mince | beef mince; mince
+- 250 g pork mince | pork mince; mince
+- 2 tbsp tomato paste | tomato paste
+- 1/2 cup red wine or milk | red wine; milk
+- 800 g tinned crushed tomatoes | crushed tomatoes; tinned tomatoes
+- 1 tsp beef stock powder | beef stock powder; stock powder
+- 1 bay leaf | bay leaves
+- 1 tsp dried oregano | oregano
+- 500 g spaghetti | spaghetti; pasta
+- parmesan, to serve | parmesan; cheese
+~ salt
+~ black pepper
+~ sugar
+> Soften the onion, carrot and celery in the oil over medium heat for 10 minutes without browning.
+> Turn the heat up, add the garlic and both minces and cook, breaking it up, until it browns and starts to stick. That brown crust is flavour.
+> Stir in the tomato paste for 1 minute, then the wine (or milk) and let it bubble away.
+> Add the tomatoes, stock powder, bay leaf, oregano, a pinch of sugar and 1 cup water. Simmer partly covered for 1 hour, stirring now and then, until rich and thick. Season.
+> Cook the spaghetti in well-salted water 1 minute less than the packet. Toss it with a few ladles of sauce and a splash of pasta water before serving.
+> Top with more sauce and grated parmesan.
+note: Better on day two. Freezes for 3 months.
+
+=== Thai green chicken curry
+id: thai-green-chicken-curry
+serves: 4
+minutes: 35
+tags: dinner, chicken, Thai, curry, quick
+credit: original
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 3 tbsp green curry paste | green curry paste; curry paste
+- 400 ml coconut milk | coconut milk
+- 600 g chicken thigh fillets, sliced | chicken thighs; chicken
+- 1 cup chicken stock | chicken stock; stock
+- 4 kaffir lime leaves, torn | kaffir lime leaves; lime leaves
+- 1 tbsp fish sauce | fish sauce
+- 2 tsp brown sugar or palm sugar | palm sugar; brown sugar; sugar
+- 200 g green beans, halved | green beans; beans
+- 1 zucchini, in half moons | zucchini
+- 1 lime | lime
+- 1 handful Thai basil or basil | thai basil; basil
+- 1 long red chilli, sliced | long red chilli; red chilli; chilli
+- jasmine rice, to serve | jasmine rice; rice
+> Heat the oil in a wok and fry the curry paste 1 to 2 minutes until fragrant.
+> Spoon in the thick cream from the top of the coconut milk and fry until the oil splits out of it, about 3 minutes. This is the Thai way and makes it taste like a restaurant.
+> Add the chicken and stir until coated and sealed.
+> Pour in the rest of the coconut milk, the stock and lime leaves and simmer 10 minutes.
+> Add the beans and zucchini and cook 4 minutes until just tender.
+> Season with fish sauce, sugar and lime juice until it is salty, sweet and sour at once. Stir in the basil, top with chilli and serve with jasmine rice.
+
+=== Chicken katsu curry
+id: chicken-katsu-curry
+serves: 4
+minutes: 50
+tags: dinner, chicken, Japanese, rice, kids
+credit: original
+-- Curry sauce
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 onion, chopped | onion; brown onion
+- 2 carrots, chopped | carrots; carrot
+- 2 garlic cloves | garlic
+- 1 tbsp grated ginger | ginger
+- 2 tbsp mild curry powder | curry powder
+- 2 tbsp plain flour | plain flour; flour
+- 2 1/2 cups chicken stock | chicken stock; stock
+- 1 tbsp soy sauce | soy sauce
+- 1 tbsp honey | honey
+- 1 apple, grated | apples; apple
+-- Katsu
+- 4 chicken thigh fillets | chicken thighs; chicken
+- 1/2 cup plain flour | plain flour; flour
+- 2 eggs | eggs
+- 2 cups panko breadcrumbs | panko breadcrumbs; breadcrumbs
+- vegetable oil, for frying | vegetable oil; canola oil; oil
+- short grain rice, to serve | sushi rice; rice
+- pickled ginger or shredded cabbage, to serve | pickled ginger; cabbage
+~ salt
+~ black pepper
+> Sauce: soften the onion and carrot in the oil 8 minutes. Add the garlic, ginger, curry powder and flour and stir 1 minute.
+> Whisk in the stock a little at a time, add the soy, honey and grated apple and simmer 15 minutes. Blend smooth and season.
+> Flatten the chicken to an even thickness and season. Coat in flour, egg, then panko.
+> Shallow fry in 1 cm hot oil 4 minutes a side until deep golden and cooked through. Drain and rest 2 minutes, then slice.
+> Serve on rice with the sauce poured beside, not over, so the crumb stays crisp.
+
+=== Beef rendang
+id: beef-rendang
+serves: 6
+minutes: 200
+tags: dinner, beef, Malaysian, curry, slow cook, weekend
+credit: original
+-- Spice paste
+- 6 red Asian shallots or 2 small onions | shallots; red onion; onion
+- 4 garlic cloves | garlic
+- 4 cm piece ginger | ginger
+- 4 cm piece galangal or extra ginger | galangal; ginger
+- 2 lemongrass stalks, white part | lemongrass
+- 6 dried red chillies, soaked | dried chillies; chilli
+- 1 tsp ground turmeric | turmeric
+-- Curry
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1.2 kg chuck steak, in 4 cm pieces | chuck steak; stewing beef; beef
+- 400 ml coconut milk | coconut milk
+- 1/2 cup desiccated coconut | desiccated coconut; coconut
+- 1 cinnamon stick | cinnamon stick; cinnamon
+- 2 star anise | star anise
+- 4 kaffir lime leaves | kaffir lime leaves; lime leaves
+- 2 tbsp tamarind puree | tamarind
+- 2 tbsp brown sugar or palm sugar | palm sugar; brown sugar; sugar
+- rice, to serve | jasmine rice; rice
+~ salt
+> Blend the paste ingredients to a smooth paste with a splash of water.
+> Fry the paste in the oil in a heavy pot over medium heat 8 minutes until it smells sweet and the oil separates.
+> Add the beef and stir to coat, then the coconut milk, cinnamon, star anise, lime leaves, tamarind, sugar, 1 tsp salt and 1 cup water.
+> Simmer uncovered on low for 2 1/2 to 3 hours, stirring more often as it thickens, until the sauce is almost gone and the beef is dark and tender.
+> Meanwhile toast the coconut in a dry pan until deep golden, then pound or blitz it fine. Stir it into the curry for the last 30 minutes.
+> When it is done the oil starts to fry the beef: let it catch slightly, stirring, for a few minutes. Serve with rice.
+note: Rendang is a dry curry. Be patient: the last hour is where it becomes rendang.
+
+=== Pad Thai
+id: pad-thai
+serves: 2
+minutes: 30
+tags: dinner, prawns, chicken, Thai, noodles, quick
+credit: original
+-- Sauce
+- 3 tbsp tamarind puree | tamarind
+- 2 tbsp fish sauce | fish sauce
+- 2 tbsp brown sugar or palm sugar | palm sugar; brown sugar; sugar
+-- Noodles
+- 200 g dried flat rice noodles | rice noodles; noodles
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 2 garlic cloves, chopped | garlic
+- 200 g green prawns or sliced chicken thigh | prawns; chicken thighs
+- 100 g firm tofu, diced (optional) | firm tofu; tofu
+- 2 eggs | eggs
+- 1 cup bean sprouts | bean sprouts
+- 3 spring onions, in lengths | spring onions
+- 1/4 cup roasted peanuts, chopped | peanuts
+- 1 lime, in wedges | lime
+- chilli flakes, to serve | chilli flakes
+> Soak the noodles in hot tap water for 10 minutes until bendy but still firm. Drain.
+> Stir the sauce ingredients until the sugar dissolves. Taste: it should be sour, salty and sweet.
+> Heat a wok until smoking. Add the oil, garlic, prawns and tofu and stir-fry 2 minutes.
+> Push to one side, crack in the eggs and scramble until just set.
+> Add the noodles and sauce and toss 2 minutes until the sauce is absorbed. Add a splash of water if they stick.
+> Toss through the sprouts and spring onion. Serve with peanuts, lime and chilli.
+note: Cook two serves at a time at most, or the wok cools and the noodles go gluey.
+
+=== Nasi goreng
+id: nasi-goreng
+serves: 4
+minutes: 25
+tags: dinner, rice, chicken, Indonesian, leftovers, quick
+credit: original
+- 4 cups cooked rice, cold | rice
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 3 red Asian shallots or 1 small onion, sliced | shallots; red onion; onion
+- 3 garlic cloves, chopped | garlic
+- 1 long red chilli, chopped | long red chilli; red chilli; chilli
+- 1 tsp shrimp paste (optional) | shrimp paste
+- 300 g chicken thigh, diced | chicken thighs; chicken
+- 3 tbsp kecap manis | kecap manis; sweet soy sauce
+- 1 tbsp soy sauce | soy sauce
+- 1 tbsp sambal oelek | sambal oelek; chilli paste
+- 4 eggs | eggs
+- 1 Lebanese cucumber, sliced | lebanese cucumber; cucumber
+- 2 tomatoes, sliced | tomatoes; tomato
+- fried shallots, to serve | fried shallots
+> Fry the shallots, garlic, chilli and shrimp paste in the oil 2 minutes, breaking up the paste.
+> Add the chicken and stir-fry 5 minutes until cooked.
+> Add the cold rice and stir-fry on high 4 minutes, pressing out any lumps.
+> Add the kecap manis, soy and sambal and toss until every grain is coloured and starting to catch.
+> Fry the eggs separately until crispy at the edges.
+> Serve the rice topped with an egg, with cucumber, tomato and fried shallots on the side.
+note: Day-old rice is the secret: fresh rice turns to mush.
+
+=== Lamb souvlaki with garlic sauce
+id: lamb-souvlaki
+serves: 4
+minutes: 40
+tags: dinner, lamb, Greek, BBQ, wraps
+credit: original
+-- Lamb
+- 700 g lamb leg steaks or backstrap, in 3 cm cubes | lamb leg steaks; lamb backstrap; lamb
+- 3 tbsp olive oil | olive oil; oil
+- 1 lemon | lemon
+- 3 garlic cloves, crushed | garlic
+- 2 tsp dried oregano | oregano
+-- Garlic sauce
+- 1 cup Greek yoghurt | greek yoghurt; yoghurt
+- 1 Lebanese cucumber, grated and squeezed | lebanese cucumber; cucumber
+- 1 garlic clove, crushed | garlic
+- 1 tbsp chopped mint or dill | mint; dill
+-- To serve
+- 4 pita breads | pita bread; flatbread
+- 2 tomatoes, sliced | tomatoes; tomato
+- 1/2 red onion, thinly sliced | red onion; onion
+- chips (optional) | chips
+~ salt
+~ black pepper
+> Mix the lamb with the oil, zest and juice of the lemon, garlic, oregano, 1 tsp salt and pepper. Marinate 30 minutes, or overnight.
+> Mix the sauce ingredients with a pinch of salt.
+> Thread the lamb onto skewers (soak wooden ones 20 minutes first).
+> Cook on a very hot BBQ or grill pan 8 to 10 minutes, turning, until charred outside and pink inside. Rest 3 minutes.
+> Warm the pita on the grill. Fill with lamb, sauce, tomato, onion and a few chips the Greek way.
+
+=== Pork and fennel sausage pasta
+id: pork-fennel-sausage-pasta
+serves: 4
+minutes: 30
+tags: dinner, pork, pasta, quick
+credit: original
+- 500 g pork and fennel sausages | pork and fennel sausages; pork sausages; sausages
+- 1 tbsp olive oil | olive oil; oil
+- 1 onion, finely chopped | onion; brown onion
+- 2 garlic cloves, sliced | garlic
+- 1/2 tsp chilli flakes | chilli flakes
+- 1/2 tsp fennel seeds (optional) | fennel seeds
+- 1/2 cup white wine or stock | white wine; chicken stock
+- 300 ml cream | thickened cream; cream
+- 2 cups baby spinach | baby spinach; spinach
+- 1 lemon | lemon
+- 400 g rigatoni or penne | rigatoni; penne; pasta
+- 1/2 cup grated parmesan | parmesan; cheese
+~ salt
+~ black pepper
+> Squeeze the sausage meat out of the skins in little lumps into a hot oiled pan. Fry 6 minutes until well browned.
+> Add the onion, garlic, chilli and fennel seeds and cook 4 minutes.
+> Add the wine and let it bubble away, then the cream. Simmer 3 minutes.
+> Cook the pasta in salted water until just al dente. Keep a cup of pasta water.
+> Toss the pasta into the sauce with the spinach, parmesan, lemon zest and a squeeze of juice, loosening with pasta water until glossy. Season with plenty of pepper.
+
+=== Chicken enchiladas
+id: chicken-enchiladas
+serves: 4
+minutes: 50
+tags: dinner, chicken, Mexican, bake
+credit: original
+-- Red sauce
+- 1 tbsp olive oil | olive oil; oil
+- 2 tbsp plain flour | plain flour; flour
+- 1 tbsp chilli powder (mild) | chilli powder
+- 1 tsp ground cumin | cumin
+- 1 tsp dried oregano | oregano
+- 2 tbsp tomato paste | tomato paste
+- 2 cups chicken stock | chicken stock; stock
+-- Filling
+- 3 cups shredded cooked chicken (a barbecue chicken) | barbecue chicken; cooked chicken; chicken
+- 400 g tinned black beans, drained | black beans; beans
+- 1 cup corn kernels | corn kernels; corn
+- 1 1/2 cups grated tasty cheese | tasty cheese; cheese
+- 8 tortillas | tortillas; wraps
+-- To serve
+- sour cream | sour cream
+- 1 avocado | avocado
+- coriander | coriander
+- pickled jalapenos | jalapenos
+~ salt
+> Heat the oven to 200°C.
+> Sauce: cook the flour and spices in the oil 1 minute, stir in the tomato paste, then whisk in the stock. Simmer 5 minutes until like thin cream. Season.
+> Mix the chicken, beans, corn, half the cheese and 1/2 cup of sauce.
+> Spread a little sauce in a baking dish. Fill and roll each tortilla and lay them seam down, tightly packed.
+> Pour over the rest of the sauce and scatter with the rest of the cheese.
+> Bake 20 minutes until bubbling and browned. Serve with sour cream, avocado, coriander and jalapenos.
+note: A supermarket barbecue chicken makes this a weeknight dinner.
+
+=== Beef stroganoff
+id: beef-stroganoff
+serves: 4
+minutes: 30
+tags: dinner, beef, quick, comfort
+credit: original
+- 600 g rump or sirloin steak, in thin strips | rump steak; sirloin steak; steak
+- 2 tbsp plain flour | plain flour; flour
+- 2 tbsp olive oil | olive oil; oil
+- 30 g butter | butter
+- 1 onion, sliced | onion; brown onion
+- 300 g mushrooms, sliced | mushrooms
+- 2 garlic cloves, crushed | garlic
+- 2 tsp sweet paprika | paprika
+- 1 tbsp Dijon mustard | dijon mustard; mustard
+- 1 tbsp Worcestershire sauce | worcestershire sauce
+- 1 cup beef stock | beef stock; stock
+- 200 g sour cream | sour cream
+- parsley, chopped | parsley
+- 400 g pappardelle or rice | pappardelle; egg noodles; pasta; rice
+~ salt
+~ black pepper
+> Toss the beef in the flour, salt and pepper. Sear it in batches in a smoking hot pan with the oil, 1 minute a side only. Set aside.
+> Add the butter, onion and mushrooms and cook 8 minutes until the mushrooms are golden and the liquid gone.
+> Add the garlic and paprika for 30 seconds, then the mustard, Worcestershire and stock. Simmer 3 minutes.
+> Turn the heat to low, stir in the sour cream (it splits if it boils), and return the beef and its juices just to heat through.
+> Serve over buttered pasta or rice with parsley.
+
+=== Chicken cacciatore
+id: chicken-cacciatore
+serves: 4
+minutes: 70
+tags: dinner, chicken, Italian, one pot
+credit: original
+- 8 chicken thigh cutlets, skin on | chicken thigh cutlets; chicken thighs; chicken
+- 2 tbsp olive oil | olive oil; oil
+- 1 onion, sliced | onion; brown onion
+- 1 red capsicum, sliced | red capsicum; capsicum
+- 200 g mushrooms, halved | mushrooms
+- 4 garlic cloves, sliced | garlic
+- 2 sprigs rosemary | rosemary
+- 1/2 cup red or white wine | red wine; white wine
+- 800 g tinned crushed tomatoes | crushed tomatoes; tinned tomatoes
+- 1/2 cup kalamata olives | kalamata olives; olives
+- 1 tbsp capers (optional) | capers
+- crusty bread or mash, to serve | crusty bread; bread
+~ salt
+~ black pepper
+> Season the chicken well. Brown it skin side down in the oil in a wide pot over medium heat for 8 minutes until the skin is deep golden. Turn, brown 2 minutes, and set aside.
+> Pour off all but 2 tbsp fat. Cook the onion, capsicum and mushrooms 8 minutes.
+> Add the garlic and rosemary for 1 minute, then the wine, scraping up the brown bits.
+> Add the tomatoes and 1/2 cup water and simmer 5 minutes.
+> Nestle the chicken in skin side up, keeping the skin above the sauce. Simmer gently uncovered 30 minutes until the chicken is tender.
+> Stir the olives and capers into the sauce for the last 5 minutes. Serve with bread or mash.
+
+=== Salt and pepper squid
+id: salt-pepper-squid
+serves: 4
+minutes: 30
+tags: dinner, seafood, entree, pub classic
+credit: original
+- 600 g squid tubes, cleaned | squid tubes; squid; calamari
+- 1/2 cup cornflour | cornflour
+- 1/4 cup plain flour | plain flour; flour
+- 2 tsp sea salt flakes | sea salt; salt
+- 2 tsp Sichuan or black peppercorns, crushed | sichuan pepper; black pepper
+- 1 tsp Chinese five spice (optional) | five spice
+- vegetable oil, for deep frying | vegetable oil; canola oil; oil
+- 1 long red chilli, sliced | long red chilli; red chilli; chilli
+- 2 spring onions, sliced | spring onions
+- 1 lime, in wedges | lime; lemon
+- aioli, to serve | aioli; mayonnaise
+> Cut the tubes open flat and pat dry. Score the inside in a fine criss-cross, then cut into strips.
+> Toast the peppercorns in a dry pan until they smell, then crush with the salt and five spice.
+> Mix the flours with half the salt and pepper mix. Toss the squid in it, shaking off the extra.
+> Heat 5 cm oil to 190°C (a cube of bread browns in 10 seconds). Fry in small batches for 60 to 90 seconds only, until pale gold. Overcooked squid turns rubbery.
+> Drain, then toss with the chilli, spring onion and the rest of the salt and pepper. Serve at once with lime and aioli.
+
+=== Beer-battered flathead and chips
+id: beer-battered-fish-chips
+serves: 4
+minutes: 50
+tags: dinner, seafood, pub classic, Friday
+credit: original
+-- Chips
+- 1 kg potatoes, in thick chips | potatoes; potato
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+-- Fish
+- 600 g flathead fillets | flathead fillets; flathead; white fish fillets; fish
+- 1 cup self-raising flour | self-raising flour; flour
+- 1/4 cup cornflour | cornflour
+- 1 cup cold beer or soda water | beer; soda water
+- vegetable oil, for deep frying | vegetable oil; canola oil; oil
+-- Tartare
+- 1/2 cup whole-egg mayonnaise | mayonnaise
+- 1 tbsp chopped gherkins | gherkins
+- 1 tbsp capers, chopped | capers
+- 1 tbsp chopped parsley or dill | parsley; dill
+- 1 lemon | lemon
+~ salt
+~ black pepper
+> Heat the oven to 220°C. Boil the chips in salted water 5 minutes, drain, and let them steam dry. Toss with oil and salt and roast 35 to 40 minutes, turning once, until crisp.
+> Mix the tartare with a squeeze of lemon.
+> Whisk the flours and a pinch of salt with the ice-cold beer until just smooth. Lumps are fine; cold batter is crisp batter.
+> Heat 5 cm oil to 180°C. Pat the fish dry, dust in a little flour, dip in batter and lower gently into the oil away from you.
+> Fry 4 to 5 minutes, turning once, until deep golden. Drain on a rack and salt straight away.
+> Serve with chips, tartare and lemon wedges.
+note: Flathead is the classic, but any firm white fillet works: whiting, ling, snapper.
+
+=== Lamb cutlets with chimichurri
+id: lamb-cutlets-chimichurri
+serves: 4
+minutes: 25
+tags: dinner, lamb, BBQ, quick, gluten free
+credit: original
+-- Chimichurri
+- 1 bunch flat-leaf parsley, finely chopped | parsley
+- 2 garlic cloves, finely chopped | garlic
+- 1 tsp dried oregano | oregano
+- 1/2 tsp chilli flakes | chilli flakes
+- 2 tbsp red wine vinegar | red wine vinegar; vinegar
+- 1/2 cup olive oil | olive oil; oil
+-- Lamb
+- 12 lamb cutlets | lamb cutlets; lamb
+- 1 tbsp olive oil | olive oil; oil
+- 1 tsp ground cumin | cumin
+~ salt
+~ black pepper
+> Mix the chimichurri with 1/2 tsp salt and leave it 10 minutes for the flavours to mingle.
+> Rub the cutlets with oil, cumin, salt and pepper.
+> Cook on a very hot BBQ or grill pan 2 to 3 minutes a side for pink. Hold them fat side down for the first minute to render and crisp the fat.
+> Rest 3 minutes, then spoon the chimichurri over.
+note: Great with potato bake or a Greek salad.
+
+=== Sticky barbecue pork ribs
+id: sticky-bbq-pork-ribs
+serves: 4
+minutes: 180
+tags: dinner, pork, BBQ, weekend
+credit: original
+-- Rub
+- 2 tbsp brown sugar | brown sugar; sugar
+- 1 tbsp smoked paprika | smoked paprika; paprika
+- 1 tsp garlic powder | garlic powder
+- 1 tsp onion powder | onion powder
+- 1 tsp mustard powder | mustard powder; mustard
+-- Ribs and glaze
+- 1.5 kg American-style pork ribs | pork ribs; ribs
+- 3/4 cup barbecue sauce | barbecue sauce
+- 2 tbsp honey | honey
+- 1 tbsp apple cider vinegar | apple cider vinegar; vinegar
+- 1 tbsp soy sauce | soy sauce
+~ salt
+~ black pepper
+> Heat the oven to 150°C. Peel the thin skin off the back of the ribs (lift a corner with a knife, grip with paper towel).
+> Mix the rub with 2 tsp salt and 1 tsp pepper and rub all over.
+> Wrap tightly in foil, meat side up, with 1/4 cup water. Bake 2 1/2 hours until the meat pulls back from the bones.
+> Simmer the barbecue sauce, honey, vinegar and soy 5 minutes into a glaze.
+> Unwrap, brush with glaze and finish on a hot BBQ or under a hot grill for 10 minutes, brushing and turning, until sticky and charred at the edges.
+note: Do the slow part the day before and just glaze and grill when people arrive.
+
+=== Peri peri chicken
+id: peri-peri-chicken
+serves: 4
+minutes: 75
+tags: dinner, chicken, BBQ, roast, spicy
+credit: original
+-- Peri peri sauce
+- 4 long red chillies | long red chillies; red chilli; chilli
+- 2 bird's eye chillies (more if you dare) | bird's eye chillies; chilli
+- 1 roasted red capsicum from a jar | roasted capsicum; capsicum
+- 4 garlic cloves | garlic
+- 1 lemon | lemon
+- 2 tbsp red wine vinegar | red wine vinegar; vinegar
+- 1 tbsp smoked paprika | smoked paprika; paprika
+- 1 tsp dried oregano | oregano
+- 1/3 cup olive oil | olive oil; oil
+-- Chicken
+- 1.6 kg whole chicken | whole chicken; chicken
+~ salt
+~ sugar
+> Blend the sauce ingredients with the zest and juice of the lemon, 2 tsp salt and 1 tsp sugar until smooth.
+> Butterfly the chicken: cut down both sides of the backbone with scissors, remove it, and press the bird flat.
+> Rub half the sauce all over and under the skin. Marinate at least 1 hour, or overnight.
+> Heat the oven to 220°C. Roast skin side up on a tray for 45 minutes, until the juices run clear, basting once.
+> For char, finish 5 minutes a side on a hot BBQ. Rest 10 minutes and serve with the rest of the sauce.
+note: Chips, corn and a sharp slaw make it the takeaway shop dinner at home.
+
+=== Beef and Guinness pie
+id: beef-guinness-pie
+serves: 6
+minutes: 210
+tags: dinner, beef, pie, slow cook, winter, weekend
+credit: original
+- 1.2 kg chuck steak, in 3 cm pieces | chuck steak; stewing beef; beef
+- 1/4 cup plain flour | plain flour; flour
+- 3 tbsp olive oil | olive oil; oil
+- 2 onions, chopped | onions; onion
+- 2 carrots, chopped | carrots; carrot
+- 200 g mushrooms, quartered | mushrooms
+- 3 garlic cloves, crushed | garlic
+- 2 tbsp tomato paste | tomato paste
+- 440 ml Guinness or other stout | guinness; stout; beer
+- 1 cup beef stock | beef stock; stock
+- 2 tbsp Worcestershire sauce | worcestershire sauce
+- 4 sprigs thyme | thyme
+- 2 bay leaves | bay leaves
+- 2 sheets frozen puff pastry, thawed | puff pastry; pastry
+- 1 egg, beaten | eggs; egg
+~ salt
+~ black pepper
+~ sugar
+> Toss the beef in seasoned flour. Brown it well in batches in the oil in a heavy pot. Do not crowd the pot or it stews instead of browning.
+> Cook the onion, carrot and mushrooms 8 minutes. Add the garlic and tomato paste for 1 minute.
+> Pour in the stout, scraping up the brown bits, then the stock, Worcestershire, herbs and a pinch of sugar. Return the beef.
+> Cover and simmer on low (or bake at 160°C) 2 1/2 hours until the beef falls apart. Season, and cool. Cold filling keeps the pastry crisp.
+> Heat the oven to 200°C. Fill a pie dish, cover with pastry, trim, crimp and cut a steam hole. Brush with egg.
+> Bake 30 to 35 minutes until puffed and deep golden. Rest 10 minutes.
+note: Make the filling a day ahead: it is better and the pie becomes a 40 minute job.
+
+=== Osso buco
+id: osso-buco
+serves: 4
+minutes: 180
+tags: dinner, beef, Italian, slow cook, weekend
+credit: original
+-- Osso buco
+- 4 veal or beef osso buco pieces | osso buco; veal shanks; beef shin
+- 1/4 cup plain flour | plain flour; flour
+- 3 tbsp olive oil | olive oil; oil
+- 1 onion, finely chopped | onion; brown onion
+- 1 carrot, finely chopped | carrots; carrot
+- 1 celery stick, finely chopped | celery
+- 3 garlic cloves | garlic
+- 1 cup white wine | white wine
+- 400 g tinned crushed tomatoes | crushed tomatoes; tinned tomatoes
+- 1 1/2 cups beef or chicken stock | beef stock; chicken stock; stock
+- 2 bay leaves | bay leaves
+-- Gremolata
+- 1 lemon | lemon
+- 1 garlic clove, very finely chopped | garlic
+- 1/2 bunch parsley, finely chopped | parsley
+-- To serve
+- creamy polenta or mash | polenta; potatoes
+~ salt
+~ black pepper
+> Tie string around each piece so it holds its shape. Season and dust with flour.
+> Brown in the oil in a wide heavy pot, 4 minutes a side, then set aside.
+> Soften the onion, carrot and celery 10 minutes. Add the garlic for 1 minute.
+> Add the wine and bubble 2 minutes, then the tomatoes, stock and bay leaves.
+> Stand the pieces upright so the marrow stays in the bone. Cover and simmer very gently (or bake at 160°C) 2 to 2 1/2 hours until the meat is meltingly soft.
+> Mix the zest of the lemon, the garlic and parsley. Serve each piece on polenta or mash with sauce and a scatter of gremolata.
+note: Scoop the marrow out with a teaspoon and spread it on bread. That is the cook's reward.
+
+=== Beef lasagne
+id: beef-lasagne
+serves: 8
+minutes: 150
+tags: dinner, beef, pasta, bake, freezer
+credit: original
+-- Meat sauce
+- 2 tbsp olive oil | olive oil; oil
+- 1 onion, finely chopped | onion; brown onion
+- 1 carrot, finely chopped | carrots; carrot
+- 1 celery stick, finely chopped | celery
+- 3 garlic cloves, crushed | garlic
+- 750 g beef mince | beef mince; mince
+- 2 tbsp tomato paste | tomato paste
+- 700 g passata | passata; tomato puree
+- 400 g tinned crushed tomatoes | crushed tomatoes; tinned tomatoes
+- 1 tsp dried oregano | oregano
+-- Bechamel
+- 80 g butter | butter
+- 1/2 cup plain flour | plain flour; flour
+- 1 litre milk | milk
+- 1/4 tsp ground nutmeg | nutmeg
+- 1 cup grated parmesan | parmesan; cheese
+-- Layers
+- 375 g instant lasagne sheets | lasagne sheets
+- 2 cups grated mozzarella | mozzarella; cheese
+~ salt
+~ black pepper
+~ sugar
+> Soften the onion, carrot and celery in the oil 10 minutes. Add the garlic and mince and brown well, breaking it up.
+> Stir in the tomato paste for 1 minute, then the passata, tomatoes, oregano, a pinch of sugar and 1 cup water. Simmer 45 minutes until thick. Season.
+> Bechamel: melt the butter, stir in the flour 1 minute, then whisk in the milk gradually. Stir until thick and smooth, take off the heat and add the nutmeg, half the parmesan, salt and pepper.
+> Heat the oven to 180°C. In a deep baking dish layer: a little meat sauce, sheets, meat sauce, bechamel, mozzarella. Repeat 3 or 4 times, finishing with bechamel, mozzarella and the rest of the parmesan.
+> Cover with foil and bake 30 minutes, then uncover and bake 20 to 25 minutes until bubbling and browned.
+> Rest 20 minutes before cutting so it holds in clean squares.
+
+=== Greek salad
+id: greek-salad
+serves: 4
+minutes: 15
+tags: side, salad, vegetarian, gluten free, BBQ, quick
+credit: original
+- 4 ripe tomatoes, in wedges | tomatoes; tomato
+- 1 Lebanese cucumber, in chunks | lebanese cucumber; cucumber
+- 1 green capsicum, sliced | green capsicum; capsicum
+- 1/2 red onion, thinly sliced | red onion; onion
+- 1/2 cup kalamata olives | kalamata olives; olives
+- 200 g block feta | feta
+- 1 tsp dried oregano | oregano
+- 1/4 cup olive oil | olive oil; oil
+- 1 tbsp red wine vinegar | red wine vinegar; vinegar
+~ salt
+~ black pepper
+> Salt the tomatoes in the bowl and leave them 5 minutes: the juice becomes part of the dressing.
+> Add the cucumber, capsicum, onion and olives.
+> Dress with the oil and vinegar and toss.
+> Sit the feta on top in one slab, sprinkle with oregano and a little more oil, and grind over pepper. Break it up at the table.
+note: No lettuce. That is the rule in Greece.
+
+=== Creamy potato bake
+id: creamy-potato-bake
+serves: 6
+minutes: 90
+tags: side, vegetarian, bake, BBQ, Christmas
+credit: original
+- 1.2 kg potatoes | potatoes; potato
+- 300 ml cream | thickened cream; cream
+- 1 cup milk | milk
+- 2 garlic cloves, crushed | garlic
+- 4 sprigs thyme | thyme
+- 1/4 tsp ground nutmeg | nutmeg
+- 1 1/2 cups grated tasty cheese or gruyere | tasty cheese; gruyere; cheese
+- 20 g butter | butter
+~ salt
+~ black pepper
+> Heat the oven to 180°C and butter a baking dish.
+> Warm the cream, milk, garlic, thyme leaves, nutmeg, 1 1/2 tsp salt and pepper until steaming.
+> Peel the potatoes and slice them 3 mm thick. Do not rinse: the starch thickens the sauce.
+> Layer the potatoes with a scatter of cheese between layers, pouring the cream over as you go. Press down so the cream comes to the top layer.
+> Cover with foil and bake 45 minutes. Uncover, add the rest of the cheese and bake 25 to 30 minutes until a knife slides through and the top is golden.
+> Rest 10 minutes before serving.
+
+=== Pavlova
+id: pavlova
+serves: 10
+minutes: 150
+tags: dessert, sweet, Christmas, gluten free, Australian
+credit: original
+- 6 egg whites, at room temperature | eggs
+- 1 1/2 cups caster sugar | caster sugar; sugar
+- 2 tsp cornflour | cornflour
+- 1 tsp white vinegar | white vinegar; vinegar
+- 1 tsp vanilla extract | vanilla extract; vanilla
+- 300 ml thickened cream | thickened cream; cream
+- 4 passionfruit | passionfruit
+- 250 g strawberries | strawberries; berries
+- 2 kiwifruit or 1 mango | kiwifruit; mango
+> Heat the oven to 150°C. Draw a 22 cm circle on baking paper and turn it over on a tray.
+> Beat the egg whites in a very clean bowl to soft peaks. Add the sugar a spoonful at a time, beating until thick, glossy and the sugar has dissolved (rub a little between your fingers: no grit), about 10 minutes.
+> Beat in the cornflour, vinegar and vanilla.
+> Pile onto the circle, smoothing the sides up into a cake shape with a shallow dip on top.
+> Put it in the oven and drop the heat to 120°C. Bake 1 1/2 hours, then turn the oven off and leave it to cool in the oven with the door ajar.
+> Just before serving, whip the cream and pile it on. Top with the fruit and spoon over the passionfruit pulp.
+note: Cracks are normal and the cream hides them.
+note: Use the 6 yolks for lemon curd or a custard.
+
+=== Lamingtons
+id: lamingtons
+serves: 16
+minutes: 90
+tags: baking, sweet, Australian, kids
+credit: original
+-- Sponge
+- 4 eggs | eggs
+- 2/3 cup caster sugar | caster sugar; sugar
+- 1 tsp vanilla extract | vanilla extract; vanilla
+- 1 cup self-raising flour | self-raising flour; flour
+- 60 g butter, melted | butter
+- 1/3 cup milk | milk
+-- Icing
+- 4 cups icing sugar | icing sugar; sugar
+- 1/3 cup cocoa powder | cocoa
+- 20 g butter | butter
+- 1/2 cup milk | milk
+- 3 cups desiccated coconut | desiccated coconut; coconut
+> Heat the oven to 180°C and line a 20 x 30 cm slice tin.
+> Beat the eggs, sugar and vanilla for 8 minutes until pale, thick and tripled.
+> Sift in the flour and fold gently. Warm the butter and milk together and fold in until just combined.
+> Pour into the tin and bake 20 to 25 minutes until it springs back. Cool, then freeze 30 minutes. A cold sponge does not crumble when you dip it.
+> Icing: sift the icing sugar and cocoa into a bowl, add the butter and milk and stand it over a pot of hot water, stirring until runny.
+> Cut the sponge into 16 squares. Dip each in the icing with two forks, let it drip, then roll in coconut. Set on a rack.
+note: For jam and cream lamingtons, split them and fill with raspberry jam and whipped cream.
+
+=== Sticky date pudding
+id: sticky-date-pudding
+serves: 8
+minutes: 70
+tags: dessert, sweet, winter, comfort
+credit: original
+-- Pudding
+- 250 g pitted dates, chopped | dates
+- 1 tsp bicarbonate of soda | bicarb soda; bicarbonate of soda
+- 80 g butter, soft | butter
+- 3/4 cup brown sugar | brown sugar; sugar
+- 2 eggs | eggs
+- 1 tsp vanilla extract | vanilla extract; vanilla
+- 1 1/2 cups self-raising flour | self-raising flour; flour
+-- Butterscotch sauce
+- 100 g butter | butter
+- 1 cup brown sugar | brown sugar; sugar
+- 300 ml thickened cream | thickened cream; cream
+-- To serve
+- vanilla ice cream | vanilla ice cream; ice cream
+~ salt
+> Heat the oven to 180°C and grease a 22 cm square tin.
+> Pour 1 1/4 cups boiling water over the dates, stir in the bicarb (it froths) and leave 10 minutes.
+> Beat the butter and sugar until pale, then beat in the eggs one at a time and the vanilla.
+> Fold in the flour, then the dates with all their liquid. The batter is thin; that is right.
+> Bake 35 to 40 minutes until a skewer comes out clean.
+> Sauce: melt the butter and sugar, add the cream and a pinch of salt, and simmer 3 minutes until glossy.
+> Pierce the hot pudding all over and pour over a third of the sauce. Serve squares with more sauce and ice cream.
+
+=== Apple and rhubarb crumble
+id: apple-rhubarb-crumble
+serves: 6
+minutes: 60
+tags: dessert, sweet, winter, budget
+credit: original
+-- Fruit
+- 6 Granny Smith apples | granny smith apples; apples
+- 1 bunch rhubarb, or 2 more apples | rhubarb
+- 1/4 cup brown sugar | brown sugar; sugar
+- 1 tsp ground cinnamon | cinnamon
+- 1/2 lemon | lemon
+-- Crumble
+- 1 cup plain flour | plain flour; flour
+- 1/2 cup rolled oats | rolled oats; oats
+- 1/2 cup brown sugar | brown sugar; sugar
+- 1/2 cup desiccated coconut | desiccated coconut; coconut
+- 125 g cold butter, cubed | butter
+-- To serve
+- custard or ice cream | custard; ice cream
+> Heat the oven to 180°C.
+> Peel and core the apples and cut into chunks. Cut the rhubarb into 3 cm lengths (leaves are poisonous: throw them out).
+> Cook the fruit with the sugar, cinnamon, lemon juice and 2 tbsp water in a covered pan for 8 minutes until just soft. Tip into a baking dish.
+> Rub the butter into the flour until it looks like breadcrumbs, then stir in the oats, sugar and coconut. Squeeze some into clumps for crunch.
+> Scatter over the fruit and bake 30 minutes until golden and bubbling at the edges. Serve hot with custard or ice cream.
+
+=== Chocolate chip cookies
+id: chocolate-chip-cookies
+serves: 20
+minutes: 35
+tags: baking, sweet, kids, lunchbox
+credit: original
+- 125 g butter | butter
+- 1/2 cup brown sugar | brown sugar; sugar
+- 1/2 cup caster sugar | caster sugar; sugar
+- 1 egg | eggs; egg
+- 1 tsp vanilla extract | vanilla extract; vanilla
+- 1 3/4 cups plain flour | plain flour; flour
+- 1/2 tsp bicarbonate of soda | bicarb soda; bicarbonate of soda
+- 200 g dark or milk chocolate, chopped | dark chocolate; chocolate; choc chips
+~ salt
+> Melt the butter and let it cool 5 minutes. Melted butter makes chewy cookies.
+> Whisk in both sugars, then the egg and vanilla until glossy.
+> Stir in the flour, bicarb and 1/2 tsp salt, then the chocolate. Chill the dough 30 minutes if you have time; they spread less.
+> Heat the oven to 180°C and line two trays. Roll into 20 balls and space them well apart.
+> Bake 10 to 12 minutes until golden at the edges but still pale and soft in the middle. They firm up as they cool.
+note: A pinch of sea salt on top of each as they come out of the oven.
+
+=== Caramel slice
+id: caramel-slice
+serves: 24
+minutes: 60
+tags: baking, sweet, Australian, lunchbox
+credit: original
+-- Base
+- 1 cup plain flour | plain flour; flour
+- 1/2 cup brown sugar | brown sugar; sugar
+- 1/2 cup desiccated coconut | desiccated coconut; coconut
+- 125 g butter, melted | butter
+-- Caramel
+- 395 g tin sweetened condensed milk | sweetened condensed milk; condensed milk
+- 2 tbsp golden syrup | golden syrup
+- 60 g butter | butter
+-- Topping
+- 200 g dark chocolate | dark chocolate; chocolate
+- 1 tsp vegetable oil | vegetable oil; canola oil; oil
+~ salt
+> Heat the oven to 180°C and line a 20 x 30 cm slice tin with baking paper.
+> Mix the base ingredients, press firmly into the tin and bake 12 to 15 minutes until golden.
+> Stir the condensed milk, golden syrup, butter and a pinch of salt in a saucepan over low heat for 8 to 10 minutes until it thickens and turns a shade darker. Do not stop stirring or it catches.
+> Pour over the base and bake 12 minutes until bubbling and golden at the edges. Cool completely.
+> Melt the chocolate with the oil and spread it over the top. Refrigerate until set, then cut with a hot knife.
+
+=== Pikelets
+id: pikelets
+serves: 4
+minutes: 25
+tags: breakfast, baking, sweet, kids, budget, quick
+credit: original
+- 1 cup self-raising flour | self-raising flour; flour
+- 2 tbsp caster sugar | caster sugar; sugar
+- 1 egg | eggs; egg
+- 3/4 cup milk | milk
+- 20 g butter, melted, plus extra for the pan | butter
+- jam and cream, or butter and honey, to serve | jam; honey
+~ salt
+> Whisk the flour, sugar and a pinch of salt. Make a well, add the egg and milk and whisk to a smooth, thick batter. Stir in the melted butter.
+> Heat a non-stick pan over medium-low heat and wipe with butter.
+> Drop tablespoons of batter in, well apart. Cook until bubbles rise and pop on top, about 1 1/2 minutes.
+> Flip and cook 1 minute more until golden.
+> Serve warm with jam and cream, or butter and honey.
+note: Keep the heat low and steady: the first one is always the tester.
