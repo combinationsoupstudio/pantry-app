@@ -155,13 +155,13 @@ void main() {
     });
   });
 
-  testWidgets('picking more potatoes on the list grows the pile', (tester) async {
+  testWidgets('picking more tins on the list grows the pile (produce shows its heap instead, v0.14)', (tester) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
     final s = await newStore();
-    final spuds = await s.addItem(name: 'Washed potatoes', locationId: 'pantry', quantity: 4, unit: 'items');
-    final line = await s.addShopping(name: 'Washed potatoes', quantity: 2);
+    final spuds = await s.addItem(name: 'Baked beans', locationId: 'pantry', quantity: 4, unit: 'items');
+    final line = await s.addShopping(name: 'Baked beans', quantity: 2);
 
     await tester.pumpWidget(PantryApp(store: s));
     await tester.tap(find.byKey(const ValueKey('nav-pantry')));

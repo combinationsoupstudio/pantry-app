@@ -10,6 +10,7 @@ import '../../models/models.dart';
 import '../widgets/common.dart';
 import '../widgets/name_match.dart';
 import '../widgets/pictures.dart';
+import '../widgets/produce.dart';
 import '../widgets/put_away_sheet.dart';
 
 class ShoppingPage extends StatelessWidget {
@@ -281,7 +282,8 @@ class _ShoppingRow extends StatelessWidget {
             key: ValueKey('shop-pile-${item.id}'),
             count: count,
             size: 40,
-            picture: () => ProductPicture(name: item.name, size: 40),
+            maxShown: produceOf(item.name) == null ? 5 : 1,
+            picture: () => ProductPicture(name: item.name, size: 40, count: count),
           );
     final someoneElse = item.addedBy.isNotEmpty && item.addedBy != store.user;
     return Dismissible(

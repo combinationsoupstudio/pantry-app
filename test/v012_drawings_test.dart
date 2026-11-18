@@ -15,12 +15,8 @@ void main() {
       'Bread': 'bread',
       'Eggs': 'eggs',
       'UHT milk': 'milk',
-      'Shallots': 'spring-onions',
-      'spring onions': 'spring-onions',
-      'Onions': 'onions',
       'Tins: tomatoes': 'tinned-tomatoes',
       'Diced tomatoes': 'tinned-tomatoes',
-      'Tomatoes': 'tomatoes',
       'Tins: fish': 'tuna',
       'Baked beans': 'baked-beans',
       'White rice': 'rice',
@@ -30,7 +26,6 @@ void main() {
       'Soy sauce': 'soy-sauce',
       'Beef mince': 'mince',
       'Chicken thighs': 'chicken',
-      'Washed potatoes': 'potatoes',
       'Tea bags': 'tea',
       'Honey': 'honey',
       // Names of their own: no drawing rather than the wrong one.
@@ -47,10 +42,10 @@ void main() {
   });
 
   test('every drawing named in the map is in the app', () {
-    for (final name in ['Bread', 'Shallots', 'Tins: fish', 'Rolled oats', 'Honey', 'Frozen peas']) {
+    for (final name in ['Bread', 'Tins: fish', 'Rolled oats', 'Honey', 'Frozen peas']) {
       expect(File(artFor(name)!).existsSync(), isTrue, reason: name);
     }
-    expect(Directory('assets/food').listSync().where((f) => f.path.endsWith('.png')), hasLength(30));
+    expect(Directory('assets/food').listSync().where((f) => f.path.endsWith('.png')), hasLength(22));
   });
 
   testWidgets('a drawing shows where there is no photo; Drawings puts it first', (tester) async {

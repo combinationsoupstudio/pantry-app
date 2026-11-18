@@ -160,6 +160,10 @@ class StockItem {
   /// True when this item is measured out of packs (ml, g ...) rather than counted.
   bool get isMeasured => packSize > 0 && const {'g', 'kg', 'ml', 'l'}.contains(unit.trim().toLowerCase());
 
+  /// Kept by weight or volume with no pack size (2 kg of loose potatoes): a
+  /// produce drawing shows the heap, not one.
+  bool get byWeight => !isMeasured && const {'g', 'kg', 'ml', 'l'}.contains(unit.trim().toLowerCase());
+
   /// "500 ml" for a measured item; '' otherwise.
   String get packLabel => isMeasured ? '${formatQty(packSize)} ${_displayUnit(unit)}' : '';
 
