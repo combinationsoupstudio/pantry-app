@@ -1,0 +1,1341 @@
+# Pantry starter recipes, pack 01: 55 recipes.
+# Format: docs/recipe-pack-format.md. Australian metric: 1 cup = 250 ml, 1 tbsp = 20 ml, 1 tsp = 5 ml.
+# Every recipe here is untested until the household rates it.
+
+@credit original: Written for Pantry by Combination Soup Studio.
+@credit qld-hnc: Adapted from the Healthy New Communities Cookbook, State of Queensland (Metro South Hospital and Health Service), CC BY 4.0. Method reworded, amounts in Australian metric. | https://www.metrosouth.health.qld.gov.au/about-us/get-involved/resources-to-build-healthier-communities/recipe-resources
+
+=== Shakshuka
+id: shakshuka
+serves: 4
+minutes: 30
+tags: breakfast, eggs, vegetarian
+credit: original
+- 2 tbsp olive oil
+- 1 onion, sliced
+- 1 red capsicum, sliced
+- 3 garlic cloves, crushed | garlic
+- 2 tsp ground cumin | cumin
+- 2 tsp smoked paprika | paprika
+- 800 g tinned tomatoes | tinned tomatoes; diced tomatoes; crushed tomatoes
+- 6 eggs
+- 60 g feta, crumbled
+- coriander leaves, to serve | coriander; parsley
+- crusty bread, to serve | bread; sourdough
+~ salt
+> Heat the oil in a large frying pan over medium heat. Cook the onion and capsicum for 8 minutes, until soft and sweet.
+> Add the garlic, cumin and paprika and stir for 1 minute, until it smells toasty.
+> Tip in the tomatoes, season with salt, and simmer for 10 minutes until thick enough to hold a dip made with a spoon.
+> Make 6 dips in the sauce and crack an egg into each. Cover and cook on low for 6 to 8 minutes, until the whites are set and the yolks still soft.
+> Scatter over the feta and coriander. Serve straight from the pan with bread for mopping.
+
+=== Corn fritters with avocado smash
+id: corn-fritters
+serves: 4
+minutes: 30
+tags: breakfast, lunch, vegetarian
+credit: original
+-- Fritters
+- 420 g tinned corn kernels, drained | corn; corn kernels
+- 1 cup self-raising flour | self-raising flour; self raising flour; flour
+- 2 eggs
+- 1/2 cup milk
+- 2 spring onions, sliced | spring onions; shallots
+- 50 g tasty cheese, grated | cheese; tasty cheese
+- 2 tbsp vegetable oil | vegetable oil; canola oil; olive oil; oil
+-- Smash
+- 2 avocados | avocado
+- 1 lemon | lemon; lime
+- 1 tomato, diced
+~ salt
+~ black pepper
+> Whisk the flour, eggs and milk into a thick batter. Fold in the corn, spring onions and cheese, and season well.
+> Heat a little of the oil in a frying pan over medium heat. Drop in heaped spoonfuls and flatten slightly.
+> Cook for 3 minutes a side, until deep golden and cooked through. Keep warm while you cook the rest, adding oil as needed.
+> Mash the avocado with a squeeze of lemon and a pinch of salt.
+> Stack the fritters, top with the smash and the tomato, and finish with pepper.
+
+=== Banana oat pancakes
+id: banana-oat-pancakes
+serves: 4
+minutes: 25
+tags: breakfast, kids, vegetarian
+credit: original
+- 2 ripe bananas | bananas; banana
+- 2 eggs
+- 1 cup self-raising flour | self-raising flour; self raising flour; flour
+- 1/2 cup rolled oats | oats; rolled oats
+- 1 cup milk
+- 1 tsp ground cinnamon | cinnamon
+- 20 g butter, for the pan | butter
+- maple syrup, to serve | maple syrup; honey
+> Mash the bananas in a bowl until almost smooth. Whisk in the eggs and milk.
+> Stir in the flour, oats and cinnamon until just combined. Rest for 5 minutes so the oats soften.
+> Melt a little butter in a non-stick pan over medium-low heat. Pour in quarter-cup amounts.
+> Cook until bubbles cover the top, about 2 minutes, then flip and cook 1 minute more.
+> Serve warm with maple syrup.
+note: Low heat matters: the banana browns fast.
+
+=== Breakfast burritos
+id: breakfast-burritos
+serves: 4
+minutes: 25
+tags: breakfast, eggs, make-ahead
+credit: original
+- 4 large tortillas | tortillas; wraps
+- 6 eggs
+- 4 rashers bacon, chopped | bacon
+- 1 potato, diced small | potatoes; potato
+- 1 red capsicum, diced
+- 60 g tasty cheese, grated | cheese; tasty cheese
+- 1/2 cup salsa | salsa; tomato salsa
+- 1 tbsp olive oil
+~ salt
+~ black pepper
+> Fry the potato in the oil over medium heat for 10 minutes, until golden and tender. Add the bacon and capsicum and cook 4 minutes more.
+> Whisk the eggs with salt and pepper. Pour into the pan and stir gently on low until just set.
+> Warm the tortillas. Divide the egg mix between them, top with cheese and salsa.
+> Fold in the sides, roll up tightly, and toast seam-side down in a dry pan for 1 minute.
+note: Wrap cooled burritos in foil and freeze. Reheat from frozen in a 180°C oven for 25 minutes.
+
+=== French toast with berries
+id: french-toast-berries
+serves: 4
+minutes: 20
+tags: breakfast, kids, vegetarian
+credit: original
+- 8 slices thick bread | bread; brioche; sourdough
+- 3 eggs
+- 3/4 cup milk
+- 1 tbsp caster sugar | sugar; caster sugar
+- 1 tsp vanilla extract | vanilla
+- 1 tsp ground cinnamon | cinnamon
+- 30 g butter
+- 1 cup frozen mixed berries | frozen berries; berries
+- 1/2 cup Greek yoghurt | yoghurt; greek yoghurt
+> Warm the berries in a small pan for 4 minutes until juicy.
+> Whisk the eggs, milk, sugar, vanilla and cinnamon in a wide dish.
+> Melt some of the butter in a frying pan over medium heat.
+> Dip each slice for about 10 seconds a side, then cook 2 to 3 minutes a side until golden.
+> Serve with the berries and a spoon of yoghurt.
+
+=== Sticky soy garlic chicken thighs
+id: sticky-soy-garlic-chicken
+serves: 4
+minutes: 35
+tags: dinner, chicken, quick
+credit: original
+- 800 g chicken thigh fillets | chicken thighs; chicken thigh; chicken
+- 1/4 cup soy sauce
+- 2 tbsp honey
+- 1 tbsp rice vinegar | rice vinegar; vinegar
+- 4 garlic cloves, crushed | garlic
+- 2 tsp grated ginger | ginger
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 2 spring onions, sliced | spring onions; shallots
+- 1 tbsp sesame seeds
+- 1 1/2 cups rice | rice; jasmine rice
+> Cook the rice.
+> Mix the soy, honey, vinegar, garlic and ginger in a jug.
+> Heat the oil in a large frying pan over medium-high heat. Cook the chicken smooth side down for 6 minutes until well browned, then turn and cook 4 minutes.
+> Pour in the sauce. Let it bubble, turning the chicken, for 3 to 4 minutes until thick and glossy.
+> Slice, spoon over the sauce, and finish with spring onions and sesame seeds. Serve with the rice.
+
+=== Honey mustard pork chops with apple
+id: honey-mustard-pork-chops
+serves: 4
+minutes: 30
+tags: dinner, pork
+credit: original
+- 4 pork loin chops | pork chops; pork
+- 2 apples, cut into wedges | apples; apple
+- 1 onion, sliced
+- 2 tbsp wholegrain mustard | mustard; wholegrain mustard
+- 1 tbsp honey
+- 1/2 cup chicken stock | chicken stock; stock
+- 1/4 cup thickened cream | cream; thickened cream
+- 1 tbsp olive oil
+- 600 g potatoes, for mash | potatoes; potato
+- 30 g butter
+~ salt
+~ black pepper
+> Boil the potatoes until tender, then mash with the butter and a splash of the cream.
+> Snip the fat on the chops every few centimetres so they stay flat. Season well.
+> Heat the oil in a frying pan over medium-high heat. Cook the chops 4 minutes a side, then rest them on a plate.
+> In the same pan cook the onion and apple for 5 minutes until golden.
+> Add the stock, mustard and honey and bubble for 2 minutes. Stir in the rest of the cream.
+> Return the chops and their juices for 1 minute. Serve on the mash.
+
+=== Beef and broccoli stir-fry
+id: beef-broccoli
+serves: 4
+minutes: 25
+tags: dinner, beef, quick
+credit: original
+- 500 g rump steak, thinly sliced | rump steak; beef strips; steak; beef
+- 1 head broccoli, cut into florets | broccoli
+- 1/4 cup oyster sauce
+- 2 tbsp soy sauce
+- 1 tbsp brown sugar | brown sugar; sugar
+- 2 tsp cornflour
+- 3 garlic cloves, crushed | garlic
+- 2 tsp grated ginger | ginger
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 1/2 cups rice | rice; jasmine rice
+> Cook the rice.
+> Toss the beef with 1 teaspoon of the cornflour and a splash of the soy.
+> Mix the oyster sauce, the rest of the soy, sugar, the rest of the cornflour and 1/2 cup water.
+> Stir-fry the beef in half the oil in a very hot wok, in two batches, for 1 minute each. Set aside.
+> Stir-fry the broccoli in the rest of the oil for 2 minutes. Add 2 tablespoons water, cover and steam 1 minute.
+> Add the garlic and ginger for 30 seconds, then the sauce and beef. Toss until glossy. Serve with rice.
+
+=== Thai basil pork mince
+id: thai-basil-pork
+serves: 4
+minutes: 20
+tags: dinner, pork, quick, spicy
+credit: original
+- 500 g pork mince | pork mince; mince
+- 4 garlic cloves, chopped | garlic
+- 2 red chillies, chopped | chilli; chillies
+- 1 red capsicum, sliced
+- 1 tbsp oyster sauce
+- 1 tbsp soy sauce
+- 2 tsp fish sauce
+- 2 tsp brown sugar | brown sugar; sugar
+- 1 bunch Thai basil | thai basil; basil
+- 4 eggs
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 1/2 cups rice | rice; jasmine rice
+> Cook the rice.
+> Pound or finely chop the garlic and chilli together.
+> Heat half the oil in a wok until smoking. Fry the garlic and chilli for 20 seconds, then add the mince and break it up. Cook 5 minutes until browned with crispy bits.
+> Add the capsicum, oyster, soy and fish sauces and sugar. Toss for 2 minutes. Take off the heat and stir through the basil.
+> Fry the eggs in the rest of the oil until the edges are crisp. Serve the pork on rice with an egg on top.
+note: Use one chilli, or none, for kids.
+
+=== Butter chicken
+id: butter-chicken
+serves: 6
+minutes: 50
+tags: dinner, chicken, curry, Indian
+credit: original
+-- Marinade
+- 1 kg chicken thigh fillets, cut into chunks | chicken thighs; chicken thigh; chicken
+- 1/2 cup Greek yoghurt | yoghurt; greek yoghurt
+- 2 tsp garam masala
+- 1 tsp ground turmeric | turmeric
+-- Sauce
+- 50 g butter
+- 1 onion, finely chopped
+- 4 garlic cloves, crushed | garlic
+- 1 tbsp grated ginger | ginger
+- 2 tsp ground cumin | cumin
+- 2 tsp ground coriander
+- 1 tsp chilli powder | chilli powder; chilli flakes
+- 400 g passata | passata; tinned tomatoes
+- 3/4 cup thickened cream | cream; thickened cream
+- 1 tsp sugar
+- 2 cups basmati rice | basmati rice; rice
+~ salt
+> Mix the chicken with the yoghurt, garam masala and turmeric. Leave for 15 minutes, or overnight in the fridge.
+> Cook the rice.
+> Grill or pan-fry the chicken over high heat in batches until charred at the edges. It does not need to be cooked through yet.
+> Melt the butter in a large pan over medium heat. Cook the onion for 8 minutes until soft and golden.
+> Add the garlic, ginger, cumin, coriander and chilli powder and stir for 1 minute.
+> Pour in the passata and simmer for 10 minutes. Blend smooth if you like.
+> Stir in the cream, sugar and chicken. Simmer 10 minutes until the chicken is cooked through. Season with salt and serve with the rice.
+
+=== Lamb kofta wraps with tzatziki
+id: lamb-kofta-wraps
+serves: 4
+minutes: 30
+tags: dinner, lamb, Greek
+credit: original
+-- Kofta
+- 500 g lamb mince | lamb mince; mince
+- 1 small onion, grated | onion
+- 2 garlic cloves, crushed | garlic
+- 2 tsp ground cumin | cumin
+- 1 tsp ground coriander
+- 2 tbsp chopped mint | mint
+-- Tzatziki
+- 1 cup Greek yoghurt | yoghurt; greek yoghurt
+- 1 Lebanese cucumber, grated | cucumber
+- 1 lemon
+-- To serve
+- 4 pita breads | pita; flatbread; wraps
+- 2 tomatoes, sliced | tomatoes; tomato
+- 1 baby cos lettuce, shredded | lettuce; cos lettuce
+- 1 tbsp olive oil
+~ salt
+~ black pepper
+> Mix the lamb, onion, garlic, spices, half the mint, salt and pepper with your hands for a minute until sticky. Shape into 12 fingers.
+> Squeeze the grated cucumber dry and mix it with the yoghurt, the rest of the mint, a squeeze of lemon and a pinch of salt.
+> Heat the oil in a frying pan or barbecue over medium-high heat. Cook the kofta for 8 minutes, turning, until browned and cooked through.
+> Warm the pitas. Fill with lettuce, tomato and kofta, and spoon over the tzatziki.
+
+=== Crispy skin salmon with lemon garlic potatoes
+id: crispy-salmon-potatoes
+serves: 4
+minutes: 40
+tags: dinner, fish
+credit: original
+- 4 salmon fillets, skin on | salmon; salmon fillets
+- 800 g baby potatoes, halved | potatoes; baby potatoes; potato
+- 3 tbsp olive oil
+- 4 garlic cloves, smashed | garlic
+- 1 lemon
+- 200 g green beans | green beans; beans
+- 2 tbsp chopped parsley | parsley
+~ salt
+~ black pepper
+> Heat the oven to 220°C. Toss the potatoes with 2 tablespoons oil, the garlic, salt and pepper on a tray. Roast for 30 minutes, turning once.
+> Add the beans to the tray for the last 8 minutes.
+> Pat the salmon skin very dry and salt it well.
+> Heat the rest of the oil in a frying pan over medium-high heat. Lay the salmon in skin side down and press for 10 seconds. Cook 5 minutes without moving until the skin is crisp, then turn and cook 1 to 2 minutes.
+> Grate the lemon zest over the potatoes, squeeze over some juice and add the parsley. Serve with the salmon.
+
+=== Fish tacos with lime slaw
+id: fish-tacos
+serves: 4
+minutes: 30
+tags: dinner, fish, Mexican
+credit: original
+- 600 g firm white fish fillets | white fish; fish fillets; fish; flathead; ling
+- 2 tsp smoked paprika | paprika
+- 1 tsp ground cumin | cumin
+- 1 tbsp olive oil
+- 8 small tortillas | tortillas; wraps
+- 1/4 red cabbage, finely shredded | red cabbage; cabbage
+- 1 carrot, grated
+- 2 limes | limes; lime; lemon
+- 1/3 cup whole egg mayonnaise | mayonnaise; mayo
+- 1 avocado
+- coriander leaves, to serve | coriander
+~ salt
+> Toss the cabbage and carrot with the juice of 1 lime and a pinch of salt. Leave to soften.
+> Mix the mayonnaise with a squeeze of lime.
+> Rub the fish with the paprika, cumin, oil and salt.
+> Cook in a hot frying pan for 2 to 3 minutes a side until it flakes. Break into chunks.
+> Warm the tortillas. Fill with slaw, fish, avocado, lime mayo and coriander. Serve with lime wedges.
+
+=== Creamy Tuscan chicken
+id: creamy-tuscan-chicken
+serves: 4
+minutes: 35
+tags: dinner, chicken, Italian
+credit: original
+- 2 chicken breasts, halved horizontally | chicken breast; chicken breasts; chicken
+- 1 tbsp olive oil
+- 3 garlic cloves, crushed | garlic
+- 1/2 cup sun-dried tomatoes, sliced | sun-dried tomatoes; sun dried tomatoes
+- 1 cup thickened cream | cream; thickened cream
+- 1/2 cup chicken stock | chicken stock; stock
+- 1/2 cup grated parmesan | parmesan; cheese
+- 2 cups baby spinach | spinach; baby spinach
+- 1 tsp dried Italian herbs | italian herbs; dried herbs; oregano
+- 400 g pasta | pasta; penne; fettuccine
+~ salt
+~ black pepper
+> Cook the pasta.
+> Season the chicken and cook in the oil over medium-high heat, 4 minutes a side, until golden and cooked through. Rest on a plate.
+> Lower the heat. Cook the garlic and sun-dried tomatoes for 1 minute.
+> Add the cream, stock, herbs and parmesan and simmer 3 minutes until slightly thickened.
+> Stir in the spinach until wilted. Slice the chicken and return it to the sauce. Serve over the pasta.
+
+=== Chicken and leek pie
+id: chicken-leek-pie
+serves: 6
+minutes: 60
+tags: dinner, chicken, baking
+credit: original
+- 800 g chicken thigh fillets, diced | chicken thighs; chicken thigh; chicken
+- 2 leeks, sliced | leeks; leek
+- 2 rashers bacon, chopped | bacon
+- 1 carrot, diced
+- 40 g butter
+- 1/4 cup plain flour | plain flour; flour
+- 1 1/2 cups chicken stock | chicken stock; stock
+- 1/2 cup thickened cream | cream; thickened cream
+- 1 tbsp Dijon mustard | mustard; dijon mustard
+- 2 sheets frozen puff pastry | puff pastry; pastry
+- 1 egg, beaten | eggs; egg
+~ salt
+~ black pepper
+> Heat the oven to 200°C. Thaw the pastry.
+> Melt the butter in a large pan. Cook the bacon, leek and carrot for 8 minutes until soft.
+> Add the chicken and cook 5 minutes until it changes colour.
+> Stir in the flour for 1 minute, then slowly stir in the stock. Simmer 10 minutes until thick.
+> Stir in the cream and mustard, season well, and pour into a pie dish. Let it cool for 10 minutes.
+> Cover with the pastry, trim, cut a steam hole and brush with egg. Bake 25 minutes until puffed and deep golden.
+
+=== Slow-cooked beef ragu
+id: slow-beef-ragu
+serves: 6
+minutes: 210
+tags: dinner, beef, Italian, slow cooker
+credit: original
+- 1 kg chuck steak, in 4 big pieces | chuck steak; gravy beef; beef
+- 2 tbsp olive oil
+- 1 onion, finely chopped
+- 1 carrot, finely chopped
+- 2 celery sticks, finely chopped | celery
+- 4 garlic cloves, crushed | garlic
+- 2 tbsp tomato paste
+- 1 cup red wine | red wine; wine
+- 800 g tinned tomatoes | tinned tomatoes; diced tomatoes; crushed tomatoes
+- 1 cup beef stock | beef stock; stock
+- 2 bay leaves
+- 500 g pappardelle | pappardelle; pasta; fettuccine
+- parmesan, to serve | parmesan; cheese
+~ salt
+~ black pepper
+> Season the beef well. Brown it all over in the oil in a heavy pot over high heat, then set aside.
+> Lower to medium. Cook the onion, carrot and celery for 10 minutes until soft.
+> Add the garlic and tomato paste for 2 minutes, then the wine. Bubble for 2 minutes.
+> Add the tomatoes, stock, bay leaves and beef. Cover and simmer very gently for 3 hours (or 8 hours on low in a slow cooker) until the beef falls apart.
+> Shred the beef into the sauce with two forks and season.
+> Cook the pasta, toss with the ragu and a splash of pasta water, and serve with parmesan.
+note: Freezes well for 3 months.
+
+=== Massaman beef curry
+id: massaman-beef
+serves: 6
+minutes: 150
+tags: dinner, beef, curry, Thai
+credit: original
+- 1 kg chuck steak, cut into 4 cm cubes | chuck steak; gravy beef; beef
+- 1/3 cup massaman curry paste | massaman curry paste; curry paste
+- 800 ml coconut milk | coconut milk; coconut cream
+- 500 g potatoes, cut into chunks | potatoes; potato
+- 1 onion, cut into wedges
+- 1/3 cup roasted peanuts | peanuts
+- 1 tbsp fish sauce
+- 1 tbsp brown sugar | brown sugar; palm sugar; sugar
+- 1 tbsp tamarind puree | tamarind; lime
+- 1 cinnamon stick | cinnamon
+- 2 cups jasmine rice | jasmine rice; rice
+> Scoop the thick cream off the top of one tin of coconut milk into a heavy pot. Fry it with the curry paste over medium heat for 3 minutes until fragrant and oily.
+> Add the beef and stir to coat. Add the rest of the coconut milk, the cinnamon and 1 cup water.
+> Cover and simmer gently for 1 1/2 hours.
+> Add the potatoes, onion and peanuts. Simmer uncovered 30 minutes more, until the beef is tender and the potato soft.
+> Season with fish sauce, sugar and tamarind until it tastes salty, sweet and sour together. Serve with rice.
+
+=== Chilli con carne
+id: chilli-con-carne
+serves: 6
+minutes: 60
+tags: dinner, beef, Mexican, freezer
+credit: original
+- 750 g beef mince | beef mince; mince
+- 1 tbsp olive oil
+- 1 onion, chopped
+- 1 red capsicum, chopped
+- 3 garlic cloves, crushed | garlic
+- 2 tsp ground cumin | cumin
+- 2 tsp smoked paprika | paprika
+- 1 tsp chilli powder | chilli powder; chilli flakes
+- 1 tsp dried oregano | oregano
+- 2 tbsp tomato paste
+- 800 g tinned tomatoes | tinned tomatoes; diced tomatoes; crushed tomatoes
+- 400 g tinned kidney beans, drained | kidney beans; beans
+- 1 cup beef stock | beef stock; stock
+- 20 g dark chocolate | dark chocolate; chocolate
+- 2 cups rice | rice
+- sour cream, to serve | sour cream
+~ salt
+> Brown the mince in the oil in a large pot over high heat, breaking it up, for 8 minutes. Set aside.
+> Cook the onion and capsicum for 6 minutes. Add the garlic, spices, oregano and tomato paste for 2 minutes.
+> Return the mince with the tomatoes, beans and stock. Simmer uncovered for 35 minutes, stirring now and then.
+> Stir in the chocolate and season with salt.
+> Serve on rice with sour cream.
+
+=== Sausage and lentil casserole
+id: sausage-lentil-casserole
+serves: 6
+minutes: 50
+tags: dinner, pork, budget
+credit: original
+- 8 thick pork sausages | sausages; pork sausages
+- 1 tbsp olive oil
+- 1 onion, chopped
+- 2 carrots, diced | carrots; carrot
+- 2 celery sticks, diced | celery
+- 3 garlic cloves, crushed | garlic
+- 1 tsp smoked paprika | paprika
+- 400 g tinned brown lentils, drained | lentils; brown lentils
+- 800 g tinned tomatoes | tinned tomatoes; diced tomatoes
+- 1 cup chicken stock | chicken stock; stock
+- 2 cups baby spinach | spinach; baby spinach
+- crusty bread, to serve | bread; sourdough
+~ salt
+~ black pepper
+> Brown the sausages in the oil in a large pot for 8 minutes, then cut each into 3.
+> Cook the onion, carrot and celery for 8 minutes. Add the garlic and paprika for 1 minute.
+> Add the lentils, tomatoes, stock and sausages. Simmer uncovered for 25 minutes until thick.
+> Stir in the spinach, season, and serve with bread.
+
+=== Garlic prawn linguine
+id: garlic-prawn-linguine
+serves: 4
+minutes: 25
+tags: dinner, seafood, Italian, quick
+credit: original
+- 500 g raw prawns, peeled | prawns; raw prawns
+- 400 g linguine | linguine; spaghetti; pasta
+- 1/4 cup olive oil
+- 5 garlic cloves, thinly sliced | garlic
+- 1/2 tsp chilli flakes | chilli flakes; chilli
+- 250 g cherry tomatoes, halved | cherry tomatoes; tomatoes
+- 1/2 cup white wine | white wine; wine
+- 1 lemon
+- 3 tbsp chopped parsley | parsley
+- 30 g butter
+~ salt
+> Cook the pasta in well-salted water. Keep a cup of the water.
+> Warm the oil, garlic and chilli in a large frying pan over medium-low heat until the garlic is pale gold.
+> Turn up the heat. Add the prawns and tomatoes and cook 2 minutes until the prawns turn pink.
+> Add the wine and bubble for 1 minute.
+> Toss in the pasta, butter, lemon zest, a squeeze of juice, parsley and a splash of pasta water until glossy.
+
+=== Teriyaki salmon rice bowls
+id: teriyaki-salmon-bowls
+serves: 4
+minutes: 30
+tags: dinner, fish, Japanese
+credit: original
+- 4 skinless salmon fillets, cubed | salmon; salmon fillets
+- 1/4 cup soy sauce
+- 2 tbsp mirin
+- 1 tbsp honey
+- 1 tsp grated ginger | ginger
+- 1 1/2 cups sushi rice | sushi rice; rice
+- 1 Lebanese cucumber, sliced | cucumber
+- 1 avocado
+- 1 carrot, cut into matchsticks | carrot
+- 1 cup frozen edamame | edamame; frozen peas
+- 1 tbsp sesame seeds
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+> Cook the rice.
+> Mix the soy, mirin, honey and ginger.
+> Cook the edamame in boiling water for 3 minutes, then drain.
+> Sear the salmon in the oil over high heat for 2 minutes, turning. Pour in the sauce and toss for 1 minute until sticky.
+> Fill bowls with rice, then the salmon, cucumber, avocado, carrot and edamame. Finish with sesame seeds.
+
+=== Korean beef bowls
+id: korean-beef-bowls
+serves: 4
+minutes: 25
+tags: dinner, beef, Korean, quick
+credit: original
+- 500 g beef mince | beef mince; mince
+- 2 tbsp gochujang | gochujang; chilli paste
+- 2 tbsp soy sauce
+- 1 tbsp brown sugar | brown sugar; sugar
+- 1 tbsp sesame oil
+- 3 garlic cloves, crushed | garlic
+- 2 tsp grated ginger | ginger
+- 1 1/2 cups rice | rice; jasmine rice
+- 1 Lebanese cucumber, sliced | cucumber
+- 1 cup kimchi | kimchi
+- 4 eggs
+- 2 spring onions, sliced | spring onions; shallots
+> Cook the rice.
+> Mix the gochujang, soy, sugar and half the sesame oil.
+> Brown the mince in the rest of the sesame oil over high heat for 6 minutes. Add the garlic and ginger for 1 minute.
+> Pour in the sauce and cook 2 minutes until sticky.
+> Fry the eggs. Serve the beef on rice with cucumber, kimchi, an egg and spring onions.
+
+=== Lemon pepper chicken schnitzel
+id: lemon-pepper-schnitzel
+serves: 4
+minutes: 35
+tags: dinner, chicken, kids
+credit: original
+- 2 chicken breasts, halved horizontally | chicken breast; chicken breasts; chicken
+- 1/2 cup plain flour | plain flour; flour
+- 2 eggs
+- 1 1/2 cups panko breadcrumbs | breadcrumbs; panko
+- 1 lemon
+- 2 tsp cracked black pepper | black pepper; pepper
+- 1/2 cup vegetable oil, for frying | vegetable oil; canola oil; oil
+- 1 bag mixed salad leaves | salad leaves; lettuce; mixed salad
+~ salt
+> Pound the chicken between baking paper to an even 1 cm.
+> Mix the breadcrumbs with the lemon zest, pepper and a good pinch of salt.
+> Dust the chicken in flour, dip in beaten egg, then press firmly into the crumbs.
+> Heat the oil in a large frying pan over medium-high heat. Fry 3 to 4 minutes a side until deep golden and cooked through. Drain on paper towel.
+> Serve with salad and lemon wedges.
+
+=== Pumpkin and sage risotto
+id: pumpkin-sage-risotto
+serves: 4
+minutes: 45
+tags: dinner, vegetarian, Italian
+credit: original
+- 600 g butternut pumpkin, cut into 2 cm cubes | pumpkin; butternut pumpkin
+- 2 tbsp olive oil
+- 1 onion, finely chopped
+- 2 garlic cloves, crushed | garlic
+- 1 1/2 cups arborio rice | arborio rice; risotto rice
+- 1/2 cup white wine | white wine; wine
+- 1.25 litres vegetable stock | vegetable stock; stock
+- 40 g butter
+- 12 sage leaves | sage
+- 1/2 cup grated parmesan | parmesan; cheese
+~ salt
+~ black pepper
+> Heat the oven to 200°C. Roast the pumpkin with half the oil and salt for 25 minutes.
+> Keep the stock hot in a saucepan.
+> Cook the onion in the rest of the oil for 6 minutes. Add the garlic and rice and stir for 2 minutes.
+> Add the wine and stir until absorbed. Add the stock a ladle at a time, stirring, letting each one soak in, for about 20 minutes until the rice is creamy and just tender.
+> Meanwhile fry the sage in half the butter until crisp.
+> Stir the rest of the butter, the parmesan and half the pumpkin into the rice, mashing a little. Top with the rest of the pumpkin and the crispy sage.
+
+=== Chickpea and spinach curry
+id: chickpea-spinach-curry
+serves: 4
+minutes: 30
+tags: dinner, vegetarian, vegan, curry, budget
+credit: original
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 onion, chopped
+- 3 garlic cloves, crushed | garlic
+- 1 tbsp grated ginger | ginger
+- 2 tsp garam masala
+- 1 tsp ground cumin | cumin
+- 1 tsp ground turmeric | turmeric
+- 800 g tinned chickpeas, drained | chickpeas
+- 400 g tinned tomatoes | tinned tomatoes; diced tomatoes
+- 400 ml coconut milk | coconut milk; coconut cream
+- 3 cups baby spinach | spinach; baby spinach
+- 1 lemon
+- 1 1/2 cups basmati rice | basmati rice; rice
+~ salt
+> Cook the rice.
+> Cook the onion in the oil for 8 minutes until golden. Add the garlic, ginger and spices and stir for 1 minute.
+> Add the chickpeas, tomatoes and coconut milk. Simmer 15 minutes, squashing a few chickpeas to thicken it.
+> Stir in the spinach until wilted. Season with salt and a squeeze of lemon. Serve with the rice.
+
+=== Baked mac and cheese
+id: baked-mac-cheese
+serves: 6
+minutes: 45
+tags: dinner, vegetarian, kids
+credit: original
+- 400 g macaroni | macaroni; pasta
+- 50 g butter
+- 1/3 cup plain flour | plain flour; flour
+- 3 cups milk
+- 200 g tasty cheese, grated | cheese; tasty cheese
+- 1/2 cup grated parmesan | parmesan; cheese
+- 2 tsp Dijon mustard | mustard; dijon mustard
+- 1 cup panko breadcrumbs | breadcrumbs; panko
+~ salt
+~ black pepper
+> Heat the oven to 200°C. Cook the macaroni 2 minutes less than the packet says, then drain.
+> Melt the butter in a saucepan. Stir in the flour for 1 minute, then whisk in the milk a little at a time.
+> Simmer, stirring, for 5 minutes until thick. Off the heat, stir in most of the tasty cheese, the mustard, salt and pepper.
+> Mix with the macaroni and tip into a baking dish.
+> Top with the rest of the cheese, the parmesan and breadcrumbs. Bake 20 minutes until bubbling and golden.
+
+=== Lamb shepherd's pie
+id: shepherds-pie
+serves: 6
+minutes: 75
+tags: dinner, lamb, freezer
+credit: original
+- 750 g lamb mince | lamb mince; mince
+- 1 tbsp olive oil
+- 1 onion, chopped
+- 2 carrots, diced | carrots; carrot
+- 2 garlic cloves, crushed | garlic
+- 2 tbsp tomato paste
+- 1 tbsp Worcestershire sauce | worcestershire sauce
+- 1 cup beef stock | beef stock; stock
+- 1 cup frozen peas | frozen peas; peas
+- 1 kg potatoes, peeled and chopped | potatoes; potato
+- 40 g butter
+- 1/2 cup milk
+- 50 g tasty cheese, grated | cheese; tasty cheese
+~ salt
+~ black pepper
+> Boil the potatoes until tender. Mash with the butter and milk and season well.
+> Heat the oven to 200°C.
+> Brown the mince in the oil over high heat for 8 minutes. Add the onion and carrot and cook 6 minutes.
+> Add the garlic, tomato paste and Worcestershire for 1 minute, then the stock. Simmer 15 minutes until thick. Stir in the peas.
+> Spoon into a baking dish, top with the mash, rough it up with a fork and scatter over the cheese.
+> Bake 25 minutes until golden on the peaks.
+
+=== Satay chicken skewers
+id: satay-chicken
+serves: 4
+minutes: 40
+tags: dinner, chicken, barbecue
+credit: original
+- 800 g chicken thigh fillets, cut into strips | chicken thighs; chicken thigh; chicken
+- 2 tbsp soy sauce
+- 1 tsp ground turmeric | turmeric
+- 2 tsp brown sugar | brown sugar; sugar
+- 1/2 cup crunchy peanut butter | peanut butter
+- 270 ml coconut milk | coconut milk; coconut cream
+- 1 tbsp sweet chilli sauce | sweet chilli sauce
+- 1 lime | lime; lemon
+- 12 bamboo skewers | skewers
+- 1 1/2 cups rice | rice; jasmine rice
+- 1 Lebanese cucumber, sliced | cucumber
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+> Soak the skewers in water. Cook the rice.
+> Mix the chicken with the soy, turmeric, sugar and oil. Thread onto the skewers.
+> Warm the peanut butter, coconut milk and sweet chilli in a small pan, stirring, for 3 minutes. Add a squeeze of lime and thin with water if needed.
+> Cook the skewers on a hot grill or barbecue for 8 to 10 minutes, turning, until charred and cooked through.
+> Serve with rice, cucumber and the satay sauce.
+
+=== Pork san choy bow
+id: san-choy-bow
+serves: 4
+minutes: 20
+tags: dinner, pork, quick, low carb
+credit: original
+- 500 g pork mince | pork mince; mince
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 3 garlic cloves, crushed | garlic
+- 2 tsp grated ginger | ginger
+- 225 g tinned water chestnuts, chopped | water chestnuts
+- 1 carrot, grated
+- 2 tbsp oyster sauce
+- 1 tbsp soy sauce
+- 1 tsp sesame oil
+- 1 iceberg lettuce | iceberg lettuce; lettuce
+- 2 spring onions, sliced | spring onions; shallots
+- 1 tbsp crispy fried shallots | fried shallots
+> Separate the lettuce into cups and chill them in iced water.
+> Stir-fry the mince in the oil over high heat for 6 minutes, breaking it up, until browned.
+> Add the garlic, ginger, water chestnuts and carrot and cook 2 minutes.
+> Add the oyster sauce, soy and sesame oil and toss for 1 minute.
+> Spoon into the dried lettuce cups and top with spring onions and fried shallots.
+
+=== Roast chicken with gravy
+id: roast-chicken-gravy
+serves: 6
+minutes: 105
+tags: dinner, chicken, Sunday roast
+credit: original
+- 1.8 kg whole chicken | whole chicken; chicken
+- 1 lemon
+- 4 garlic cloves | garlic
+- 40 g butter, softened | butter
+- 1 kg potatoes, cut into chunks | potatoes; potato
+- 600 g pumpkin, cut into chunks | pumpkin
+- 3 tbsp olive oil
+- 2 tbsp plain flour | plain flour; flour
+- 1 1/2 cups chicken stock | chicken stock; stock
+- 2 cups frozen peas | frozen peas; peas
+- 4 sprigs thyme | thyme; rosemary
+~ salt
+~ black pepper
+> Heat the oven to 200°C. Take the chicken out of the fridge 30 minutes before.
+> Pat the chicken dry, rub with butter and season well. Put the halved lemon, garlic and thyme inside.
+> Roast in a tray for 1 hour 20 minutes, until the juices run clear when the thigh is pierced.
+> After the chicken has been in for 20 minutes, toss the potatoes and pumpkin with oil and salt on another tray and roast for 1 hour, turning once.
+> Rest the chicken on a board under foil for 15 minutes.
+> Spoon most of the fat off the chicken tray. Put the tray on the stove, stir in the flour for 1 minute, then whisk in the stock. Simmer 3 minutes until thick, and strain.
+> Cook the peas. Carve the chicken and serve with the veg and gravy.
+
+=== Lamb shanks in red wine
+id: lamb-shanks-red-wine
+serves: 4
+minutes: 180
+tags: dinner, lamb, slow cooker, winter
+credit: original
+- 4 lamb shanks
+- 2 tbsp plain flour | plain flour; flour
+- 2 tbsp olive oil
+- 1 onion, chopped
+- 2 carrots, chopped | carrots; carrot
+- 4 garlic cloves, crushed | garlic
+- 2 tbsp tomato paste
+- 1 1/2 cups red wine | red wine; wine
+- 400 g tinned tomatoes | tinned tomatoes; diced tomatoes
+- 2 cups beef stock | beef stock; stock
+- 3 sprigs rosemary | rosemary
+- 1 kg potatoes, for mash | potatoes; potato
+- 40 g butter
+- 1/2 cup milk
+~ salt
+~ black pepper
+> Heat the oven to 160°C. Season the shanks and dust with flour.
+> Brown them well in the oil in a heavy ovenproof pot, then set aside.
+> Cook the onion and carrot for 6 minutes. Add the garlic and tomato paste for 1 minute.
+> Pour in the wine and bubble for 3 minutes. Add the tomatoes, stock, rosemary and shanks.
+> Cover and bake for 2 1/2 hours, until the meat is falling off the bone.
+> Make mash with the potatoes, butter and milk. Serve the shanks on the mash with plenty of sauce.
+note: In a slow cooker: 8 hours on low after browning.
+
+=== Pumpkin soup
+id: pumpkin-soup
+serves: 6
+minutes: 45
+tags: soup, vegetarian, budget, freezer
+credit: original
+- 1.5 kg butternut pumpkin, peeled and chopped | pumpkin; butternut pumpkin
+- 1 onion, chopped
+- 2 garlic cloves, crushed | garlic
+- 1 potato, chopped | potatoes; potato
+- 1 litre vegetable stock | vegetable stock; chicken stock; stock
+- 2 tbsp olive oil
+- 1/2 tsp ground nutmeg | nutmeg
+- 1/2 cup thickened cream | cream; thickened cream
+- crusty bread, to serve | bread; sourdough
+~ salt
+~ black pepper
+> Cook the onion in the oil in a large pot for 6 minutes. Add the garlic and nutmeg for 1 minute.
+> Add the pumpkin, potato and stock. Bring to the boil, then simmer 25 minutes until very soft.
+> Blend until smooth. Season well.
+> Swirl through the cream and serve with bread.
+
+=== Chicken and corn soup
+id: chicken-corn-soup
+serves: 4
+minutes: 30
+tags: soup, chicken, kids, quick
+credit: original
+- 1 litre chicken stock | chicken stock; stock
+- 420 g tinned creamed corn | creamed corn
+- 2 cups shredded cooked chicken | cooked chicken; barbecue chicken; chicken
+- 2 tsp grated ginger | ginger
+- 1 tbsp soy sauce
+- 2 tbsp cornflour
+- 2 eggs, lightly beaten | eggs; egg
+- 1 tsp sesame oil
+- 2 spring onions, sliced | spring onions; shallots
+~ white pepper
+> Bring the stock, creamed corn, ginger and soy to a simmer.
+> Add the chicken and simmer 5 minutes.
+> Mix the cornflour with 3 tablespoons cold water and stir it in. Simmer 2 minutes until silky.
+> Stir the soup in one direction and slowly pour in the egg, so it sets in ribbons.
+> Season with white pepper and sesame oil. Top with spring onions.
+note: A shop barbecue chicken does the job.
+
+=== Minestrone
+id: minestrone
+serves: 6
+minutes: 50
+tags: soup, vegetarian, budget, freezer
+credit: original
+- 2 tbsp olive oil
+- 1 onion, chopped
+- 2 carrots, diced | carrots; carrot
+- 2 celery sticks, diced | celery
+- 3 garlic cloves, crushed | garlic
+- 1 zucchini, diced | zucchini
+- 800 g tinned tomatoes | tinned tomatoes; diced tomatoes
+- 1.5 litres vegetable stock | vegetable stock; chicken stock; stock
+- 400 g tinned cannellini beans, drained | cannellini beans; white beans; beans
+- 1 cup small pasta | small pasta; macaroni; pasta
+- 2 cups shredded cabbage or kale | cabbage; kale
+- parmesan, to serve | parmesan; cheese
+~ salt
+~ black pepper
+> Cook the onion, carrot and celery in the oil for 10 minutes. Add the garlic for 1 minute.
+> Add the zucchini, tomatoes and stock and simmer 15 minutes.
+> Add the beans, pasta and cabbage. Simmer 10 minutes until the pasta is tender.
+> Season well and serve with parmesan.
+
+=== Pea and ham soup
+id: pea-ham-soup
+serves: 6
+minutes: 150
+tags: soup, pork, winter, freezer
+credit: original
+- 1 ham hock | ham hock; ham bone
+- 500 g green split peas, rinsed | split peas; green split peas
+- 1 onion, chopped
+- 2 carrots, diced | carrots; carrot
+- 2 celery sticks, diced | celery
+- 1 tbsp olive oil
+- 2 bay leaves
+~ black pepper
+> Cook the onion, carrot and celery in the oil in a big pot for 8 minutes.
+> Add the split peas, ham hock, bay leaves and 2.5 litres of water.
+> Bring to the boil, skim, then simmer partly covered for 2 hours, stirring now and then, until the peas collapse.
+> Lift out the hock. Shred the meat, throw away the skin and bone, and return the meat.
+> Season with pepper. The hock is salty, so taste before adding salt.
+
+=== Banana bread
+id: banana-bread
+serves: 10
+minutes: 70
+tags: baking, sweet, kids
+credit: original
+- 3 very ripe bananas | bananas; banana
+- 125 g butter, melted | butter
+- 3/4 cup brown sugar | brown sugar; sugar
+- 2 eggs
+- 1 tsp vanilla extract | vanilla
+- 2 cups self-raising flour | self-raising flour; self raising flour; flour
+- 1 tsp ground cinnamon | cinnamon
+- 1/2 cup walnuts, chopped | walnuts
+> Heat the oven to 170°C. Line a loaf tin with baking paper.
+> Mash the bananas. Whisk in the butter, sugar, eggs and vanilla.
+> Fold in the flour, cinnamon and walnuts until just combined.
+> Pour into the tin and bake for 55 to 60 minutes, until a skewer comes out clean.
+> Cool in the tin for 10 minutes, then on a rack.
+note: Leave out the walnuts for school lunches.
+
+=== Anzac biscuits
+id: anzac-biscuits
+serves: 24
+minutes: 30
+tags: baking, sweet, Australian
+credit: original
+- 1 cup rolled oats | oats; rolled oats
+- 1 cup plain flour | plain flour; flour
+- 1 cup desiccated coconut | coconut; desiccated coconut
+- 3/4 cup brown sugar | brown sugar; sugar
+- 125 g butter
+- 2 tbsp golden syrup | golden syrup
+- 1/2 tsp bicarbonate of soda | bicarb soda; bicarbonate of soda
+> Heat the oven to 160°C. Line two trays.
+> Mix the oats, flour, coconut and sugar in a bowl.
+> Melt the butter and golden syrup together. Mix the bicarb with 2 tablespoons boiling water and stir it in; it will foam.
+> Pour into the dry mix and stir well.
+> Roll tablespoons into balls, place 5 cm apart and flatten slightly.
+> Bake 12 to 15 minutes until golden. They firm up as they cool.
+
+=== Chocolate self-saucing pudding
+id: chocolate-self-saucing-pudding
+serves: 6
+minutes: 50
+tags: dessert, sweet, winter
+credit: original
+- 1 cup self-raising flour | self-raising flour; self raising flour; flour
+- 1/2 cup caster sugar | caster sugar; sugar
+- 1/3 cup cocoa powder | cocoa
+- 1/2 cup milk
+- 60 g butter, melted | butter
+- 1 egg | eggs; egg
+- 3/4 cup brown sugar | brown sugar; sugar
+- vanilla ice cream, to serve | ice cream
+> Heat the oven to 180°C. Grease a 1.5 litre baking dish.
+> Mix the flour, caster sugar and 2 tablespoons of the cocoa. Whisk in the milk, butter and egg until smooth. Spread in the dish.
+> Mix the brown sugar with the rest of the cocoa and sprinkle evenly over the top.
+> Slowly pour 1 1/2 cups boiling water over the back of a spoon onto the pudding. Do not stir.
+> Bake 35 to 40 minutes until the top is firm. The sauce forms underneath. Serve with ice cream.
+
+=== Lemon slice
+id: lemon-slice
+serves: 20
+minutes: 20
+tags: baking, sweet, no bake
+credit: original
+- 250 g Marie biscuits, crushed | marie biscuits; plain biscuits; biscuits
+- 1 cup desiccated coconut | coconut; desiccated coconut
+- 395 g tin sweetened condensed milk | condensed milk; sweetened condensed milk
+- 125 g butter
+- 2 lemons | lemons; lemon
+- 1 1/2 cups icing sugar | icing sugar
+> Line a 20 x 30 cm slice tin.
+> Melt the butter and condensed milk together. Stir in the biscuit crumbs, coconut and zest of both lemons.
+> Press firmly into the tin. Chill for 1 hour.
+> Mix the icing sugar with 2 to 3 tablespoons lemon juice until spreadable. Spread over the slice and chill until set.
+> Cut into squares.
+
+=== Scones
+id: scones
+serves: 12
+minutes: 30
+tags: baking, sweet, morning tea
+credit: original
+- 3 cups self-raising flour | self-raising flour; self raising flour; flour
+- 1 tbsp caster sugar | caster sugar; sugar
+- 60 g cold butter, cubed | butter
+- 1 1/4 cups milk
+- jam, to serve | jam; strawberry jam
+- 300 ml thickened cream, whipped | cream; thickened cream
+> Heat the oven to 220°C. Dust a tray with flour.
+> Rub the butter into the flour and sugar with your fingertips until it looks like breadcrumbs.
+> Make a well and pour in most of the milk. Mix quickly with a butter knife into a soft, sticky dough, adding the rest of the milk if dry.
+> Turn out, knead just 3 or 4 times, and pat out 3 cm thick. Cut rounds with a floured cutter, pushing straight down without twisting.
+> Place them touching on the tray, brush tops with milk, and bake 12 to 15 minutes until risen and golden.
+> Wrap in a tea towel for 5 minutes. Serve with jam and cream.
+
+=== Doro wat
+id: doro-wat
+serves: 6
+minutes: 60
+tags: dinner, chicken, African, spicy
+credit: qld-hnc
+- 1 kg chicken drumsticks | chicken drumsticks; drumsticks; chicken
+- 1/2 cup white vinegar | white vinegar; vinegar
+- 6 eggs
+- 2 red onions, finely chopped | red onions; red onion; onion
+- 3 garlic cloves, finely chopped | garlic
+- 1 tbsp grated ginger | ginger
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 tbsp tomato paste
+- 2 tbsp berbere spice | berbere
+- 1 tsp stock powder | stock powder; chicken stock powder
+- injera or flatbread, to serve | injera; flatbread
+~ salt
+> Rinse the chicken and soak it in the vinegar mixed with 1 cup water while you prepare the rest.
+> Hard-boil the eggs for 10 minutes, cool and peel.
+> Fry the onion in the oil over medium heat for 10 minutes until soft and deep golden.
+> Add the garlic, ginger, tomato paste and berbere and cook 5 minutes, adding a splash of water if it catches.
+> Drain the chicken, add it and brown on both sides for 2 minutes.
+> Add 1/4 cup water, the stock powder and salt. Cover and simmer on low for 25 to 30 minutes until cooked through.
+> Add the eggs and cook 5 minutes more. Serve with injera or flatbread and a salad.
+note: Berbere is an Ethiopian spice blend: look in the spice aisle or an African grocer.
+
+=== Misir wat
+id: misir-wat
+serves: 6
+minutes: 40
+tags: dinner, vegetarian, vegan, African, budget
+credit: qld-hnc
+- 1 1/2 cups red lentils | red lentils; lentils
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 red onion, finely chopped | red onion; onion
+- 2 garlic cloves, finely chopped | garlic
+- 2 tsp grated ginger | ginger
+- 1 tomato, finely chopped | tomatoes; tomato
+- 1 tbsp tomato paste
+- 1 tbsp berbere spice | berbere
+- 2 tsp stock powder | stock powder; vegetable stock powder
+- injera or flatbread, to serve | injera; flatbread
+~ salt
+> Rinse the lentils until the water runs clear, then leave them soaking.
+> Fry the onion in the oil over medium heat for 10 minutes.
+> Add the garlic, ginger, tomato, tomato paste and berbere and cook 5 minutes, adding a splash of water if dry.
+> Drain the lentils and add them with 3 cups water, the stock powder and 1 teaspoon salt.
+> Bring to the boil, then simmer on low for 10 to 12 minutes until soft but still holding their shape. Serve with injera or flatbread.
+
+=== Wan pot chicken and bulgur
+id: wan-pot
+serves: 6
+minutes: 30
+tags: dinner, chicken, African, one pot
+credit: qld-hnc
+- 500 g skinless chicken thighs | chicken thighs; chicken thigh; chicken
+- 1 1/2 cups bulgur | bulgur; burghul
+- 2 tsp stock powder | stock powder; chicken stock powder
+- 2 tbsp coconut oil | coconut oil; vegetable oil; oil
+- 1 tbsp tomato paste
+- 1 onion, sliced
+- 1 spring onion, chopped | spring onions; shallots
+- 1 tomato, chopped | tomatoes; tomato
+- 1 small red capsicum, chopped | red capsicum; capsicum
+- 1/2 head broccoli, chopped small | broccoli
+> Poach the chicken in water with 1 teaspoon of the stock powder for 6 to 8 minutes until cooked. Keep the liquid.
+> Rinse and drain the bulgur and put it in a pot with about 3 cups water.
+> Stir in the oil, tomato paste and the rest of the stock powder, then the onion, spring onion, tomato, capsicum and broccoli.
+> Shred the chicken and add it with its cooking liquid.
+> Bring to the boil, then cook on low for 15 to 20 minutes, adding water if it dries, until the bulgur is tender. A rice cooker works too.
+note: The original uses a crayfish seasoning cube for depth; add one if you can find it at an African grocer.
+
+=== Suqaar digaag
+id: suqaar-digaag
+serves: 8
+minutes: 35
+tags: dinner, chicken, African
+credit: qld-hnc
+- 1 kg chicken thigh fillets, chopped small | chicken thighs; chicken thigh; chicken
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 2 onions, chopped | onions; onion
+- 6 garlic cloves, chopped | garlic
+- 3 carrots, diced | carrots; carrot
+- 3 potatoes, diced | potatoes; potato
+- 6 tomatoes, chopped | tomatoes; tomato
+- 3 capsicums, mixed colours, chopped | capsicum; red capsicum
+- 1 tbsp tomato paste
+- 3 tsp xawaash spice mix | xawaash; baharat; cumin
+- 2 tsp stock powder | stock powder; chicken stock powder
+- 1/2 bunch coriander, chopped | coriander
+- flatbread or rice, to serve | flatbread; rice
+> Brown the chicken in 1 tablespoon of the oil in batches, then set aside.
+> Fry the onion in the rest of the oil for 5 to 6 minutes until golden.
+> Add the garlic, carrot, potato, tomato and capsicum and cook 3 to 4 minutes.
+> Stir in the tomato paste, xawaash, stock powder and 1 cup water.
+> Return the chicken, bring to the boil and simmer 15 minutes until the potato is tender.
+> Stir in the coriander. Serve with flatbread or rice.
+note: Xawaash is a Somali spice blend; baharat or a mix of cumin, coriander, black pepper and cardamom is close.
+
+=== Beef, peanut and spinach stew
+id: mulang-e-tongpiny
+serves: 6
+minutes: 50
+tags: dinner, beef, African
+credit: qld-hnc
+- 500 g lean diced beef | diced beef; beef
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 red onion, chopped | red onion; onion
+- 3 garlic cloves, chopped | garlic
+- 1 tbsp tomato paste
+- 2 tsp stock powder | stock powder; beef stock powder
+- 1 cup peanut butter | peanut butter
+- 3 tomatoes, chopped | tomatoes; tomato
+- 1 bunch spinach, chopped | spinach; english spinach
+- ugali or rice, to serve | rice; maize meal; polenta
+> Brown the beef in the hot oil, 1 to 2 minutes a side.
+> Add the onion and garlic and cook 3 minutes.
+> Add the tomato paste, stock powder and 2 cups water. Simmer 20 to 30 minutes until the liquid has halved.
+> Stir in the peanut butter until smooth.
+> Add the tomato and spinach and cook 2 minutes until wilted. Serve with ugali or rice.
+note: South Sudanese mulang e tongpiny.
+
+=== Lamb and okra stew
+id: bamia-thabiek
+serves: 6
+minutes: 70
+tags: dinner, lamb, African
+credit: qld-hnc
+- 1 kg lamb chops | lamb chops; lamb
+- 1 tbsp olive oil
+- 2 onions, chopped | onions; onion
+- 3 garlic cloves, chopped | garlic
+- 2 tsp stock powder | stock powder; beef stock powder
+- 2 tbsp tomato paste
+- 2 tsp ground cumin | cumin
+- 2 carrots, chopped | carrots; carrot
+- 3 cups okra, trimmed | okra
+- 2 handfuls dill, chopped | dill
+- rice, to serve | rice
+~ salt
+> Fry the onions in the oil for 5 to 7 minutes.
+> Add the lamb and garlic and brown. Add 1 cup water and the stock powder and cook 30 minutes.
+> Add the tomato paste, cumin and carrots and cook 5 minutes.
+> Add the okra and 1 teaspoon salt, plus 1/4 cup water if dry. Cook 15 minutes.
+> Stir in the dill and serve with rice.
+note: South Sudanese bamia thabiek.
+
+=== Aksa Zomi chicken curry
+id: aksa-chicken-curry
+serves: 6
+minutes: 75
+tags: dinner, chicken, curry, Burmese
+credit: qld-hnc
+- 1.5 kg chicken drumsticks and thighs | chicken drumsticks; chicken thighs; chicken
+- 1/2 cup natural yoghurt | yoghurt; natural yoghurt
+- 4 potatoes, quartered | potatoes; potato
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 3 lemongrass stalks, bruised | lemongrass
+- 1 tbsp ginger paste | ginger
+- 6 garlic cloves, crushed | garlic
+- 2 onions, chopped | onions; onion
+- 2 tbsp curry powder
+- 1 tsp ground turmeric | turmeric
+- 1 tsp paprika
+- 30 curry leaves | curry leaves
+- 8 makrut lime leaves | makrut lime leaves; kaffir lime leaves; lime leaves
+- 2 tsp chicken stock powder | stock powder; chicken stock powder
+- 400 ml coconut cream | coconut cream; coconut milk
+- 2 cups basmati rice | basmati rice; rice
+~ salt
+> Mix the chicken with the yoghurt and set aside.
+> Simmer the potatoes for 10 minutes and drain while still a little firm. Cook the rice.
+> Fry the lemongrass in the oil for 3 to 4 minutes. Add the ginger and garlic for 2 minutes, then the onion for 5 to 7 minutes until golden.
+> Stir in the curry powder, turmeric and paprika for 1 minute.
+> Add the chicken and brown for 5 minutes.
+> Add the curry leaves, lime leaves, stock powder, 1 teaspoon salt and a little water if needed. Bring to the boil and simmer 30 minutes.
+> Stir in the coconut cream and potatoes and cook 5 minutes until the potatoes are done. Check the salt and serve with rice.
+
+=== Burmese tomato turmeric eggs
+id: kyet-u-chet
+serves: 6
+minutes: 30
+tags: dinner, eggs, vegetarian, Burmese
+credit: qld-hnc
+- 12 eggs
+- 3 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 tbsp ginger paste | ginger
+- 4 garlic cloves, crushed | garlic
+- 1 onion, sliced
+- 3 tomatoes, chopped | tomatoes; tomato
+- 1 tsp paprika
+- 1 tsp ground turmeric | turmeric
+- 1 tbsp kecap manis | kecap manis; sweet soy sauce
+- 1 tbsp oyster sauce
+- 1 tbsp fish sauce
+- 1/2 bunch coriander | coriander
+- 2 cups basmati rice | basmati rice; rice
+~ salt
+> Cook the rice. Boil the eggs for 14 minutes, cool and peel.
+> Fry the whole eggs in 2 tablespoons of the oil until golden all over, then set aside.
+> Stir-fry the ginger, garlic and onion in the rest of the oil for 3 minutes.
+> Add the tomato, paprika, turmeric, kecap manis, oyster sauce and 1/2 teaspoon salt. Cook 5 minutes, adding a little water if dry.
+> Return the eggs and turn them in the sauce for 5 minutes.
+> Add the fish sauce and coriander. Serve with rice.
+note: Leave out the fish and oyster sauce, and add soy, to make it vegetarian.
+
+=== Chicken noodle stir-fry with sambal
+id: chicken-noodle-stir-fry
+serves: 6
+minutes: 45
+tags: dinner, chicken, quick
+credit: qld-hnc
+- 250 g rice vermicelli noodles | vermicelli; rice noodles; noodles
+- 500 g chicken breast, finely sliced | chicken breast; chicken breasts; chicken
+- 1 garlic clove, crushed | garlic
+- 4 cabbage leaves, shredded | cabbage
+- 2 carrots, cut into matchsticks | carrots; carrot
+- 2 celery sticks, sliced | celery
+- 1 tsp sesame oil
+- 1 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 1 tsp cornflour
+- 1 bunch garlic chives, cut into lengths | garlic chives; chives
+- chilli sambal, to serve | sambal oelek; chilli sambal; chilli sauce
+~ salt
+> Soak the noodles in room-temperature water for 30 minutes, then drain.
+> Toss the chicken with the sesame oil and 1/2 teaspoon salt.
+> Stir-fry the chicken and garlic in the hot oil for 3 minutes until cooked.
+> Add the carrot, cabbage and celery and stir-fry 1 minute, then the noodles.
+> Mix the cornflour with 1 tablespoon water, stir it through, then the chives.
+> Serve in bowls with sambal to taste.
+
+=== Chicken fried rice
+id: chicken-fried-rice
+serves: 6
+minutes: 30
+tags: dinner, chicken, kids, leftovers
+credit: qld-hnc
+- 4 1/2 cups cold cooked rice | cooked rice; rice
+- 500 g chicken mince | chicken mince; mince
+- 1 onion, finely chopped
+- 1 garlic clove, finely chopped | garlic
+- 2 spring onions, sliced, white and green kept apart | spring onions; shallots
+- 1 carrot, finely diced
+- 1 tsp stock powder | stock powder; chicken stock powder
+- 2 tbsp vegetable oil | vegetable oil; canola oil; oil
+- 2 cups frozen peas and corn | frozen peas; peas and corn; frozen veg
+- 3 eggs
+- 2 tbsp soy sauce
+- 2 tsp sesame oil
+~ white pepper
+> Use rice cooked the day before, or cooked and chilled for 2 to 3 hours.
+> Mix the chicken with 1 teaspoon of the sesame oil and the stock powder. Cook it in half the oil until white, then remove.
+> Stir-fry the onion, spring onion whites, garlic and carrot in the rest of the oil for 2 minutes.
+> Add the rice and stir-fry 2 minutes to break up the grains.
+> Add the peas and corn, soy sauce, chicken and the rest of the sesame oil.
+> Push it all to one side, scramble the eggs in the gap, then mix through.
+> Finish with the spring onion greens and white pepper.
+
+=== Spaghetti carbonara
+id: spaghetti-carbonara
+serves: 4
+minutes: 25
+tags: dinner, pork, Italian, quick
+credit: original
+- 400 g spaghetti | spaghetti; pasta
+- 150 g pancetta or bacon, chopped | pancetta; bacon
+- 3 eggs
+- 1 egg yolk | eggs; egg
+- 3/4 cup grated parmesan | parmesan; pecorino; cheese
+- 1 tsp cracked black pepper | black pepper; pepper
+~ salt
+> Cook the pasta in well-salted water. Keep 1 cup of the water.
+> Whisk the eggs, yolk, parmesan and pepper in a bowl.
+> Cook the pancetta in a large frying pan until crisp. Take the pan off the heat.
+> Add the drained pasta to the pan and toss in the fat. Wait 1 minute so it is not scorching.
+> Pour in the egg mix with a splash of pasta water and toss fast until creamy, adding more water as needed. The eggs must thicken, not scramble.
+note: No cream: the eggs, cheese and pasta water make the sauce.
+
+=== Pulled pork burgers with slaw
+id: pulled-pork-burgers
+serves: 8
+minutes: 300
+tags: dinner, pork, slow cooker, barbecue
+credit: original
+- 1.5 kg pork shoulder, skin removed | pork shoulder; pork
+- 1 tbsp smoked paprika | paprika
+- 2 tbsp brown sugar | brown sugar; sugar
+- 1 tsp garlic powder
+- 1 onion, sliced
+- 1 cup barbecue sauce | barbecue sauce; bbq sauce
+- 2 tbsp apple cider vinegar | apple cider vinegar; vinegar
+- 8 brioche buns | brioche buns; burger buns; buns
+- 1/4 red cabbage, shredded | red cabbage; cabbage
+- 1 carrot, grated
+- 1/3 cup whole egg mayonnaise | mayonnaise; mayo
+~ salt
+> Rub the pork with the paprika, sugar, garlic powder and 2 teaspoons salt.
+> Put the onion in a slow cooker, the pork on top, and pour over half the barbecue sauce, the vinegar and 1/2 cup water.
+> Cook on low for 8 hours (or in a covered pot at 150°C for 4 1/2 hours) until it pulls apart.
+> Shred the pork with two forks and mix with the rest of the sauce and some of the juices.
+> Toss the cabbage and carrot with the mayonnaise. Fill the toasted buns with pork and slaw.
+
+=== Beef nachos
+id: beef-nachos
+serves: 4
+minutes: 30
+tags: dinner, beef, Mexican, kids
+credit: original
+- 500 g beef mince | beef mince; mince
+- 1 tbsp olive oil
+- 1 onion, chopped
+- 30 g taco seasoning | taco seasoning
+- 400 g tinned black beans, drained | black beans; kidney beans; beans
+- 400 g tinned tomatoes | tinned tomatoes; diced tomatoes
+- 230 g corn chips | corn chips
+- 150 g tasty cheese, grated | cheese; tasty cheese
+- 1 avocado
+- 1/2 cup sour cream | sour cream
+- 1 lime | lime; lemon
+> Heat the oven to 200°C.
+> Brown the mince and onion in the oil for 8 minutes. Add the taco seasoning, beans and tomatoes and simmer 10 minutes until thick.
+> Spread the corn chips in a big baking dish, spoon over the beef and cover with the cheese.
+> Bake 8 to 10 minutes until the cheese melts.
+> Top with mashed avocado, sour cream and a squeeze of lime.
+
+=== Moroccan lamb with couscous
+id: moroccan-lamb-couscous
+serves: 4
+minutes: 35
+tags: dinner, lamb, Moroccan
+credit: original
+- 600 g lamb backstrap or leg steaks | lamb backstrap; lamb steaks; lamb
+- 2 tsp ground cumin | cumin
+- 2 tsp ground coriander
+- 1 tsp ground cinnamon | cinnamon
+- 2 tbsp olive oil
+- 1 1/2 cups couscous | couscous
+- 1 1/2 cups chicken stock | chicken stock; stock
+- 400 g tinned chickpeas, drained | chickpeas
+- 1/2 cup dried apricots, chopped | dried apricots; apricots
+- 1/3 cup slivered almonds | almonds
+- 1 lemon
+- 1/2 cup Greek yoghurt | yoghurt; greek yoghurt
+- 1/2 cup chopped mint | mint
+~ salt
+> Rub the lamb with the spices, half the oil and salt. Leave 10 minutes.
+> Bring the stock to the boil, pour over the couscous, cover and leave 5 minutes. Fluff with a fork.
+> Warm the chickpeas, apricots and almonds in the rest of the oil for 3 minutes. Stir through the couscous with lemon zest, juice and mint.
+> Cook the lamb in a hot pan 3 minutes a side for medium. Rest 5 minutes, then slice.
+> Serve the lamb on the couscous with a spoon of yoghurt.
+
+=== Prawn and chorizo paella
+id: prawn-chorizo-paella
+serves: 6
+minutes: 50
+tags: dinner, seafood, Spanish, one pot
+credit: original
+- 2 chorizo sausages, sliced | chorizo
+- 500 g raw prawns, peeled | prawns; raw prawns
+- 2 tbsp olive oil
+- 1 onion, chopped
+- 1 red capsicum, sliced
+- 3 garlic cloves, crushed | garlic
+- 2 tsp smoked paprika | paprika
+- 1 pinch saffron threads | saffron
+- 1 1/2 cups paella rice | paella rice; arborio rice; rice
+- 400 g tinned tomatoes | tinned tomatoes; diced tomatoes
+- 1 litre chicken stock | chicken stock; stock
+- 1 cup frozen peas | frozen peas; peas
+- 1 lemon
+~ salt
+> Soak the saffron in the warm stock.
+> Fry the chorizo in the oil in a large wide pan until crisp. Take it out.
+> Cook the onion and capsicum for 6 minutes. Add the garlic, paprika and rice and stir for 1 minute.
+> Add the tomatoes, stock and chorizo. Shake the pan level and simmer without stirring for 18 minutes.
+> Press the prawns and peas into the top. Cook 5 minutes more, until the prawns are pink and the bottom is lightly crusted.
+> Rest 5 minutes off the heat under a tea towel. Serve with lemon wedges.

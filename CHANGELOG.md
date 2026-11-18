@@ -4,6 +4,19 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-18
+
+### Added
+- **55 starter recipes with full methods** (pack 1 of 4 toward 200+). Breakfasts, weeknight dinners, curries, slow cooks, soups and baking, in Australian metric (1 cup 250 ml, 1 tbsp 20 ml). 45 are written for Pantry; 10 are adapted from Queensland Health's *Healthy New Communities Cookbook* (CC BY 4.0, credited on each recipe).
+- Every pack recipe opens like your own: ingredients checked against stock on one tab, the numbered method on the other, plus serves, time, tips and who wrote it.
+- **Untested** label on every pack recipe until the household has cooked and rated it.
+- **Browse all starter recipes**: search by name or ingredient, filter by Breakfast, Dinner, Quick, Vegetarian, Soup, Baking, Slow cook; the ones you can make soonest come first.
+- Ingredient lines can say which part of a recipe they are for ("Smash", "Marinade"). The part is shown beside the line, never as a line of its own, so a heading can never reach the shopping list.
+- Salt and pepper you do not track are taken as in the cupboard: shown under *From the cupboard*, never counted missing, never added to the list. Track them and they behave like anything else.
+
+### Fixed
+- A count of parts no longer compares with whole things kept: "4 garlic cloves" against 2 garlic, or "4 rashers bacon" against 1 pack, used to say *short*.
+
 ## [0.15.0] - 2026-11-18
 
 ### Added

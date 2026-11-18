@@ -108,7 +108,7 @@ class RecipeDetailPage extends StatelessWidget {
         body: TabBarView(
           children: [
             _IngredientsTab(match: match),
-            _MethodTab(saved: saved),
+            _MethodTab(saved: saved, recipe: recipe),
           ],
         ),
         bottomNavigationBar: SafeArea(
@@ -188,11 +188,12 @@ class _IngredientsTab extends StatelessWidget {
             ),
             title: Text(sentenceCase(i.line), style: text.bodyLarge),
             subtitle: Text(
-              stock != null
-                  ? (have ? 'You have: ${stock.name}' : 'Your ${stock.name} has run out')
-                  : close != null
-                  ? 'Not sure which of yours this is'
-                  : 'Not something you keep yet · tap to match',
+              (i.group == null ? '' : '${i.group}  ·  ') +
+                  (stock != null
+                      ? (have ? 'You have: ${stock.name}' : 'Your ${stock.name} has run out')
+                      : close != null
+                      ? 'Not sure which of yours this is'
+                      : 'Not something you keep yet · tap to match'),
               style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
             ),
             trailing: Icon(Icons.swap_horiz, size: 20, color: scheme.onSurfaceVariant),
@@ -268,14 +269,26 @@ class _IngredientsTab extends StatelessWidget {
           heading('You have (${match.have.length})'),
           for (final i in match.have) row(i, have: true),
         ],
+        if (match.assumed.isNotEmpty) ...[
+          heading('From the cupboard'),
+          Padding(
+            key: const ValueKey('assumed'),
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+            child: Text(
+              '${sentenceCase(match.assumed.map((i) => i.line).join(', '))}. Not tracked, so never added to your list.',
+              style: text.bodyMedium,
+            ),
+          ),
+        ],
       ],
     );
   }
 }
 
 class _MethodTab extends StatelessWidget {
-  const _MethodTab({required this.saved});
+  const _MethodTab({required this.saved, required this.recipe});
   final SavedRecipe? saved;
+  final Recipe recipe;
 
   @override
   Widget build(BuildContext context) {
@@ -314,9 +327,31 @@ class _MethodTab extends StatelessWidget {
       );
     }
 
-    final steps = s == null ? const <String>[] : methodSteps(s.method);
+    final steps = s == null ? recipe.steps : methodSteps(s.method);
+    if (s == null && steps.isNotEmpty) {
+      children.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              if (recipe.serves > 0) Chip(label: Text('Serves ${recipe.serves}')),
+              if (recipe.minutes > 0) Chip(label: Text('${recipe.minutes} min')),
+              if (recipe.untested)
+                Chip(
+                  key: const ValueKey('untested'),
+                  avatar: const Icon(Icons.science_outlined, size: 18),
+                  label: const Text('Untested: not cooked by us yet'),
+                ),
+            ],
+          ),
+        ),
+      );
+    }
     if (steps.isNotEmpty) {
-      if (s!.isLinked) {
+      if (s != null && s.isLinked) {
         children.add(
           Padding(
             padding: const EdgeInsets.only(top: 16, bottom: 8),
@@ -343,6 +378,38 @@ class _MethodTab extends StatelessWidget {
             ),
           ),
         );
+      }
+      if (s == null) {
+        for (final note in recipe.notes) {
+          children.add(
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.lightbulb_outline, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(child: Text(note, style: text.bodyMedium)),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+        final credit = recipe.credit;
+        if (credit != null) {
+          children.add(
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Text(
+                credit.url == null ? credit.text : '${credit.text} ${credit.url}',
+                key: const ValueKey('recipe-credit'),
+                style: text.bodySmall,
+              ),
+            ),
+          );
+        }
       }
     } else if (s == null || !s.isLinked) {
       children.add(

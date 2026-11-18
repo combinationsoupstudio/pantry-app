@@ -7,6 +7,7 @@ import '../theme.dart';
 import '../widgets/common.dart';
 import 'recipe_detail_page.dart';
 import 'recipe_editor_page.dart';
+import 'starter_library_page.dart';
 
 /// A list of recipe banners. Everything about a recipe is one tap away, on
 /// its own page; nothing here needs reading past the banner.
@@ -34,6 +35,19 @@ class RecipesPage extends StatelessWidget {
           SliverList.list(children: [for (final m in saved) RecipeBanner(match: m)]),
           SliverToBoxAdapter(child: SectionHeader('Starter ideas you can nearly make (${starters.length})')),
           SliverList.list(children: [for (final m in starters) RecipeBanner(match: m)]),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+              child: OutlinedButton.icon(
+                key: const ValueKey('browse-starters'),
+                style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                onPressed: () =>
+                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const StarterLibraryPage())),
+                icon: const Icon(Icons.menu_book_outlined),
+                label: Text('Browse all ${starterLibrary.length} starter recipes'),
+              ),
+            ),
+          ),
           const SliverToBoxAdapter(child: SizedBox(height: 96)),
         ],
       ),
@@ -98,7 +112,8 @@ class RecipeBanner extends StatelessWidget {
       if (match.recipe.minutes > 0) '${match.recipe.minutes} min',
       '${match.recipe.ingredients.length} ingredients',
       if (saved?.siteName != null) saved!.siteName!,
-      if (saved == null) 'starter',
+      if (match.recipe.serves > 0) 'serves ${match.recipe.serves}',
+      if (saved == null) match.recipe.untested ? 'untested' : 'starter',
     ].join('  ·  ');
 
     return Padding(

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'app.dart';
 import 'data/household_store.dart';
 import 'data/photo_store.dart';
+import 'data/recipe_library.dart';
 import 'data/picture_finder.dart';
 import 'data/reminder_service.dart';
 import 'data/storage_backend.dart';
@@ -12,6 +13,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final store = HouseholdStore(FileBackend());
   await store.load();
+  await loadStarterLibrary();
   // Household sync: in step on open, then every few seconds while open.
   final sync = SyncService.instance = SyncService(store);
   await sync.load();
