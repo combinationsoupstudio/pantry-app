@@ -4,6 +4,14 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-19
+
+### Added
+- **50 more starter recipes** (pack 2 of 4; 105 in all). Breakfasts, pub classics, curries from Thailand, Malaysia and Japan, BBQ, slow cooks and Aussie baking: chicken parmigiana, beef rendang, pad Thai, sticky BBQ ribs, beef and Guinness pie, pavlova, lamingtons, sticky date pudding and more. 35 are written for Pantry; 15 are adapted from Queensland Health's *Healthy New Communities Cookbook* (CC BY 4.0, credited on each recipe), including lamb biryani, ghormeh sabzi, ashak and bakso. ([#30](https://github.com/combinationsoupstudio/pantry-app/issues/30))
+- **Smoko burritos**, the house recipe: charred chipotle Smoko sauce and crusted, spiced beef.
+- A test that no recipe name or id repeats across any pack.
+- `CLAUDE.md`: how work flows here (issue, branch, commits naming the issue, a pull request that closes it, CI, release), for people and AI assistants alike. ([#32](https://github.com/combinationsoupstudio/pantry-app/issues/32))
+
 ## [0.16.0] - 2026-11-18
 
 ### Added

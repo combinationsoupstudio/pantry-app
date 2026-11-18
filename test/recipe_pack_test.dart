@@ -86,6 +86,83 @@ void main() {
     });
   });
 
+  group('pack 02 (more starter recipes, issue #30)', () {
+    final pack = loadPack('assets/recipes/pack-02.txt');
+
+    test('reads with no errors: 50 recipes, shipped', () {
+      expect(pack.errors, isEmpty);
+      expect(pack.recipes.length, 50);
+      expect(recipePackAssets, contains('assets/recipes/pack-02.txt'));
+    });
+
+    test('every recipe is whole: serves, time, method, credit, marked untested', () {
+      for (final r in pack.recipes) {
+        expect(r.serves, greaterThan(0), reason: r.name);
+        expect(r.minutes, greaterThan(0), reason: r.name);
+        expect(r.steps.length, greaterThanOrEqualTo(3), reason: r.name);
+        expect(r.ingredients.length, greaterThanOrEqualTo(3), reason: r.name);
+        expect(r.tags, isNotEmpty, reason: r.name);
+        expect(r.credit, isNotNull, reason: r.name);
+        expect(r.untested, isTrue, reason: r.name);
+      }
+    });
+
+    test('borrowed recipes carry their CC BY credit and a link; the rest are our own', () {
+      final credited = pack.recipes.where((r) => r.credit!.text.contains('CC BY')).toList();
+      expect(credited.length, 15);
+      for (final r in credited) {
+        expect(r.credit!.text, contains('Healthy New Communities Cookbook'));
+        expect(r.credit!.url, startsWith('https://www.metrosouth.health.qld.gov.au/'));
+      }
+      expect(pack.recipes.where((r) => r.credit!.text.startsWith('Written for Pantry')).length, 35);
+    });
+
+    test('Australian metric only: no ounces, pounds, Fahrenheit or US sticks', () {
+      final text = File('assets/recipes/pack-02.txt').readAsStringSync().toLowerCase();
+      for (final bad in [RegExp(r'\d\s*oz\b'), RegExp(r'\d\s*lbs?\b'), RegExp(r'°f\b'), RegExp(r'\bstick of butter')]) {
+        expect(bad.hasMatch(text), isFalse, reason: bad.pattern);
+      }
+    });
+
+    test('no heading ever becomes an ingredient', () {
+      for (final r in pack.recipes) {
+        for (final i in r.ingredients) {
+          expect(
+            i.label,
+            isNot(anyOf('ingredients', 'method', 'sauce', 'to serve', '')),
+            reason: '${r.name}: ${i.line}',
+          );
+          expect(i.line.endsWith(':'), isFalse, reason: '${r.name}: ${i.line}');
+          expect(RegExp(r'\d').hasMatch(i.label), isFalse, reason: '${r.name}: ${i.label}');
+        }
+      }
+    });
+
+    test('the house recipe is in: Smoko burritos', () {
+      final smoko = pack.recipes.firstWhere((r) => r.id == 'smoko-burritos');
+      expect(smoko.credit!.text, startsWith('Written for Pantry'));
+      expect(smoko.ingredients.map((i) => i.group).toSet(), containsAll(['Smoko sauce', 'Seasoning', 'Meat']));
+    });
+  });
+
+  group('every shipped pack together', () {
+    final packs = [for (final a in recipePackAssets) loadPack(a)];
+    final all = [for (final p in packs) ...p.recipes];
+
+    test('no id and no recipe name is used twice across packs', () {
+      final ids = all.map((r) => r.id).toList();
+      final names = all.map((r) => r.name.toLowerCase()).toList();
+      expect(ids.toSet().length, ids.length, reason: 'duplicate id');
+      expect(names.toSet().length, names.length, reason: 'duplicate name');
+    });
+
+    test('the library holds every pack recipe', () {
+      final library = buildStarterLibrary(packs);
+      expect(library.where((r) => r.credit != null).length, all.length);
+      expect(all.length, greaterThanOrEqualTo(105));
+    });
+  });
+
   group('the format', () {
     const sample = '''
 @credit original: Written for Pantry.

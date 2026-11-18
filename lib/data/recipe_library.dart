@@ -4,7 +4,7 @@ import '../logic/recipe_pack.dart';
 import '../logic/recipes.dart';
 
 /// The recipe packs bundled with the app (assets/recipes/).
-const recipePackAssets = ['assets/recipes/pack-01.txt'];
+const recipePackAssets = ['assets/recipes/pack-01.txt', 'assets/recipes/pack-02.txt'];
 
 /// Loads the packs into [starterLibrary]. A pack that will not load leaves
 /// the short starter ideas in place rather than stopping the app.
