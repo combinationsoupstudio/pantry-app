@@ -146,14 +146,15 @@ ItemLook lookFor(String name, {String? locationId}) {
   return const ItemLook(Icons.shopping_basket, LookFamily.other);
 }
 
-/// Drawn pictures (assets/food/), each with the names it is for, most
-/// specific first. Names are compared folded (names.dart), word by word:
-/// "Shallots" is spring onions, "Tins: fish" is the tuna tin.
+/// Drawn pictures of everyday pantry foods (assets/food/), each with the
+/// names it is for, most specific first. Fresh fruit, vegetables and herbs
+/// have their own, count-aware set (produce.dart), looked at first. Names
+/// are compared folded (names.dart), word by word: "Tins: fish" is the tuna
+/// tin.
 const List<(String, List<String>)> _art = [
   ('tinned-tomatoes', ['tin tomato', 'tomato tin', 'diced tomato', 'crushed tomato', 'chopped tomato', 'passata']),
   ('baked-beans', ['baked bean']),
   ('tuna', ['tuna', 'tin fish', 'fish tin', 'sardine']),
-  ('spring-onions', ['spring onion']),
   ('olive-oil', ['olive oil']),
   ('soy-sauce', ['soy sauce', 'tamari']),
   ('frozen-peas', ['frozen pea', 'pea']),
@@ -169,13 +170,6 @@ const List<(String, List<String>)> _art = [
   ('pasta', ['pasta', 'spaghetti', 'penne', 'macaroni', 'fettuccine', 'lasagne', 'fusilli']),
   ('flour', ['flour', 'plain flour', 'self raising flour', 'cornflour']),
   ('sugar', ['sugar', 'brown sugar', 'icing sugar', 'caster sugar', 'raw sugar']),
-  ('onions', ['onion']),
-  ('garlic', ['garlic']),
-  ('potatoes', ['potato']),
-  ('carrots', ['carrot']),
-  ('tomatoes', ['tomato', 'cherry tomato']),
-  ('apples', ['apple']),
-  ('bananas', ['banana']),
   ('oats', ['oat', 'rolled oat', 'porridge', 'muesli']),
   ('coffee', ['coffee']),
   ('tea', ['tea']),

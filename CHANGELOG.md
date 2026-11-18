@@ -4,6 +4,17 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.14.0] - 2026-11-18
+
+### Added
+- **Drawings of fresh fruit, vegetables and herbs.** 228 ink-and-wash pictures of 141 things sold in Australia, loose or in punnets and bags: 49 fruit, 75 vegetables, 17 herbs (Chris: "every vegetable or fruit we can possibly buy in Australia"). Bundled in the app (1.9 MB, no download), shown when an item has no photo of its own.
+- **One of it, or a heap.** 1 potato shows one potato; 2 or more shows a heap of potatoes with the count on it (Chris: "1 x potato. Then when any more than 1 potato is needed, you have a bunch"). Bananas, carrots, bok choy and beetroot go to a bunch; pumpkins, melons and cabbages stay whole, and show the cut piece when you have less than one (half a pumpkin). Berries show their punnet, herbs their bunch, salad leaves their bag. Loose produce kept by weight (1.5 kg of potatoes) shows the heap.
+- Names are matched however they are typed: "Shallots" are spring onions, "Kumara" is sweet potato, "Cantaloupe" is rockmelon, "Bell pepper" is capsicum. Things made from produce never get the fresh drawing: tinned tomatoes, orange juice, dried oregano, garlic powder, banana bread, frozen peas.
+
+### Changed
+- Produce pictures are not fanned out into a pile any more: the heap or bunch drawing already shows more than one, with "×4" on it. Everything else (tins, jars, packs) still fans out.
+- The eight first produce drawings (apples, bananas, carrots, onions, garlic, potatoes, tomatoes, spring onions) are replaced by the new set; the other 22 pantry drawings stay.
+
 ## [0.13.0] - 2026-11-17
 
 ### Added

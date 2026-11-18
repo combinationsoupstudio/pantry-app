@@ -8,11 +8,13 @@ import '../../data/picture_cache.dart';
 import '../../data/store_scope.dart';
 import '../../models/models.dart';
 import 'item_look.dart';
+import 'produce.dart';
 
 /// One product's picture: the household's own photo first, then the product
 /// picture (downloaded once, then read from the phone), then a drawing of
-/// the food (assets/food/, v0.12; first of all when Settings > Pictures says
-/// Drawings), else an icon for what it is on its family's colour
+/// the food (fresh produce first, produce.dart, v0.14: one of it, or the heap
+/// or bunch for [count] 2 or more; then assets/food/, v0.12; first of all
+/// when Settings > Pictures says Drawings), else an icon for what it is on its family's colour
 /// (item_look.dart), never a wrong picture.
 class ProductPicture extends StatefulWidget {
   const ProductPicture({
@@ -24,12 +26,18 @@ class ProductPicture extends StatefulWidget {
     this.size = 44,
     this.dim = false,
     this.item,
+    this.count = 1,
+    this.part = false,
   });
 
   /// The picture of a stock item. Items with none get one from the
   /// background PictureFinder.
-  factory ProductPicture.of(StockItem item, {Key? key, double size = 44}) => ProductPicture(
+  /// Loose produce weighed (1.5 kg of potatoes) shows the heap; less than
+  /// one whole (half a pumpkin) the cut piece.
+  factory ProductPicture.of(StockItem item, {Key? key, double size = 44, int? count}) => ProductPicture(
     key: key,
+    count: item.byWeight ? 2 : (count ?? item.pileCount),
+    part: count == null && item.quantity > 0 && item.quantity < 1 && !item.isMeasured && !item.byWeight,
     name: item.name,
     photoPath: item.photoPath,
     photoId: item.photoId,
@@ -50,6 +58,13 @@ class ProductPicture extends StatefulWidget {
   /// Drawn faded (an item that has run out).
   final bool dim;
   final StockItem? item;
+
+  /// How many: a produce drawing shows one of it for 1, the heap or bunch
+  /// for 2 or more.
+  final int count;
+
+  /// Less than one whole (half a pumpkin): the cut piece.
+  final bool part;
 
   @override
   State<ProductPicture> createState() => _ProductPictureState();
@@ -134,7 +149,7 @@ class _ProductPictureState extends State<ProductPicture> {
   Widget _picture(BuildContext context) {
     Widget child;
     final own = widget.photoPath;
-    final art = artFor(widget.name);
+    final art = produceArt(widget.name, count: widget.count, part: widget.part) ?? artFor(widget.name);
     // Settings > Pictures: drawings first, or product photos first (default).
     final drawingsFirst = StoreScope.maybeOf(context)?.setting<String>('pictures', 'photos') == 'drawings';
     if (own != null && File(own).existsSync()) {
@@ -183,9 +198,11 @@ class _ProductPictureState extends State<ProductPicture> {
   }
 }
 
-/// A pile of the same picture, one per item: 4 potatoes is four pictures,
+/// A pile of the same picture, one per item: 4 jars is four pictures,
 /// fanned out, with "×4" on top. It grows as the amount goes up (up to five
-/// shown; the badge always tells the true count).
+/// shown; the badge always tells the true count). A produce drawing is not
+/// fanned: its heap or bunch picture already shows more than one
+/// ([maxShown] 1).
 class PicturePile extends StatelessWidget {
   const PicturePile({super.key, required this.picture, required this.count, this.size = 44, this.maxShown = 5});
 
@@ -268,9 +285,24 @@ class ItemPile extends StatelessWidget {
   final double size;
 
   @override
-  Widget build(BuildContext context) => PicturePile(
-    count: count ?? item.pileCount,
-    size: size,
-    picture: () => ProductPicture.of(item, size: size),
-  );
+  Widget build(BuildContext context) {
+    final n = count ?? item.pileCount;
+    return PicturePile(
+      count: n,
+      size: size,
+      maxShown: showsProduceDrawing(context, item) ? 1 : 5,
+      picture: () => ProductPicture.of(item, size: size, count: count),
+    );
+  }
+}
+
+/// Whether [item]'s picture is a produce drawing (no photo of its own, and
+/// no product photo shown ahead of the drawings).
+bool showsProduceDrawing(BuildContext context, StockItem item) {
+  if (produceOf(item.name) == null) return false;
+  if (item.photoId != null) return false;
+  final own = item.photoPath;
+  if (own != null && File(own).existsSync()) return false;
+  if (item.imageUrl == null) return true;
+  return StoreScope.maybeOf(context)?.setting<String>('pictures', 'photos') == 'drawings';
 }
