@@ -21,7 +21,7 @@ class PantryApp extends StatelessWidget {
       child: ListenableBuilder(
         listenable: store,
         builder: (context, _) {
-          final look = PantryLook.fromName(store.setting<String>('look', 'warm'));
+          final look = PantryLook.fromName(store.setting<String>('look', 'market'));
           return MaterialApp(
             title: 'Pantry',
             debugShowCheckedModeBanner: false,

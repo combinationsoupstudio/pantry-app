@@ -81,7 +81,7 @@ class SettingsPage extends StatelessWidget {
                     label: Text(l.label, key: ValueKey('look-${l.name}')),
                   ),
               ],
-              selected: {PantryLook.fromName(store.setting<String>('look', 'warm'))},
+              selected: {PantryLook.fromName(store.setting<String>('look', 'market'))},
               onSelectionChanged: (v) => store.setSetting('look', v.first.name),
             ),
           ),

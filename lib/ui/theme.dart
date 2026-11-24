@@ -13,7 +13,8 @@ enum PantryLook {
   const PantryLook(this.label);
   final String label;
 
-  static PantryLook fromName(Object? name) => name == 'market' ? PantryLook.market : PantryLook.warm;
+  /// Market fresh is the default (Chris, 24 Nov 2026: "I like Market Fresh").
+  static PantryLook fromName(Object? name) => name == 'warm' ? PantryLook.warm : PantryLook.market;
 }
 
 /// One look in one brightness: every colour the theme is built from.
@@ -212,7 +213,7 @@ class StatusColors extends ThemeExtension<StatusColors> {
   StatusColors lerp(StatusColors? other, double t) => (t < 0.5 || other == null) ? this : other;
 }
 
-ThemeData buildTheme(Brightness brightness, {PantryLook look = PantryLook.warm}) {
+ThemeData buildTheme(Brightness brightness, {PantryLook look = PantryLook.market}) {
   final p = Palette.of(look, brightness);
   final scheme = ColorScheme.fromSeed(
     seedColor: p.primary,

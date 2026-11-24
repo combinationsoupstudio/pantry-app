@@ -42,9 +42,9 @@ void main() {
     }
   }
 
-  test('the look is read from the setting, warm when unknown', () {
-    expect(PantryLook.fromName('market'), PantryLook.market);
-    expect(PantryLook.fromName(null), PantryLook.warm);
+  test('the look is read from the setting, Market fresh when unset', () {
+    expect(PantryLook.fromName('warm'), PantryLook.warm);
+    expect(PantryLook.fromName(null), PantryLook.market);
     expect(buildTheme(Brightness.light, look: PantryLook.market).colorScheme.primary, Palette.marketLight.primary);
   });
 }
