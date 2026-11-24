@@ -1,10 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'dates_page.dart';
-import '../../logic/supplies.dart';
 import '../../app.dart';
 import '../../data/store_scope.dart';
-import '../../models/models.dart';
 import '../../logic/insights.dart';
 import '../../logic/recipes.dart';
 import '../widgets/common.dart';
@@ -27,129 +26,21 @@ class HomePage extends StatelessWidget {
     final low = store.runningLow;
     final ready = matchRecipes(store.items).where((m) => m.ready).length;
     final toBuy = store.shopping.where((s) => !s.bought).length;
-    final people = store.setting<int>('people', 3);
-    final water = waterDays(store.items, people: people);
-    final text = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.medium(
-            title: Text('G\'day ${store.user}'),
-            actions: [
-              const SyncButton(),
-              IconButton(
-                tooltip: 'Settings',
-                icon: const Icon(Icons.settings_outlined),
-                onPressed: () =>
-                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SettingsPage())),
-              ),
-            ],
-          ),
           SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Card(
-                color: scheme.primaryContainer,
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  key: const ValueKey('home-stock'),
-                  onTap: () => _openInsights(context),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 84,
-                          height: 84,
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              CircularProgressIndicator(
-                                value: ins.readiness ?? 0,
-                                strokeWidth: 8,
-                                backgroundColor: scheme.surface.withValues(alpha: 0.5),
-                              ),
-                              Center(
-                                child: Text(
-                                  ins.readiness == null ? '—' : '${(ins.readiness! * 100).round()}%',
-                                  style: text.titleLarge?.copyWith(color: scheme.onPrimaryContainer),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'House stock',
-                                      style: text.titleLarge?.copyWith(color: scheme.onPrimaryContainer),
-                                    ),
-                                  ),
-                                  Icon(Icons.chevron_right, color: scheme.onPrimaryContainer),
-                                ],
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _assessment(ins),
-                                style: text.bodyMedium?.copyWith(color: scheme.onPrimaryContainer),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            sliver: SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                mainAxisExtent: 140 * MediaQuery.textScalerOf(context).scale(1).clamp(1, 1.6),
-              ),
-              delegate: SliverChildListDelegate([
-                StatTile(
-                  label: 'on the list',
-                  value: '$toBuy',
-                  icon: Icons.shopping_cart_outlined,
-                  onTap: () => onGo(AppTab.shopping),
-                ),
-                StatTile(
-                  label: 'meals ready',
-                  value: '$ready',
-                  icon: Icons.restaurant_menu_outlined,
-                  onTap: () => onGo(AppTab.recipes),
-                ),
-                StatTile(
-                  label: 'dates soon',
-                  value: '${ins.useBySoon.length}',
-                  icon: Icons.event_outlined,
-                  tone: ins.useBySoon.isEmpty
-                      ? null
-                      : (StatusColors.of(context).low, StatusColors.of(context).lowContainer),
-                  key: const ValueKey('home-dates'),
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DatesPage())),
-                ),
-              ]),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: _WaterCard(water: water, people: people),
+            child: _HomeHeader(
+              ins: ins,
+              now: now,
+              assessment: _assessment(ins),
+              toBuy: toBuy,
+              ready: ready,
+              datesSoon: ins.useBySoon.length,
+              onStock: () => _openInsights(context),
+              onList: () => onGo(AppTab.shopping),
+              onMeals: () => onGo(AppTab.recipes),
+              onDates: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const DatesPage())),
             ),
           ),
           if (store.runningOutWithin(7).isNotEmpty) ...[
@@ -226,61 +117,330 @@ class HomePage extends StatelessWidget {
   }
 }
 
-/// Water days: drinking water in stock against 3 L per person a day.
-class _WaterCard extends StatelessWidget {
-  const _WaterCard({required this.water, required this.people});
-  final WaterDays water;
-  final int people;
+/// The top of Home (v0.18, #42; Chris picked "Bold: teal header" 24 Nov):
+/// a deep band in the look's bar colour with the date, how stocked the house
+/// is and a bar split into good, low and out; three bright tiles sit half
+/// over its edge. No greeting (Chris: "I dont like the G'day").
+class _HomeHeader extends StatelessWidget {
+  const _HomeHeader({
+    required this.ins,
+    required this.now,
+    required this.assessment,
+    required this.toBuy,
+    required this.ready,
+    required this.datesSoon,
+    required this.onStock,
+    required this.onList,
+    required this.onMeals,
+    required this.onDates,
+  });
+
+  final Insights ins;
+  final DateTime now;
+  final String assessment;
+  final int toBuy, ready, datesSoon;
+  final VoidCallback onStock, onList, onMeals, onDates;
+
+  static const _days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
+  static const _months = [
+    'JANUARY',
+    'FEBRUARY',
+    'MARCH',
+    'APRIL',
+    'MAY',
+    'JUNE',
+    'JULY',
+    'AUGUST',
+    'SEPTEMBER',
+    'OCTOBER',
+    'NOVEMBER',
+    'DECEMBER',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final p = LookColors.of(context);
+    final theme = Theme.of(context);
+    final text = theme.textTheme;
+    final scale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 1.6);
+    final tileH = 124.0 * scale;
+    const overlap = 44.0;
+    final top = MediaQuery.paddingOf(context).top;
+    final pct = ins.readiness == null ? null : (ins.readiness! * 100).round();
+    // Insights' low counts the outs too; the bar shows each once.
+    final good = ins.atTarget, out = ins.out, low = ins.low - ins.out < 0 ? 0 : ins.low - ins.out;
+    final total = good + low + out;
+
+    final header = Container(
+      decoration: BoxDecoration(
+        color: p.bar,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
+      ),
+      padding: EdgeInsets.fromLTRB(20, top + 6, 8, overlap + 16),
+      child: IconButtonTheme(
+        data: IconButtonThemeData(style: IconButton.styleFrom(foregroundColor: p.onBar)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${_days[now.weekday - 1]} ${now.day} ${_months[now.month - 1]}',
+                    key: const ValueKey('home-date'),
+                    style: text.labelLarge?.copyWith(color: p.barSoft, fontWeight: FontWeight.w800, letterSpacing: 1),
+                  ),
+                ),
+                const SyncButton(),
+                IconButton(
+                  tooltip: 'Settings',
+                  icon: const Icon(Icons.settings_outlined),
+                  onPressed: () =>
+                      Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const SettingsPage())),
+                ),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 12),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  key: const ValueKey('home-stock'),
+                  borderRadius: BorderRadius.circular(16),
+                  onTap: onStock,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              pct == null ? '—' : '$pct%',
+                              style: text.displayLarge?.copyWith(
+                                fontFamily: headingFont,
+                                fontSize: 72,
+                                height: 0.95,
+                                fontWeight: FontWeight.w600,
+                                color: p.onBar,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Text(
+                                  'of the house\nstocked',
+                                  style: text.titleMedium?.copyWith(
+                                    color: p.onBar,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Icon(Icons.chevron_right, color: p.barSoft),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 14),
+                        // The bar says it; the sentence is only for a house
+                        // with nothing to score yet.
+                        if (total > 0)
+                          _StockBar(good: good, low: low, out: out, palette: p)
+                        else
+                          Text(assessment, style: text.bodyMedium?.copyWith(color: p.onBar)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Column(
+            children: [
+              header,
+              SizedBox(height: tileH - overlap),
+            ],
+          ),
+          Positioned(
+            left: 16,
+            right: 16,
+            bottom: 0,
+            height: tileH,
+            child: Row(
+              children: [
+                _HeroTile(
+                  key: const ValueKey('home-list'),
+                  value: '$toBuy',
+                  label: 'on the list',
+                  icon: Icons.shopping_cart_outlined,
+                  bg: p.accent,
+                  fg: p.onAccent,
+                  onTap: onList,
+                ),
+                const SizedBox(width: 10),
+                _HeroTile(
+                  key: const ValueKey('home-meals'),
+                  value: '$ready',
+                  label: 'meals ready',
+                  icon: Icons.restaurant_menu_outlined,
+                  bg: p.meals,
+                  fg: p.onMeals,
+                  onTap: onMeals,
+                ),
+                const SizedBox(width: 10),
+                _HeroTile(
+                  key: const ValueKey('home-dates'),
+                  value: '$datesSoon',
+                  label: 'dates soon',
+                  icon: Icons.event_outlined,
+                  bg: p.dates,
+                  fg: p.onDates,
+                  onTap: onDates,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Good, low and out as one bar, each part as wide as its share.
+class _StockBar extends StatelessWidget {
+  const _StockBar({required this.good, required this.low, required this.out, required this.palette});
+  final int good, low, out;
+  final Palette palette;
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
-    final scheme = Theme.of(context).colorScheme;
-    final store = StoreScope.read(context);
-    return Card(
-      key: const ValueKey('home-water'),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final parts = [(good, palette.meals, 'good'), (low, palette.accent, 'low'), (out, palette.dates, 'out')];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: SizedBox(
+            height: 12,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (i, (n, c, _)) in parts.where((x) => x.$1 > 0).indexed) ...[
+                  if (i > 0) const SizedBox(width: 3),
+                  Expanded(
+                    flex: n,
+                    child: ColoredBox(color: c),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 14,
           children: [
-            Row(
-              children: [
-                Icon(Icons.water_drop_outlined, color: scheme.primary),
-                const SizedBox(width: 6),
-                Text('Water', style: text.titleSmall),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              water.counted.isEmpty ? 'None counted' : '${water.days} day${water.days == 1 ? '' : 's'}',
-              key: const ValueKey('water-days'),
-              style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
-            ),
-            Text('${formatQty(double.parse(water.litres.toStringAsFixed(1)))} L for', style: text.bodySmall),
-            Wrap(
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                InkWell(
-                  key: const ValueKey('people-less'),
-                  onTap: people <= 1 ? null : () => store.setSetting('people', people - 1),
-                  child: const Padding(padding: EdgeInsets.all(4), child: Icon(Icons.remove, size: 18)),
-                ),
-                Text('$people people', style: text.labelLarge?.copyWith(fontWeight: FontWeight.w800)),
-                InkWell(
-                  key: const ValueKey('people-more'),
-                  onTap: () => store.setSetting('people', people + 1),
-                  child: const Padding(padding: EdgeInsets.all(4), child: Icon(Icons.add, size: 18)),
-                ),
-              ],
-            ),
-            Text(
-              water.notCounted.isEmpty
-                  ? '3 L each a day (NSW Health, RFS)'
-                  : '3 L each a day. ${water.notCounted.length} not counted: put litres in the name or unit',
-              style: text.labelSmall?.copyWith(color: scheme.onSurfaceVariant),
-            ),
+            for (final (n, c, label) in parts)
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    '$n $label',
+                    style: text.labelLarge?.copyWith(color: palette.onBar, fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+/// A bright tile on Home: a big number, what it counts, and where it goes.
+class _HeroTile extends StatelessWidget {
+  const _HeroTile({
+    super.key,
+    required this.value,
+    required this.label,
+    required this.icon,
+    required this.bg,
+    required this.fg,
+    required this.onTap,
+  });
+
+  final String value, label;
+  final IconData icon;
+  final Color bg, fg;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return Expanded(
+      child: Material(
+        color: bg,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(18),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.55),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: fg, size: 20),
+                ),
+                const Spacer(),
+                Text(
+                  value,
+                  style: text.headlineMedium?.copyWith(
+                    fontFamily: headingFont,
+                    fontWeight: FontWeight.w600,
+                    color: fg,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: text.labelLarge?.copyWith(color: fg, fontWeight: FontWeight.w800),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

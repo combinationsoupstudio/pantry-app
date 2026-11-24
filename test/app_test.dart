@@ -31,9 +31,11 @@ void main() {
     await tester.pumpWidget(PantryApp(store: store));
     await tester.pumpAndSettle();
 
-    expect(find.text("G'day Chris"), findsWidgets);
+    expect(find.text("G'day Chris"), findsNothing, reason: 'no greeting since v0.18 (#42)');
+    expect(find.byKey(const ValueKey('home-date')), findsOneWidget);
     expect(find.text('0%'), findsOneWidget);
-    expect(find.text('0 of 2 targets met, 2 running low.'), findsOneWidget);
+    expect(find.text('0 good'), findsOneWidget);
+    expect(find.text('2 low'), findsOneWidget);
     expect(find.text('Rice'), findsOneWidget);
   });
 
@@ -46,11 +48,11 @@ void main() {
     for (final tab in AppTab.values) {
       await tester.tap(find.byKey(ValueKey('nav-${tab.name}')));
       await tester.pumpAndSettle();
-      final title = tab == AppTab.home
-          ? "G'day Chris"
-          : tab == AppTab.shopping
-          ? 'Shopping list'
-          : tab.label;
+      if (tab == AppTab.home) {
+        expect(find.byKey(const ValueKey('home-date')).hitTestable(), findsOneWidget, reason: tab.name);
+        continue;
+      }
+      final title = tab == AppTab.shopping ? 'Shopping list' : tab.label;
       expect(find.text(title).hitTestable(), findsWidgets, reason: tab.name);
     }
   });

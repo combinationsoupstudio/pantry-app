@@ -1,5 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
+import '../../logic/supplies.dart';
+import 'water_card.dart';
+
 import 'voice_add.dart';
 import 'scan_to_use.dart';
 import '../pages/stocktake_page.dart';
@@ -166,6 +169,16 @@ class _StockListViewState extends State<StockListView> {
                 )
               else
                 const SliverToBoxAdapter(child: SizedBox(height: 8)),
+              if (k == LocationKind.storage && _query.isEmpty && !_lowOnly)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                    child: WaterCard(
+                      water: waterDays(store.items, people: store.setting<int>('people', 3)),
+                      people: store.setting<int>('people', 3),
+                    ),
+                  ),
+                ),
               SliverList.builder(
                 itemCount: list.length,
                 itemBuilder: (_, i) => StockTile(item: list[i], showLocation: _locationId == null),

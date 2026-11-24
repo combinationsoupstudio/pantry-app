@@ -43,6 +43,11 @@ class Palette {
     required this.outContainer,
     required this.bar,
     required this.onBar,
+    required this.barSoft,
+    required this.meals,
+    required this.onMeals,
+    required this.dates,
+    required this.onDates,
     required this.surfaceLow,
     required this.surface,
     required this.surfaceHigh,
@@ -52,8 +57,12 @@ class Palette {
   final Color accent, onAccent, accentContainer, onAccentContainer, ink, inkSoft, outline;
   final Color ok, okContainer, low, lowContainer, out, outContainer;
 
-  /// The bottom bar: a deep band of the main colour, its pill in [accent].
-  final Color bar, onBar;
+  /// The bottom bar and Home's header (v0.18, #42): a deep band of the main
+  /// colour, its pill in [accent]; [barSoft] for quieter words on it.
+  final Color bar, onBar, barSoft;
+
+  /// Home's three tiles: the list (accent), meals, dates.
+  final Color meals, onMeals, dates, onDates;
   final Color surfaceLow, surface, surfaceHigh;
 
   static Palette of(PantryLook look, Brightness b) => switch ((look, b)) {
@@ -86,6 +95,11 @@ class Palette {
     outContainer: Color(0xFFFFDCD2),
     bar: Color(0xFF2F3E14),
     onBar: Color(0xFFF8F0E0),
+    barSoft: Color(0xFFD9EBB0),
+    meals: Color(0xFFC5E08F),
+    onMeals: Color(0xFF1C2A05),
+    dates: Color(0xFFFFB8A6),
+    onDates: Color(0xFF3A0D05),
     surfaceLow: Color(0xFFFCF4E6),
     surface: Color(0xFFF5EAD5),
     surfaceHigh: Color(0xFFEEE1C8),
@@ -114,6 +128,11 @@ class Palette {
     outContainer: Color(0xFF532319),
     bar: Color(0xFF121A06),
     onBar: Color(0xFFF3ECDF),
+    barSoft: Color(0xFFD9EBB0),
+    meals: Color(0xFFC5E08F),
+    onMeals: Color(0xFF1C2A05),
+    dates: Color(0xFFFFB8A6),
+    onDates: Color(0xFF3A0D05),
     surfaceLow: Color(0xFF221E18),
     surface: Color(0xFF2A251E),
     surfaceHigh: Color(0xFF332D25),
@@ -142,6 +161,11 @@ class Palette {
     outContainer: Color(0xFFFFDDD6),
     bar: Color(0xFF0A3D33),
     onBar: Color(0xFFE6F4EF),
+    barSoft: Color(0xFFA8E6D3),
+    meals: Color(0xFF7FD6C1),
+    onMeals: Color(0xFF00382D),
+    dates: Color(0xFFFF9A86),
+    onDates: Color(0xFF3A0D05),
     surfaceLow: Color(0xFFF7FBF9),
     surface: Color(0xFFE9F2EE),
     surfaceHigh: Color(0xFFDDEAE4),
@@ -170,6 +194,11 @@ class Palette {
     outContainer: Color(0xFF552219),
     bar: Color(0xFF06241E),
     onBar: Color(0xFFE6F4EF),
+    barSoft: Color(0xFFA8E6D3),
+    meals: Color(0xFF7FD6C1),
+    onMeals: Color(0xFF00382D),
+    dates: Color(0xFFFF9A86),
+    onDates: Color(0xFF3A0D05),
     surfaceLow: Color(0xFF131D1A),
     surface: Color(0xFF1C2925),
     surfaceHigh: Color(0xFF24332E),
@@ -178,6 +207,21 @@ class Palette {
 
 const headingFont = 'Fraunces';
 const bodyFont = 'Nunito Sans';
+
+/// The look's own colours for pages that paint with them (Home's header).
+@immutable
+class LookColors extends ThemeExtension<LookColors> {
+  const LookColors(this.palette);
+  final Palette palette;
+
+  static Palette of(BuildContext context) => Theme.of(context).extension<LookColors>()!.palette;
+
+  @override
+  LookColors copyWith() => this;
+
+  @override
+  LookColors lerp(LookColors? other, double t) => (t < 0.5 || other == null) ? this : other;
+}
 
 /// What a colour means, the same on every page.
 @immutable
@@ -254,7 +298,7 @@ ThemeData buildTheme(Brightness brightness, {PantryLook look = PantryLook.market
 
   return base.copyWith(
     scaffoldBackgroundColor: page,
-    extensions: [StatusColors.from(p)],
+    extensions: [StatusColors.from(p), LookColors(p)],
     textTheme: text.copyWith(
       titleMedium: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
       titleSmall: text.titleSmall?.copyWith(fontWeight: FontWeight.w700),

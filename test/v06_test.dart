@@ -149,7 +149,7 @@ void main() {
     expect([s.item(a.id)!.quantity, s.item(b.id)!.quantity, s.item(c.id)!.quantity], [10, 3.5, 1]);
   });
 
-  testWidgets('home shows water days and use-by; people can be changed', (tester) async {
+  testWidgets('water days sit with the stock stored away; people can be changed; home opens dates', (tester) async {
     tester.view.physicalSize = const Size(1080, 2400);
     tester.view.devicePixelRatio = 2.625;
     addTearDown(tester.view.reset);
@@ -158,10 +158,17 @@ void main() {
     await s.addItem(name: 'Panadol', locationId: 'medical', quantity: 1, useBy: DateTime(2020));
     await tester.pumpWidget(PantryApp(store: s));
     await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('home-water')), findsNothing, reason: 'off Home since v0.18 (#42)');
+    await tester.tap(find.byKey(const ValueKey('nav-pantry')));
+    await tester.pumpAndSettle();
+    final water = find.byKey(const ValueKey('water-days'));
+    await tester.scrollUntilVisible(water, 200, scrollable: find.byType(Scrollable).first);
     expect(find.text('4 days'), findsOneWidget, reason: '40 L / (3 people x 3 L)');
     await tester.tap(find.byKey(const ValueKey('people-less')));
     await tester.pumpAndSettle();
     expect(find.text('6 days'), findsOneWidget);
+    await tester.tap(find.byKey(const ValueKey('nav-home')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('home-dates')));
     await tester.pumpAndSettle();
     expect(find.byType(DatesPage), findsOneWidget);
