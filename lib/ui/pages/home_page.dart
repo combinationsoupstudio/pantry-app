@@ -134,7 +134,7 @@ class HomePage extends StatelessWidget {
                   onTap: () => onGo(AppTab.recipes),
                 ),
                 StatTile(
-                  label: 'use by soon',
+                  label: 'dates soon',
                   value: '${ins.useBySoon.length}',
                   icon: Icons.event_outlined,
                   tone: ins.useBySoon.isEmpty

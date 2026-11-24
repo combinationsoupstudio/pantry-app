@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../../data/store_scope.dart';
 import '../../logic/amounts.dart';
 import '../../logic/supplies.dart';
+import '../../models/models.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/item_sheets.dart';
@@ -50,7 +51,7 @@ class _DatesPageState extends State<DatesPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Use-by dates')),
+      appBar: AppBar(title: const Text('Dates')),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -84,7 +85,10 @@ class _DatesPageState extends State<DatesPage> {
           if (groups.isEmpty)
             Padding(
               padding: const EdgeInsets.all(24),
-              child: Text('No dates here yet. Open an item and set its use-by date.', style: text.bodyLarge),
+              child: Text(
+                'No dates here yet. Open an item and give it a use by or best before date.',
+                style: text.bodyLarge,
+              ),
             ),
           for (final g in DateGroup.values)
             if (groups[g] != null) ...[
@@ -100,13 +104,18 @@ class _DatesPageState extends State<DatesPage> {
                           leading: ProductPicture.of(i, size: 40),
                           title: Text(i.name, style: text.titleSmall),
                           subtitle: Text(
-                            '${store.location(i.locationId)?.name ?? ''} · '
+                            '${b.kind.label} · ${store.location(i.locationId)?.name ?? ''} · '
                             '${i.batches.length == 1 && i.undatedAmount == 0 ? formatMeasure(i.quantity, i.unit) : '${formatMeasure(b.amount, i.unit)} of ${formatMeasure(i.quantity, i.unit)}'}'
-                            '${b.guessed ? ' · guessed' : ''}',
+                            '${b.guessed ? ' · guessed' : ''}'
+                            '${g == DateGroup.expired ? '\n${b.kind.pastAdvice}' : ''}',
                           ),
                           trailing: Text(
                             '${b.guessed ? '~' : ''}${when(b.useBy)}',
-                            style: text.labelLarge?.copyWith(color: colourOf(g), fontWeight: FontWeight.w800),
+                            style: text.labelLarge?.copyWith(
+                              // Past a best before is a check, not a bin (v0.18).
+                              color: g == DateGroup.expired && b.kind == DateKind.bestBefore ? status.low : colourOf(g),
+                              fontWeight: FontWeight.w800,
+                            ),
                           ),
                           onTap: () => showItemEditor(context, existing: i),
                         ),

@@ -16,6 +16,7 @@ import '../../logic/names.dart';
 import '../../logic/usage.dart';
 import '../../models/models.dart';
 import 'capture.dart';
+import 'date_kind.dart';
 import 'name_match.dart';
 import 'picture_search.dart';
 import 'pictures.dart';
@@ -69,6 +70,7 @@ class _ItemEditorState extends State<_ItemEditor> {
   late String _unit;
   late String _locationId;
   DateTime? _useBy;
+  late DateKind _dateKind;
 
   /// An existing item's dated stock, edited here and saved with it (v0.15).
   late List<StockBatch> _batches;
@@ -108,6 +110,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     _target = TextEditingController(text: e == null || !e.hasTarget ? '' : formatQty(e.target));
     _unit = e?.unit ?? '';
     _useBy = e?.useBy;
+    _dateKind = e?.dateKind ?? DateKind.useBy;
     _batches = [...?e?.batches];
     _locationId = e?.locationId ?? widget.locationId ?? '';
     _barcode = e?.barcode;
@@ -414,7 +417,7 @@ class _ItemEditorState extends State<_ItemEditor> {
     return [
       Padding(
         padding: const EdgeInsets.only(top: 4, bottom: 2),
-        child: Text('Use-by dates', style: text.titleSmall),
+        child: Text('Dates', style: text.titleSmall),
       ),
       if (shown.isEmpty && undated == 0)
         Text('Nothing in stock to date.', style: text.bodySmall?.copyWith(color: scheme.onSurfaceVariant)),
@@ -425,7 +428,9 @@ class _ItemEditorState extends State<_ItemEditor> {
           dense: true,
           leading: Icon(k == 0 ? Icons.priority_high : Icons.event_outlined, color: k == 0 ? scheme.primary : null),
           title: Text(
-            '${_amount(b.amount)} · ${b.guessed ? 'about ' : 'use by '}${formatDayMonthYear(b.useBy)}',
+            b.guessed
+                ? '${_amount(b.amount)} · about ${formatDayMonthYear(b.useBy)} (${b.kind.lower})'
+                : '${_amount(b.amount)} · ${b.kind.lower} ${formatDayMonthYear(b.useBy)}',
             style: text.bodyLarge?.copyWith(fontWeight: k == 0 ? FontWeight.w700 : null),
           ),
           subtitle: Text(
@@ -446,9 +451,13 @@ class _ItemEditorState extends State<_ItemEditor> {
             ),
           ),
           onTap: () async {
-            final picked = await _pickDate(context, b.useBy);
+            final picked = await showDateAndKindPicker(context, initial: b.useBy, kind: b.kind);
             if (picked == null) return;
-            setState(() => _batches = [for (final x in shown) x == b ? x.copyWith(useBy: picked, guessed: false) : x]);
+            final (day, kind) = picked;
+            setState(() {
+              _batches = [for (final x in shown) x == b ? x.copyWith(useBy: day, kind: kind, guessed: false) : x];
+              _dateKind = kind;
+            });
           },
         ),
       if (undated > 0)
@@ -463,9 +472,10 @@ class _ItemEditorState extends State<_ItemEditor> {
             onPressed: () async {
               final got = await showDateSomeSheet(context, item: e, undated: undated, unitLabel: _amount);
               if (got == null) return;
-              final (amount, day) = got;
+              final (amount, day, kind) = got;
               setState(() {
-                _batches = [...shown, StockBatch(amount: amount > undated ? undated : amount, useBy: day)];
+                _batches = [...shown, StockBatch(amount: amount > undated ? undated : amount, useBy: day, kind: kind)];
+                _dateKind = kind;
                 final keep = keepDaysFrom(DateTime.now(), day);
                 if (keep > 0) _keepDays = keep;
               });
@@ -474,18 +484,6 @@ class _ItemEditorState extends State<_ItemEditor> {
           ),
         ),
     ];
-  }
-
-  Future<DateTime?> _pickDate(BuildContext context, DateTime initial) {
-    final now = DateTime.now();
-    // A calendar, never typing: no slashes to lose (v0.12.1).
-    return showDatePicker(
-      context: context,
-      firstDate: DateTime(now.year - 1),
-      lastDate: DateTime(now.year + 10),
-      initialDate: initial,
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
-    );
   }
 
   Future<void> _save() async {
@@ -530,6 +528,7 @@ class _ItemEditorState extends State<_ItemEditor> {
         unit: unit,
         target: target,
         useBy: _useBy,
+        dateKind: _dateKind,
         packSize: packSize,
         barcode: _barcode,
         photoPath: _photoPath,
@@ -548,6 +547,7 @@ class _ItemEditorState extends State<_ItemEditor> {
           target: target,
           batches: _batches,
           keepDays: _keepDays,
+          dateKind: _dateKind,
           packSize: packSize,
           barcode: _barcode,
           clearBarcode: _barcode == null,
@@ -925,10 +925,22 @@ class _ItemEditorState extends State<_ItemEditor> {
               ),
               const SizedBox(height: 8),
               if (widget.existing == null) ...[
+                DateKindSwitch(
+                  key: const ValueKey('new-date-kind'),
+                  value: _dateKind,
+                  onChanged: (k) => setState(() => _dateKind = k),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(dateKindHint(_dateKind), style: text.bodySmall),
+                ),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.event_outlined),
-                  title: Text(_useBy == null ? 'No use-by date' : 'Use by ${formatDayMonthYear(_useBy!)}'),
+                  title: Text(
+                    _useBy == null ? 'No date' : '${_dateKind.label} ${formatDayMonthYear(_useBy!)}',
+                    key: const ValueKey('new-date-label'),
+                  ),
                   trailing: _useBy == null
                       ? null
                       : IconButton(
@@ -1169,13 +1181,13 @@ String formatDayMonthYear(DateTime d) => '${d.day}/${d.month}/${d.year}';
 /// Dates some undated stock: how much (all of it to start), then one tap on
 /// a shelf life, "same as last time" first when the item has kept before, or
 /// the calendar. Returns the amount and the day, or null (v0.15).
-Future<(double, DateTime)?> showDateSomeSheet(
+Future<(double, DateTime, DateKind)?> showDateSomeSheet(
   BuildContext context, {
   required StockItem item,
   required double undated,
   required String Function(double) unitLabel,
 }) {
-  return showModalBottomSheet<(double, DateTime)>(
+  return showModalBottomSheet<(double, DateTime, DateKind)>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
@@ -1202,7 +1214,9 @@ class _DateSomeState extends State<_DateSome> {
     return v > widget.undated ? widget.undated : v;
   }
 
-  void _done(DateTime day) => Navigator.of(context).pop((_how, DateTime(day.year, day.month, day.day)));
+  late DateKind _kind = widget.item.dateKind;
+
+  void _done(DateTime day) => Navigator.of(context).pop((_how, DateTime(day.year, day.month, day.day), _kind));
 
   @override
   Widget build(BuildContext context) {
@@ -1229,11 +1243,17 @@ class _DateSomeState extends State<_DateSome> {
             decoration: const InputDecoration(labelText: 'How much of it'),
           ),
           const SizedBox(height: 12),
+          DateKindSwitch(
+            key: const ValueKey('date-some-kind'),
+            value: _kind,
+            onChanged: (k) => setState(() => _kind = k),
+          ),
+          const SizedBox(height: 12),
           if (guess != null) ...[
             FilledButton(
               key: const ValueKey('date-some-same'),
               onPressed: () => _done(guess),
-              child: Text('Same as last time: ${formatDayMonthYear(guess)}'),
+              child: Text('Same as last time: ${_kind.lower} ${formatDayMonthYear(guess)}'),
             ),
             const SizedBox(height: 8),
           ],

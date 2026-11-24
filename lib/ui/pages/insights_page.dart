@@ -84,7 +84,7 @@ class InsightsPage extends StatelessWidget {
                 ),
             ],
           ),
-          const SliverToBoxAdapter(child: SectionHeader('Use by soon')),
+          const SliverToBoxAdapter(child: SectionHeader('Dates coming up')),
           SliverList.list(
             children: [
               if (ins.useBySoon.isEmpty) const ListTile(title: Text('Nothing due in the next fortnight.')),

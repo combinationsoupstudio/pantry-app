@@ -359,6 +359,7 @@ class HouseholdStore extends ChangeNotifier {
     String unit = '',
     double target = 0,
     DateTime? useBy,
+    DateKind dateKind = DateKind.useBy,
     String notes = '',
     double packSize = 0,
     String? barcode,
@@ -373,6 +374,7 @@ class HouseholdStore extends ChangeNotifier {
       unit: unit.trim(),
       target: target < 0 ? 0 : target,
       useBy: useBy,
+      dateKind: dateKind,
       keepDays: useBy == null ? 0 : keepDaysFrom(_clock(), useBy),
       notes: notes,
       updatedAt: _clock(),
@@ -448,13 +450,15 @@ class HouseholdStore extends ChangeNotifier {
       quantity: current.quantity + added,
       updatedAt: now,
       updatedBy: _user,
-      batches: guess == null ? null : [...current.batches, StockBatch(amount: added, useBy: guess, guessed: true)],
+      batches: guess == null
+          ? null
+          : [...current.batches, StockBatch(amount: added, useBy: guess, guessed: true, kind: current.dateKind)],
     );
   }
 
   /// Dates [amount] of an item's undated stock (all of it when more is asked
   /// for), and remembers how long it keeps for next time. A checked date.
-  Future<void> dateStock(String itemId, double amount, DateTime useBy) async {
+  Future<void> dateStock(String itemId, double amount, DateTime useBy, {DateKind kind = DateKind.useBy}) async {
     final index = _items.indexWhere((i) => i.id == itemId);
     if (index < 0) return;
     final current = _items[index];
@@ -465,9 +469,10 @@ class HouseholdStore extends ChangeNotifier {
     _items[index] = current.copyWith(
       batches: [
         ...current.batches,
-        StockBatch(amount: take, useBy: useBy),
+        StockBatch(amount: take, useBy: useBy, kind: kind),
       ],
       keepDays: keep > 0 ? keep : null,
+      dateKind: kind,
       updatedAt: now,
       updatedBy: _user,
     );

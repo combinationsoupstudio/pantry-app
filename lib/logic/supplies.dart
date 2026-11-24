@@ -71,7 +71,7 @@ WaterDays waterDays(Iterable<StockItem> items, {required int people, double extr
   );
 }
 
-/// Use-by groups, soonest first.
+/// Date groups (use by and best before alike), soonest first.
 enum DateGroup {
   expired('Past its date'),
   week('Within a week'),
@@ -128,12 +128,15 @@ String? eatFirstHint(StockItem item, DateTime now, String Function(double) amoun
   final days = b.useBy.difference(DateTime(now.year, now.month, now.day)).inDays;
   if (days > 6) return null;
   final what = amount(b.amount);
-  if (days < 0) return '$what past date';
+  // A use by is a safety line; a best before is only about quality (v0.18).
+  if (days < 0) return '$what past ${b.kind.lower}';
   const names = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  final when = days == 0
-      ? 'today'
-      : days == 1
-      ? 'tomorrow'
-      : 'by ${names[b.useBy.weekday - 1]}';
-  return 'eat $what $when${b.guessed ? '?' : ''}';
+  final day = names[b.useBy.weekday - 1];
+  final q = b.guessed ? '?' : '';
+  if (b.kind == DateKind.bestBefore) {
+    final when = days == 0 ? 'today' : (days == 1 ? 'tomorrow' : day);
+    return '$what best before $when$q';
+  }
+  final when = days == 0 ? 'today' : (days == 1 ? 'tomorrow' : 'by $day');
+  return 'eat $what $when$q';
 }

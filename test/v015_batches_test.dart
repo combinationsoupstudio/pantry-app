@@ -145,7 +145,7 @@ void main() {
       String n(double a) => formatQty(a);
       expect(eatFirstHint(s.item(y.id)!, today, n), 'eat 2 by Fri');
       final past = s.item(y.id)!.copyWith(batches: [b(1, 17)]);
-      expect(eatFirstHint(past, today, n), '1 past date');
+      expect(eatFirstHint(past, today, n), '1 past use by');
       final far = s.item(y.id)!.copyWith(batches: [b(1, 30)]);
       expect(eatFirstHint(far, today, n), isNull);
       final soonGuess = s.item(y.id)!.copyWith(batches: [b(1, 19, guessed: true)]);
