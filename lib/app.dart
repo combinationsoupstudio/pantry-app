@@ -17,16 +17,23 @@ class PantryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreScope(
       store: store,
-      child: MaterialApp(
-        title: 'Pantry',
-        debugShowCheckedModeBanner: false,
-        theme: buildTheme(Brightness.light),
-        darkTheme: buildTheme(Brightness.dark),
-        // Australian dates (17/11/2026) in pickers and anything localised.
-        locale: const Locale('en', 'AU'),
-        supportedLocales: const [Locale('en', 'AU')],
-        localizationsDelegates: GlobalMaterialLocalizations.delegates,
-        home: const AppShell(),
+      // The look follows the household setting (v0.18, #38).
+      child: ListenableBuilder(
+        listenable: store,
+        builder: (context, _) {
+          final look = PantryLook.fromName(store.setting<String>('look', 'warm'));
+          return MaterialApp(
+            title: 'Pantry',
+            debugShowCheckedModeBanner: false,
+            theme: buildTheme(Brightness.light, look: look),
+            darkTheme: buildTheme(Brightness.dark, look: look),
+            // Australian dates (17/11/2026) in pickers and anything localised.
+            locale: const Locale('en', 'AU'),
+            supportedLocales: const [Locale('en', 'AU')],
+            localizationsDelegates: GlobalMaterialLocalizations.delegates,
+            home: const AppShell(),
+          );
+        },
       ),
     );
   }

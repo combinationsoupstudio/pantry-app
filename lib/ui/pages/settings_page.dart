@@ -17,6 +17,7 @@ import '../../data/store_scope.dart';
 import '../../data/sync_service.dart';
 import 'household_page.dart';
 import '../../models/models.dart';
+import '../theme.dart';
 import '../widgets/common.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -67,6 +68,27 @@ class SettingsPage extends StatelessWidget {
           ),
           const SectionHeader('Reminders'),
           const _Reminders(),
+          const SectionHeader('Look'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SegmentedButton<PantryLook>(
+              key: const ValueKey('look'),
+              showSelectedIcon: false,
+              segments: [
+                for (final l in PantryLook.values)
+                  ButtonSegment(
+                    value: l,
+                    label: Text(l.label, key: ValueKey('look-${l.name}')),
+                  ),
+              ],
+              selected: {PantryLook.fromName(store.setting<String>('look', 'warm'))},
+              onSelectionChanged: (v) => store.setSetting('look', v.first.name),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: Text('The colours on every phone in the household.'),
+          ),
           const SectionHeader('Backup'),
           ListTile(
             key: const ValueKey('backup-now'),
