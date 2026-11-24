@@ -390,6 +390,89 @@ class HouseholdStore extends ChangeNotifier {
     return item;
   }
 
+  /// Adds one product bought as several [lots], each to its own place with
+  /// its own date (v0.18, #37). In each place the same item (same name and
+  /// unit, or [intoItemId] itself) is topped up; otherwise it is made there,
+  /// carrying the product's picture and barcode. [target] goes on the first
+  /// place only, and only on an item made new. One history line per place.
+  /// Returns the ids of the items that got stock, in the order of the lots.
+  Future<List<String>> addLots({
+    required String name,
+    required List<StockLot> lots,
+    String unit = '',
+    double target = 0,
+    double packSize = 0,
+    String? barcode,
+    String? photoPath,
+    String? imageUrl,
+    String? photoId,
+    String? intoItemId,
+  }) async {
+    final into = intoItemId == null ? null : item(intoItemId);
+    final cleanName = (into?.name ?? name).trim();
+    final cleanUnit = (into?.unit ?? unit).trim();
+    final now = _clock();
+    final byPlace = <String, List<StockLot>>{};
+    for (final l in lots) {
+      if (l.amount <= 0 || location(l.locationId) == null) continue;
+      byPlace.putIfAbsent(l.locationId, () => []).add(l);
+    }
+    final ids = <String>[];
+    var first = true;
+    for (final MapEntry(key: placeId, value: here) in byPlace.entries) {
+      final amount = here.fold<double>(0, (t, l) => t + l.amount);
+      final batches = [for (final l in here) ?l.batch];
+      final lastDated = here.lastWhere((l) => l.date != null, orElse: () => here.last);
+      final keep = lastDated.date == null ? 0 : keepDaysFrom(now, lastDated.date!);
+      final index = _items.indexWhere(
+        (i) =>
+            i.locationId == placeId &&
+            (i.id == into?.id ||
+                (i.name.toLowerCase() == cleanName.toLowerCase() && i.unit.toLowerCase() == cleanUnit.toLowerCase())),
+      );
+      if (index >= 0) {
+        final had = _items[index];
+        _items[index] = had.copyWith(
+          quantity: had.quantity + amount,
+          batches: [...had.batches, ...batches],
+          keepDays: keep > 0 ? keep : null,
+          dateKind: lastDated.date == null ? null : lastDated.kind,
+          updatedAt: now,
+          updatedBy: _user,
+        );
+        ids.add(had.id);
+        _log(had.name, 'topped up', delta: amount, unit: had.unit);
+      } else {
+        final made = StockItem(
+          id: newId(),
+          name: cleanName,
+          locationId: placeId,
+          quantity: amount,
+          unit: cleanUnit,
+          target: first && into == null && target > 0 ? target : 0,
+          batches: batches,
+          keepDays: keep,
+          dateKind: lastDated.date == null ? DateKind.useBy : lastDated.kind,
+          updatedAt: now,
+          updatedBy: _user,
+          packSize: into?.packSize ?? (packSize < 0 ? 0 : packSize),
+          barcode: into?.barcode ?? ((barcode == null || barcode.trim().isEmpty) ? null : barcode.trim()),
+          photoPath: into?.photoPath ?? photoPath,
+          imageUrl: into?.imageUrl ?? imageUrl,
+          photoId: into?.photoId ?? photoId,
+          aliases: into?.aliases ?? const [],
+        );
+        _items.add(made);
+        ids.add(made.id);
+        final where = location(placeId)?.name;
+        _log(made.name, where == null ? 'added' : 'added to $where', delta: amount, unit: made.unit);
+      }
+      first = false;
+    }
+    if (ids.isNotEmpty) await _commit();
+    return ids;
+  }
+
   Future<void> updateItem(StockItem updated) async {
     final index = _items.indexWhere((i) => i.id == updated.id);
     if (index < 0) return;

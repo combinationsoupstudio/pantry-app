@@ -6,6 +6,7 @@ import 'package:material_ui/material_ui.dart';
 import 'common.dart';
 
 import '../../data/catalogue.dart';
+import '../../data/household_store.dart';
 import '../../data/open_food_facts.dart';
 import '../../data/photo_store.dart';
 import '../../data/picture_finder.dart';
@@ -75,6 +76,13 @@ class _ItemEditorState extends State<_ItemEditor> {
   /// An existing item's dated stock, edited here and saved with it (v0.15).
   late List<StockBatch> _batches;
   int? _keepDays;
+
+  /// A new counted item split into lots, each with its own place and date
+  /// (v0.18, #37). Off: one place, one date, as before.
+  bool _split = false;
+  List<StockLot> _lots = [];
+  List<int> _lotKeys = [];
+  int _nextLotKey = 0;
 
   // Measured items: pack size, unopened packs, what is left in the open one.
   late bool _measured;
@@ -168,6 +176,8 @@ class _ItemEditorState extends State<_ItemEditor> {
   }
 
   void _setMeasured(bool on) {
+    // Lots are for counted things; measuring folds them back to one (#37).
+    if (on && _split) _setSplit(false);
     setState(() {
       _measured = on;
       if (on) {
@@ -486,6 +496,171 @@ class _ItemEditorState extends State<_ItemEditor> {
     ];
   }
 
+  /// Turns lots on (two to start: what is set now, and one more somewhere
+  /// else) or back off to the first lot.
+  void _setSplit(bool on) {
+    final store = StoreScope.read(context);
+    setState(() {
+      if (on) {
+        final qty = _parse(_qty.text) ?? 1;
+        final kind = store.location(_locationId)?.kind;
+        final others = store.locations.where((l) => l.id != _locationId).toList()
+          // The overflow usually goes to the other side: kitchen to stored
+          // away (pantry to prep pantry), or back.
+          ..sort((a, b) => (a.kind != kind ? 0 : 1).compareTo(b.kind != kind ? 0 : 1));
+        _lots = [
+          StockLot(locationId: _locationId, amount: qty > 1 ? qty - 1 : qty, date: _useBy, kind: _dateKind),
+          StockLot(locationId: others.isEmpty ? _locationId : others.first.id, amount: 1, kind: _dateKind),
+        ];
+        _lotKeys = [_nextLotKey++, _nextLotKey++];
+      } else if (_lots.isNotEmpty) {
+        final firstLot = _lots.first;
+        _locationId = firstLot.locationId;
+        _useBy = firstLot.date;
+        _dateKind = firstLot.kind;
+        _lots = [];
+        _lotKeys = [];
+      }
+      _split = on;
+      _syncLotTotal();
+    });
+  }
+
+  void _syncLotTotal() {
+    if (!_split) return;
+    _qty.text = formatQty(_lots.fold<double>(0, (t, l) => t + l.amount));
+  }
+
+  void _setLot(int k, StockLot lot) => setState(() {
+    _lots[k] = lot;
+    _syncLotTotal();
+  });
+
+  /// One card per lot: how many, where, and its date (v0.18, #37).
+  List<Widget> _lotFields(BuildContext context) {
+    final store = StoreScope.read(context);
+    final text = Theme.of(context).textTheme;
+    final places = store.locations;
+    return [
+      for (final (k, lot) in _lots.indexed)
+        Card(
+          key: ValueKey('lot-${_lotKeys[k]}'),
+          margin: const EdgeInsets.only(bottom: 8),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 4, 4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      child: TextFormField(
+                        key: ValueKey('lot-amount-$k'),
+                        initialValue: formatQty(lot.amount),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        decoration: InputDecoration(labelText: 'Lot ${k + 1}'),
+                        validator: (v) => (double.tryParse((v ?? '').trim()) ?? 0) > 0 ? null : 'How many?',
+                        onChanged: (v) => _setLot(k, lot.copyWith(amount: double.tryParse(v.trim()) ?? 0)),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        key: ValueKey('lot-place-$k-${lot.locationId}'),
+                        initialValue: places.any((l) => l.id == lot.locationId) ? lot.locationId : places.first.id,
+                        isExpanded: true,
+                        decoration: const InputDecoration(labelText: 'Goes in'),
+                        items: [for (final l in places) DropdownMenuItem(value: l.id, child: Text(l.name))],
+                        onChanged: (v) => _setLot(k, lot.copyWith(locationId: v)),
+                      ),
+                    ),
+                    IconButton(
+                      key: ValueKey('lot-remove-$k'),
+                      tooltip: 'Remove this lot',
+                      icon: const Icon(Icons.close),
+                      onPressed: _lots.length <= 1
+                          ? null
+                          : () => setState(() {
+                              _lots.removeAt(k);
+                              _lotKeys.removeAt(k);
+                              _syncLotTotal();
+                            }),
+                    ),
+                  ],
+                ),
+                ListTile(
+                  key: ValueKey('lot-date-$k'),
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  leading: Icon(lot.kind == DateKind.useBy ? Icons.health_and_safety_outlined : Icons.star_outline),
+                  title: Text(
+                    lot.date == null ? 'No date. Tap to add' : '${lot.kind.label} ${formatDayMonthYear(lot.date!)}',
+                    style: text.bodyLarge,
+                  ),
+                  trailing: lot.date == null
+                      ? null
+                      : IconButton(
+                          tooltip: 'Clear date',
+                          icon: const Icon(Icons.close),
+                          onPressed: () => _setLot(k, lot.copyWith(clearDate: true)),
+                        ),
+                  onTap: () async {
+                    final picked = await showDateAndKindPicker(
+                      context,
+                      initial: lot.date ?? DateTime.now(),
+                      kind: lot.kind,
+                    );
+                    if (picked == null) return;
+                    _setLot(k, lot.copyWith(date: picked.$1, kind: picked.$2));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      OutlinedButton.icon(
+        key: const ValueKey('lot-add'),
+        icon: const Icon(Icons.add),
+        label: const Text('Add another lot'),
+        onPressed: () => setState(() {
+          final last = _lots.last;
+          _lots.add(StockLot(locationId: last.locationId, amount: 1, kind: last.kind));
+          _lotKeys.add(_nextLotKey++);
+          _syncLotTotal();
+        }),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(top: 6),
+        child: Text(
+          'Each lot goes to its place with its own date. Same item already there? It is topped up.',
+          style: text.bodySmall,
+        ),
+      ),
+    ];
+  }
+
+  Future<void> _addLots(HouseholdStore store, {String? intoItemId, required List<String> aliases}) async {
+    final ids = await store.addLots(
+      name: _name.text,
+      lots: _lots,
+      unit: _unit,
+      target: _parse(_target.text) ?? 0,
+      barcode: _barcode,
+      photoPath: _photoPath,
+      imageUrl: _imageUrl,
+      photoId: _photoId,
+      intoItemId: intoItemId,
+    );
+    if (aliases.isNotEmpty) {
+      for (final id in ids) {
+        final i = store.item(id);
+        if (i != null) await store.setAliases(id, {...i.aliases, ...aliases}.toList());
+      }
+    }
+    PictureFinder.instance?.nudge();
+  }
+
   Future<void> _save() async {
     if (!_form.currentState!.validate()) return;
     final store = StoreScope.read(context);
@@ -514,12 +689,23 @@ class _ItemEditorState extends State<_ItemEditor> {
             ? await _askAddToExisting(same.item)
             : await askSameThing(context, _name.text, same.item, yesLabel: 'Yes, add to it', noLabel: 'No, it is new');
         if (yes == null || !mounted) return;
+        if (yes && _split) {
+          await _addLots(store, intoItemId: same.item.id, aliases: aliases);
+          if (mounted) Navigator.of(context).pop();
+          return;
+        }
         if (yes) {
           await store.adjust(same.item.id, qty);
           if (aliases.isNotEmpty) await store.setAliases(same.item.id, [...same.item.aliases, ...aliases]);
           if (mounted) Navigator.of(context).pop();
           return;
         }
+      }
+      if (_split) {
+        await _addLots(store, aliases: aliases);
+        _shareToLibrary();
+        if (mounted) Navigator.of(context).pop();
+        return;
       }
       final added = await store.addItem(
         name: _name.text,
@@ -636,8 +822,9 @@ class _ItemEditorState extends State<_ItemEditor> {
           child: TextFormField(
             key: const ValueKey('field-qty'),
             controller: _qty,
+            enabled: !_split,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            decoration: const InputDecoration(labelText: 'Have'),
+            decoration: InputDecoration(labelText: 'Have', helperText: _split ? 'The lots added up' : null),
             validator: _number,
           ),
         ),
@@ -915,74 +1102,88 @@ class _ItemEditorState extends State<_ItemEditor> {
               const SizedBox(height: 4),
               ...(_measured ? _measuredFields(context) : _countedFields()),
               const SizedBox(height: 12),
-              DropdownButtonFormField<String>(
-                // Keyed by the value: a scan that sets the place shows it.
-                key: ValueKey('kept-in-$_locationId'),
-                initialValue: _locationId,
-                decoration: const InputDecoration(labelText: 'Kept in'),
-                items: [for (final l in locations) DropdownMenuItem(value: l.id, child: Text(l.name))],
-                onChanged: (v) => setState(() => _locationId = v ?? _locationId),
-              ),
-              const SizedBox(height: 8),
-              if (widget.existing == null) ...[
-                DateKindSwitch(
-                  key: const ValueKey('new-date-kind'),
-                  value: _dateKind,
-                  onChanged: (k) => setState(() => _dateKind = k),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(dateKindHint(_dateKind), style: text.bodySmall),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.event_outlined),
-                  title: Text(
-                    _useBy == null ? 'No date' : '${_dateKind.label} ${formatDayMonthYear(_useBy!)}',
-                    key: const ValueKey('new-date-label'),
+              if (widget.existing == null && !_measured)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    key: const ValueKey('split-lots'),
+                    onPressed: () => _setSplit(!_split),
+                    icon: Icon(_split ? Icons.call_merge : Icons.call_split),
+                    label: Text(_split ? 'Back to one lot' : 'Different dates or places? Split it'),
                   ),
-                  trailing: _useBy == null
-                      ? null
-                      : IconButton(
-                          tooltip: 'Clear date',
-                          icon: const Icon(Icons.close),
-                          onPressed: () => setState(() => _useBy = null),
+                ),
+              if (_split)
+                ..._lotFields(context)
+              else ...[
+                DropdownButtonFormField<String>(
+                  // Keyed by the value: a scan that sets the place shows it.
+                  key: ValueKey('kept-in-$_locationId'),
+                  initialValue: _locationId,
+                  decoration: const InputDecoration(labelText: 'Kept in'),
+                  items: [for (final l in locations) DropdownMenuItem(value: l.id, child: Text(l.name))],
+                  onChanged: (v) => setState(() => _locationId = v ?? _locationId),
+                ),
+                const SizedBox(height: 8),
+                if (widget.existing == null) ...[
+                  DateKindSwitch(
+                    key: const ValueKey('new-date-kind'),
+                    value: _dateKind,
+                    onChanged: (k) => setState(() => _dateKind = k),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(dateKindHint(_dateKind), style: text.bodySmall),
+                  ),
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.event_outlined),
+                    title: Text(
+                      _useBy == null ? 'No date' : '${_dateKind.label} ${formatDayMonthYear(_useBy!)}',
+                      key: const ValueKey('new-date-label'),
+                    ),
+                    trailing: _useBy == null
+                        ? null
+                        : IconButton(
+                            tooltip: 'Clear date',
+                            icon: const Icon(Icons.close),
+                            onPressed: () => setState(() => _useBy = null),
+                          ),
+                    onTap: () async {
+                      final now = DateTime.now();
+                      // A calendar, never typing: no slashes to lose (v0.12.1).
+                      final picked = await showDatePicker(
+                        context: context,
+                        firstDate: DateTime(now.year - 1),
+                        lastDate: DateTime(now.year + 10),
+                        initialDate: _useBy ?? now,
+                        initialEntryMode: DatePickerEntryMode.calendarOnly,
+                      );
+                      if (picked != null) setState(() => _useBy = picked);
+                    },
+                  ),
+                  // One tap for the usual shelf lives, counted from today.
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: [
+                      for (final (label, days, months) in const [
+                        ('+1 week', 7, 0),
+                        ('+1 month', 0, 1),
+                        ('+6 months', 0, 6),
+                        ('+1 year', 0, 12),
+                        ('+2 years', 0, 24),
+                      ])
+                        ActionChip(
+                          key: ValueKey('useby-$label'),
+                          label: Text(label),
+                          onPressed: () =>
+                              setState(() => _useBy = useByFromToday(DateTime.now(), days: days, months: months)),
                         ),
-                  onTap: () async {
-                    final now = DateTime.now();
-                    // A calendar, never typing: no slashes to lose (v0.12.1).
-                    final picked = await showDatePicker(
-                      context: context,
-                      firstDate: DateTime(now.year - 1),
-                      lastDate: DateTime(now.year + 10),
-                      initialDate: _useBy ?? now,
-                      initialEntryMode: DatePickerEntryMode.calendarOnly,
-                    );
-                    if (picked != null) setState(() => _useBy = picked);
-                  },
-                ),
-                // One tap for the usual shelf lives, counted from today.
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: [
-                    for (final (label, days, months) in const [
-                      ('+1 week', 7, 0),
-                      ('+1 month', 0, 1),
-                      ('+6 months', 0, 6),
-                      ('+1 year', 0, 12),
-                      ('+2 years', 0, 24),
-                    ])
-                      ActionChip(
-                        key: ValueKey('useby-$label'),
-                        label: Text(label),
-                        onPressed: () =>
-                            setState(() => _useBy = useByFromToday(DateTime.now(), days: days, months: months)),
-                      ),
-                  ],
-                ),
-              ] else
-                ..._batchFields(context),
+                    ],
+                  ),
+                ] else
+                  ..._batchFields(context),
+              ],
               if (widget.existing != null) _ItemFacts(item: widget.existing!),
               const SizedBox(height: 8),
               Row(

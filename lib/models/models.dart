@@ -123,6 +123,29 @@ class StockBatch {
   int get hashCode => Object.hash(amount, useBy, guessed, kind);
 }
 
+/// One lot of a product being added (v0.18, #37): how much, where it goes,
+/// and its date if it has one. "2 tins, best before May, in the Pantry; 4
+/// tins, best before August, in the Prep pantry" is two lots.
+class StockLot {
+  const StockLot({required this.locationId, required this.amount, this.date, this.kind = DateKind.useBy});
+
+  final String locationId;
+  final double amount;
+  final DateTime? date;
+  final DateKind kind;
+
+  StockLot copyWith({String? locationId, double? amount, DateTime? date, bool clearDate = false, DateKind? kind}) =>
+      StockLot(
+        locationId: locationId ?? this.locationId,
+        amount: amount ?? this.amount,
+        date: clearDate ? null : (date ?? this.date),
+        kind: kind ?? this.kind,
+      );
+
+  /// Its date as a batch, or null when it has none.
+  StockBatch? get batch => date == null || amount <= 0 ? null : StockBatch(amount: amount, useBy: date!, kind: kind);
+}
+
 /// Batches tidied: nothing empty, one batch per date and kind (a guess merged with a
 /// checked date counts as checked), soonest first, and never more dated than
 /// there is: when there is less now, the soonest went first (eat me first).
