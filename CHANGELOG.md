@@ -4,6 +4,19 @@ All notable changes to this project are listed here. Format: [Keep a Changelog](
 
 ## [Unreleased]
 
+## [0.18.0] - 2026-11-24
+
+### Added
+- **Use by or Best before** on every date. A switch on every date picker; picking one unpicks the other. Past a use by reads "Don't eat" in red; past a best before reads "Check it" in amber, because it is usually still fine. Each item remembers which kind it gets, so guessed dates on top-ups match. Older data reads as use by. ([#36](https://github.com/combinationsoupstudio/pantry-app/issues/36))
+- **Split into lots** when adding: several of one product, each with its own amount, place and date. "2 tins best before May in the Pantry, 4 tins best before August in the Prep pantry" goes in as one add; each place gets its stock and its dates, topping up what is already there. ([#37](https://github.com/combinationsoupstudio/pantry-app/issues/37))
+- **Colour glow-up** and a choice of look in Settings: *Warm pantry*, richer (herb green, saffron, tomato, a deep olive bar), or *Market fresh*, bold (teal, citrus, coral), now the default. Every status colour passes WCAG AA, checked by a test. ([#38](https://github.com/combinationsoupstudio/pantry-app/issues/38))
+
+- **New top of Home**: a deep teal header with the date, how stocked the house is (big %) and one bar split into good, low and out; three bright tiles for the list, meals ready and dates soon sit over its edge. The greeting is gone. ([#42](https://github.com/combinationsoupstudio/pantry-app/issues/42))
+
+### Changed
+- **Water days moved off Home** to the stored-away side of Pantry, with the rest of the stock you keep in reserve. ([#42](https://github.com/combinationsoupstudio/pantry-app/issues/42))
+- The Dates page and Home say "Dates" rather than "Use-by dates", since a date can now be either kind.
+
 ## [0.17.0] - 2026-11-19
 
 ### Added

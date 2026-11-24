@@ -52,50 +52,117 @@ class StockLocation {
   );
 }
 
+/// What a date on a pack means (v0.18). A **use by** date is about safety:
+/// past it, do not eat it. A **best before** date is about quality: past it,
+/// it is usually still fine to eat if it looks and smells right (FSANZ). A
+/// date is one or the other, never both.
+enum DateKind {
+  useBy('Use by'),
+  bestBefore('Best before');
+
+  const DateKind(this.label);
+  final String label;
+
+  /// "use by" / "best before", for inside a sentence.
+  String get lower => label.toLowerCase();
+
+  /// What to do once the date has gone.
+  String get pastAdvice => this == DateKind.useBy ? "Past use by. Don't eat" : 'Past best before. Check it';
+
+  static DateKind fromName(Object? name) => name == 'bestBefore' ? DateKind.bestBefore : DateKind.useBy;
+}
+
 /// Some of an item that shares one use-by date (v0.15): "2 of the 4 yoghurts
 /// are good till Friday". [amount] is in the item's own unit, like its
 /// quantity. [guessed] marks a date the app filled in from how long this item
 /// kept last time, shown as "about" until someone checks it.
 class StockBatch {
-  StockBatch({required this.amount, required DateTime useBy, this.guessed = false})
+  StockBatch({required this.amount, required DateTime useBy, this.guessed = false, this.kind = DateKind.useBy})
     : useBy = DateTime(useBy.year, useBy.month, useBy.day);
 
   final double amount;
+
+  /// The date itself; what it means is [kind] (the name stays for old data).
   final DateTime useBy;
   final bool guessed;
+  final DateKind kind;
 
-  StockBatch copyWith({double? amount, DateTime? useBy, bool? guessed}) =>
-      StockBatch(amount: amount ?? this.amount, useBy: useBy ?? this.useBy, guessed: guessed ?? this.guessed);
+  /// "Use by 3/12/2026" or "Best before 3/12/2026".
+  String label(String Function(DateTime) day) => '${kind.label} ${day(useBy)}';
 
-  Map<String, Object?> toJson() => {'amount': amount, 'useBy': useBy.toIso8601String(), if (guessed) 'guessed': true};
+  StockBatch copyWith({double? amount, DateTime? useBy, bool? guessed, DateKind? kind}) => StockBatch(
+    amount: amount ?? this.amount,
+    useBy: useBy ?? this.useBy,
+    guessed: guessed ?? this.guessed,
+    kind: kind ?? this.kind,
+  );
+
+  Map<String, Object?> toJson() => {
+    'amount': amount,
+    'useBy': useBy.toIso8601String(),
+    if (guessed) 'guessed': true,
+    if (kind != DateKind.useBy) 'kind': kind.name,
+  };
 
   factory StockBatch.fromJson(Map<String, Object?> json) => StockBatch(
     amount: (json['amount']! as num).toDouble(),
     useBy: DateTime.parse(json['useBy']! as String),
     guessed: json['guessed'] == true,
+    kind: DateKind.fromName(json['kind']),
   );
 
   @override
   bool operator ==(Object other) =>
-      other is StockBatch && other.amount == amount && other.useBy == useBy && other.guessed == guessed;
+      other is StockBatch &&
+      other.amount == amount &&
+      other.useBy == useBy &&
+      other.guessed == guessed &&
+      other.kind == kind;
 
   @override
-  int get hashCode => Object.hash(amount, useBy, guessed);
+  int get hashCode => Object.hash(amount, useBy, guessed, kind);
 }
 
-/// Batches tidied: nothing empty, one batch per date (a guess merged with a
+/// One lot of a product being added (v0.18, #37): how much, where it goes,
+/// and its date if it has one. "2 tins, best before May, in the Pantry; 4
+/// tins, best before August, in the Prep pantry" is two lots.
+class StockLot {
+  const StockLot({required this.locationId, required this.amount, this.date, this.kind = DateKind.useBy});
+
+  final String locationId;
+  final double amount;
+  final DateTime? date;
+  final DateKind kind;
+
+  StockLot copyWith({String? locationId, double? amount, DateTime? date, bool clearDate = false, DateKind? kind}) =>
+      StockLot(
+        locationId: locationId ?? this.locationId,
+        amount: amount ?? this.amount,
+        date: clearDate ? null : (date ?? this.date),
+        kind: kind ?? this.kind,
+      );
+
+  /// Its date as a batch, or null when it has none.
+  StockBatch? get batch => date == null || amount <= 0 ? null : StockBatch(amount: amount, useBy: date!, kind: kind);
+}
+
+/// Batches tidied: nothing empty, one batch per date and kind (a guess merged with a
 /// checked date counts as checked), soonest first, and never more dated than
 /// there is: when there is less now, the soonest went first (eat me first).
 List<StockBatch> normaliseBatches(Iterable<StockBatch> batches, double quantity) {
-  final byDay = <DateTime, StockBatch>{};
+  final byDay = <(DateTime, DateKind), StockBatch>{};
   for (final b in batches) {
     if (b.amount <= 0) continue;
-    final had = byDay[b.useBy];
-    byDay[b.useBy] = had == null
-        ? b
-        : StockBatch(amount: had.amount + b.amount, useBy: b.useBy, guessed: had.guessed && b.guessed);
+    final key = (b.useBy, b.kind);
+    final had = byDay[key];
+    byDay[key] = had == null ? b : had.copyWith(amount: had.amount + b.amount, guessed: had.guessed && b.guessed);
   }
-  final sorted = byDay.values.toList()..sort((a, b) => a.useBy.compareTo(b.useBy));
+  // Soonest first; on the same day a use by goes before a best before.
+  final sorted = byDay.values.toList()
+    ..sort((a, b) {
+      final d = a.useBy.compareTo(b.useBy);
+      return d != 0 ? d : a.kind.index.compareTo(b.kind.index);
+    });
   final dated = sorted.fold<double>(0, (t, b) => t + b.amount);
   final over = dated - (quantity < 0 ? 0 : quantity);
   if (over <= 1e-9) return List.unmodifiable(sorted);
@@ -148,6 +215,7 @@ class StockItem {
     DateTime? useBy,
     List<StockBatch>? batches,
     this.keepDays = 0,
+    this.dateKind = DateKind.useBy,
     this.notes = '',
     this.packSize = 0,
     this.barcode,
@@ -159,7 +227,7 @@ class StockItem {
     this.notAliases = const [],
     this.photoId,
   }) : batches = normaliseBatches(
-         batches ?? (useBy == null ? const [] : [StockBatch(amount: quantity, useBy: useBy)]),
+         batches ?? (useBy == null ? const [] : [StockBatch(amount: quantity, useBy: useBy, kind: dateKind)]),
          quantity,
        );
 
@@ -240,6 +308,10 @@ class StockItem {
   /// date typed at all.
   final int keepDays;
 
+  /// What its dates usually are (v0.18): the kind it was last dated with, so
+  /// a top-up's guessed date and the next date picked start the same way.
+  final DateKind dateKind;
+
   /// The soonest use-by date ("eat me first"), or null when none is dated.
   DateTime? get useBy => batches.isEmpty ? null : batches.first.useBy;
 
@@ -301,6 +373,7 @@ class StockItem {
     bool clearUseBy = false,
     List<StockBatch>? batches,
     int? keepDays,
+    DateKind? dateKind,
     String? notes,
     DateTime? updatedAt,
     String? updatedBy,
@@ -325,6 +398,7 @@ class StockItem {
     target: target ?? this.target,
     batches: _nextBatches(quantity ?? this.quantity, useBy, clearUseBy, batches),
     keepDays: keepDays ?? this.keepDays,
+    dateKind: dateKind ?? this.dateKind,
     notes: notes ?? this.notes,
     updatedAt: updatedAt ?? this.updatedAt,
     updatedBy: updatedBy ?? this.updatedBy,
@@ -348,7 +422,7 @@ class StockItem {
     if (clear) return const [];
     if (oneDate != null) {
       final day = DateTime(oneDate.year, oneDate.month, oneDate.day);
-      if (day != useBy) return [StockBatch(amount: nextQuantity, useBy: day)];
+      if (day != useBy) return [StockBatch(amount: nextQuantity, useBy: day, kind: dateKind)];
     }
     if (nextQuantity < quantity) return takeSoonest(batches, quantity - nextQuantity).$1;
     return batches;
@@ -365,6 +439,7 @@ class StockItem {
     'useBy': useBy?.toIso8601String(),
     if (batches.isNotEmpty) 'batches': [for (final b in batches) b.toJson()],
     if (keepDays > 0) 'keepDays': keepDays,
+    if (dateKind != DateKind.useBy) 'dateKind': dateKind.name,
     'notes': notes,
     'updatedAt': updatedAt.toIso8601String(),
     'updatedBy': updatedBy,
@@ -391,6 +466,7 @@ class StockItem {
         ? null
         : [for (final b in json['batches']! as List) StockBatch.fromJson((b as Map).cast<String, Object?>())],
     keepDays: (json['keepDays'] as num? ?? 0).toInt(),
+    dateKind: DateKind.fromName(json['dateKind']),
     notes: json['notes'] as String? ?? '',
     updatedAt: DateTime.parse(json['updatedAt']! as String),
     updatedBy: json['updatedBy'] as String? ?? '',
